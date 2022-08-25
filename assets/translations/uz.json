@@ -1,0 +1,65 @@
+{
+  "registration": "Ro'yxatdan o'tish",
+  "name": "Ismi",
+  "surname": "Eng ko'p ishlatiladigan",
+  "date_birthday": "Tug'ilgan sanasi",
+  "have_account": "Allaqachon hisob bormi?",
+  "enter": "kirish",
+  "check_your_network_connection": "Tarmoq ulanishini tekshiring",
+
+  "entrance": "Kirish",
+  "enter_your_authorization_number": "Avtorizatsiya qilish uchun raqamingizni kiriting",
+  "dont_have_account_yet": "Hali hisob yo'qmi?",
+  "register": "Ro'yxatdan o'tish",
+  "verification": "Tekshirish",
+  "you_will_receive_SMS_to_number": "Raqamga SMS-xabar keladi",
+  "no_sms_coming": "Qayta so'rash orqali",
+  "сontinue": "Davom eting",
+  "send_again": "Yana yuboring",
+
+  "favourites": "Sevimlilar",
+  "you_dont_have_favorites": "Sevimlilar yo'q",
+  "permission_to_use_geodata": "Dasturning to'g'ri ishlashi uchun geodatabase-dan foydalanish uchun ruxsat kerak",
+  "provide": "Ta'minlash",
+  "reject": "Rad etish",
+  "no_dots": "Hech qanday nuqta yo'q",
+
+  "settings": "Sozlamalar",
+  "phone_number": "Telefon raqami",
+  "language": "til",
+  "logout": "Chiqish",
+
+  "route": "Yo'nalish",
+
+  "your_position": "Sizning manzilingiz",
+  "travel_time": "sayohat vaqti",
+
+  "metre": "m",
+  "meters": "m",
+  "metrov": "m",
+  "kilometer": "km",
+  "kilometers": "km",
+  "kilometrov": "km",
+
+  "minute": "min",
+  "minutes": "min",
+  "minuti": "min",
+  "hour": "soat",
+  "hour_s": "soat",
+  "hours": "soat",
+
+  "are_you_sure": "Ishonchingiz komilmi?",
+  "do_you_want_exit_app": "Chiqish istayman\nilovadan",
+  "no": "Yo'q",
+  "yes": "Ha",
+
+  "types_of_raw_materials": "Xom ashyo turlari: ",
+
+  "pn": "dus: ",
+  "vt": "WT: ",
+  "sr": "SR: ",
+  "cht": "Pays: ",
+  "pt": "Juma: ",
+  "sb": "Shanba: ",
+  "vs": "Quyosh: "
+}
