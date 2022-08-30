@@ -2,35 +2,56 @@ import 'package:flutter/material.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 
-class ConfirmationButton extends StatelessWidget {
-  const ConfirmationButton({
+class ButtonSecondary extends StatelessWidget {
+  const ButtonSecondary({
     Key? key,
     required this.text,
-    required this.onTap
+    required this.onMinusTap,
+    required this.onPlusTap
   }) : super(key: key);
 
   final text;
-  final GestureTapCallback onTap;
+  final GestureTapCallback onMinusTap;
+  final GestureTapCallback onPlusTap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
+    return Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30.0),
-          color: kColorGreen1,
+          borderRadius: BorderRadius.circular(15.0),
+          color: kColorGrey1,
+          border: Border.all(width: 1.0, color: Color(0xFFBEBEBE)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 14.0,),
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: kTextStyle3,
-          ),
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+              InkWell(
+              onTap: onMinusTap,
+              child:Column(children: [Text(
+              "-",
+              textAlign: TextAlign.start,
+              style: kTextStyle2,
+            ),],
+                crossAxisAlignment: CrossAxisAlignment.start)),
+
+             Column(children: [Text(
+              text,
+              textAlign: TextAlign.center,
+              style: kTextStyle2,
+            )],
+        crossAxisAlignment: CrossAxisAlignment.center,),
+          InkWell(
+              onTap: onPlusTap,
+              child:Column(children: [Text(
+              "+",
+              textAlign: TextAlign.end,
+              style: kTextStyle2,
+            ),],
+            crossAxisAlignment: CrossAxisAlignment.end))
+        ,]),
         ),
-      ),
-    );
+      );
   }
 }

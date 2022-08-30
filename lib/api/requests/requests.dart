@@ -21,7 +21,7 @@ import 'package:app/api/models/server_response_when_requesting_registration.dart
 import 'package:app/main.dart';
 import 'package:app/screens/authorisation.dart';
 import 'package:app/utils/shared_preferences.dart';
-
+final String mapbox_token = 'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA';
 //запрос на получение списка языков
 Future<List<ListLanguages>?> getLanguages() async {
 
@@ -405,9 +405,10 @@ Future<List<ListOfObjectsFromFilter>?> getListOfObjectsInFilter(List<int> array,
 Future<Driving.Route?> getCoordinatesDriving(BuildContext context, double lngMyLocation, double latMyLocation, double objectLng, double objectLat) async {
 
   //String url = 'https://api.mapbox.com/directions/v5/mapbox/driving/30.090796,59.789816;30.134563,59.769149?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA&steps=true&language=ru';
+  String token = 'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA';
+  String url = 'https://api.mapbox.com/directions/v5/mapbox/driving/$lngMyLocation,$latMyLocation;$objectLng,$objectLat?access_token=$token&steps=true&language=ru';
 
-  String url = 'https://api.mapbox.com/directions/v5/mapbox/driving/$lngMyLocation,$latMyLocation;$objectLng,$objectLat?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA&steps=true&language=ru';
-
+  String geocodingUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$lngMyLocation,$latMyLocation.json?access_token=$token';
   var headers = new Map<String, String>();
   // if (Settings.token != null)
   headers['accept'] = "application/json";
@@ -436,12 +437,47 @@ Future<Driving.Route?> getCoordinatesDriving(BuildContext context, double lngMyL
   return null;
 }
 
+//запрос для маршрута driving
+Future<String?> getAddressCoordinates(BuildContext context, double lngMyLocation, double latMyLocation) async {
+
+  //String url = 'https://api.mapbox.com/directions/v5/mapbox/driving/30.090796,59.789816;30.134563,59.769149?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA&steps=true&language=ru';
+
+  String url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$lngMyLocation,$latMyLocation.json?access_token=$mapbox_token';
+  var headers = new Map<String, String>();
+  // if (Settings.token != null)
+  headers['accept'] = "application/json";
+  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  //headers['Authorization'] = "Bearer " + Settings.token.toString();
+  if (mainLocale != null) {
+    headers['Accept-Language'] = mainLocale!.languageCode;
+  } else {
+    headers['Accept-Language'] = "ru";
+  }
+
+  try {
+    Response response = await http.get(Uri.parse(url), headers: headers);
+    if (200 <= response.statusCode && response.statusCode < 300) {
+      var responseJson = json.decode(response.body);
+      String address = responseJson["features"][0]["place_name"].toString();
+
+      return address;
+    } else if (response.statusCode == 401) {
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {return Authorisation();}), (Route<dynamic> route) => false);
+    }
+  } on Exception {
+    return null;
+  } catch (e) {
+    return null;
+  }
+  return null;
+}
+
 //запрос для маршрута walking
 Future<Walking.RouteWalking?> getCoordinatesWalking(BuildContext context, double lngMyLocation, double latMyLocation, double objectLng, double objectLat) async {
 
   //String url = 'https://api.mapbox.com/directions/v5/mapbox/walking/30.090796,59.789816;30.134563,59.769149?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA&steps=true&language=ru';
 
-  String url = 'https://api.mapbox.com/directions/v5/mapbox/walking/$lngMyLocation,$latMyLocation;$objectLng,$objectLat?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA&steps=true&language=ru';
+  String url = 'https://api.mapbox.com/directions/v5/mapbox/walking/$lngMyLocation,$latMyLocation;$objectLng,$objectLat?access_token=$mapbox_token&steps=true&language=ru';
 
   var headers = new Map<String, String>();
   // if (Settings.token != null)

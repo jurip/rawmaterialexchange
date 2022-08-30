@@ -250,6 +250,9 @@ class _VerificationState extends State<Verification> {
                                   if (data != null) {
                                     if (data.accessToken != '' && data.accessToken != null) {
                                       Settings.setTokenFromSharedPref(data.accessToken!);
+                                      Settings.setPhoneFromSharedPref(widget.phone);
+
+
                                       Navigator.push(context, MaterialPageRoute(builder: (context) {return MapScreen();}));
                                     } else {
                                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

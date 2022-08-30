@@ -98,6 +98,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   static String token = '';
+  static String phone = '';
 
   void getToken() {
     Settings.getTokenFromSharedPref().then((value) {
@@ -106,5 +107,6 @@ class _MyAppState extends State<MyApp> {
         });
     });
   }
+
 }
 //      Future.delayed(const Duration(milliseconds: 5000), () {

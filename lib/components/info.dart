@@ -14,16 +14,16 @@ import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-class OrderDone extends StatefulWidget {
-  const OrderDone({
+class Info extends StatefulWidget {
+  const Info({
     Key? key,
   }) : super(key: key);
 
   @override
-  _OrderDoneState createState() => _OrderDoneState();
+  _InfoState createState() => _InfoState();
 }
 
-class _OrderDoneState extends State<OrderDone> {
+class _InfoState extends State<Info> {
 
   List<PopupMenuEntry<PopupItem>> popUpMenuItem = [ ];
 
@@ -148,7 +148,7 @@ class _OrderDoneState extends State<OrderDone> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: topPadding2),
-                child: Center(child: Text('order_done'.tr(), style: kAlertTextStyle)),
+                child: Text('how_it_works'.tr(), style: kAlertTextStyle),
               ),
               Container(
                 constraints: BoxConstraints(
@@ -161,18 +161,7 @@ class _OrderDoneState extends State<OrderDone> {
                     children: [
                       //66 * 4
                       SizedBox(height: sizedBoxHeight1),
-                      Text("orded_done_text".tr()),
-                      SizedBox(height: sizedBoxHeight3),
-                      Container(width: double.infinity, height: containerHeight2, color: kColorGrey1,),
-                      SizedBox(height: sizedBoxHeight4),
-                      ConfirmationButton(//46
-                        text: 'to_main'.tr(),
-                        onTap: () async {
-                          Navigator.pop(context);
-                          },
-                      ),
-                      SizedBox(height: sizedBoxHeight5),
-                      SizedBox(height: 300),
+                  Text('how_it_works_text'.tr())
                     ],
                   ),
                 ),

@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 
-class ConfirmationButton extends StatelessWidget {
-  const ConfirmationButton({
+class OrderButton extends StatelessWidget {
+  const OrderButton({
     Key? key,
-    required this.text,
+    required this.text1,
+    required this.text2,
     required this.onTap
   }) : super(key: key);
 
-  final text;
+  final text1;
+  final text2;
   final GestureTapCallback onTap;
 
   @override
@@ -25,11 +27,23 @@ class ConfirmationButton extends StatelessWidget {
         child:
           Padding(
           padding: const EdgeInsets.symmetric(vertical: 14.0,),
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: kTextStyle3,
-          ),
+          child:
+            Row(
+              children: [
+                Text(
+                  text1,
+                  textAlign: TextAlign.start,
+                  style: kTextStyle3,
+                ),
+                Text(
+                  text2,
+                  textAlign: TextAlign.end,
+                  style: kTextStyle3,
+                ),
+                Image(image: AssetImage("images/white_arrow"))
+              ],
+            )
+
         ),
       ),
     );

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-List<ListOfRawMaterials> listOfRawMaterialsFromJson(String str) => List<ListOfRawMaterials>.from(json.decode(str).map((x) => ListOfRawMaterials.fromJson(x)));
+List<Service> listOfRawMaterialsFromJson(String str) => List<Service>.from(json.decode(str).map((x) => Service.fromJson(x)));
 
 //String listOfRawMaterialsToJson(List<ListOfRawMaterials> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-class ListOfRawMaterials {
-  ListOfRawMaterials({
+class Service {
+  Service({
     required this.id,
     required this.name,
     this.selectedRawMaterials  = false,
@@ -14,7 +14,7 @@ class ListOfRawMaterials {
   String name;
   bool selectedRawMaterials;
 
-  factory ListOfRawMaterials.fromJson(Map<String, dynamic> json) => ListOfRawMaterials(
+  factory Service.fromJson(Map<String, dynamic> json) => Service(
     id: json["id"],
     name: json["name"],
   );

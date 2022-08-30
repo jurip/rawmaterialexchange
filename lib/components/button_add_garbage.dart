@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 
-class ButtonSecondary extends StatelessWidget {
-  const ButtonSecondary({
+class ButtonAddGarbage extends StatelessWidget {
+  const ButtonAddGarbage({
     Key? key,
     required this.text,
     required this.onTap
@@ -20,26 +20,15 @@ class ButtonSecondary extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
-          color: kColorGrey1,
-          border: Border.all()
+          border: Border.all(width: 1.0, color: Color(0xFFBEBEBE)),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 14.0,),
-          child: Row(children: [Text(
-            "-",
-            textAlign: TextAlign.start,
-            style: kTextStyle3,
-          ),
-            Text(
-            "+",
+          child: Text(
+            text,
             textAlign: TextAlign.center,
-            style: kTextStyle3,
+            style: kTextStyle2,
           ),
-            Text(
-              text,
-              textAlign: TextAlign.center,
-              style: kTextStyle3,
-            )],),
         ),
       ),
     );

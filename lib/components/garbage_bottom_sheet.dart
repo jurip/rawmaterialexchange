@@ -1,3 +1,5 @@
+import 'package:app/components/bottom_sheet_order.dart';
+import 'package:app/components/button_secondary.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:app/api/models/response_get_favorites.dart';
@@ -5,32 +7,46 @@ import 'package:app/api/requests/requests.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 
-class FavouritesBottomSheet extends StatefulWidget {
-  const FavouritesBottomSheet({
+import '../api/models/response_list_of_row_materials.dart';
+import '../constants/image_constants.dart';
+import 'button_add_garbage.dart';
+import 'confirmation_button.dart';
+import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
+
+import 'info.dart';
+import 'package:latlong2/latlong.dart';
+
+class GarbageBottomSheet extends StatefulWidget {
+  final List<ListOfRawMaterials> materials;
+  final LatLng? position;
+  String address = "";
+  double income = 0;
+  GarbageBottomSheet({
     Key? key,
+    required this.materials,
+    required this.position,
   }) : super(key: key);
 
   @override
-  _FavouritesBottomSheetState createState() => _FavouritesBottomSheetState();
+  _GarbageBottomSheetState createState() => _GarbageBottomSheetState();
 }
 
-class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
+class _GarbageBottomSheetState extends State<GarbageBottomSheet> {
+  Future<void> getAddressCoordinatesAddToVar() async {
+    getAddressCoordinates(context, widget.position!.longitude, widget.position!.latitude,)
+        .then((value) {
+      if (value != null) widget.address = value;
 
-  List<GetFavorites> favorites = [];
-
+    });
+  }
   @override
   void initState() {
     super.initState();
-    getFavorites(context).then((value) {
-      setState(() {
-        favorites = value!;
-      });
-    });
+    getAddressCoordinatesAddToVar();
   }
-
   @override
   Widget build(BuildContext context) {
-    return favorites == null ? Scaffold(
+    return widget.materials == null ? Scaffold(
       backgroundColor: Colors.transparent,
       body: Center(
         child: CircularProgressIndicator(backgroundColor: Colors.transparent, color: Colors.green,),
@@ -75,23 +91,84 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
                   onTap: () {
                     Navigator.pop(context);
                   },
-                  child: Icon(Icons.keyboard_arrow_left, size: 30.0,),
+                  child: Row(
+                    children: [
+                      Icon(Icons.keyboard_arrow_left, size: 30.0,),
+                      Text('main'.tr(), style: TextStyle(
+                        color: Color(0xFF2E2E2E),
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'GothamProNarrow-Medium',
+                        fontSize: 18.0,
+                      ))
+                    ],
+                  ),
                 ),
-                Center(child: Text('favourites'.tr(), style: kAlertTextStyle)),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                  SizedBox(height: 25.0),
+                  Text('garbage_collection'.tr(), style: kAlertTextStyle),
+                  SizedBox(height: 5.0),
+                  Text('garbage_collection_text'.tr() ),
+                  SizedBox(height: 5.0),
+                  InkWell(
+                    child: Text('how_it_works_link'.tr(), style: linkStyle, ),
+                    onTap: () async {
+
+    if (true) {
+    // If the form is valid, display a snackbar. In the real world,
+    // you'd often call a server or save the information in a database.
+    ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Processing Data')),
+    );
+
+    cbs.showModalBottomSheet(
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    barrierColor: Colors.white.withOpacity(0),
+    context: context,
+    builder: (BuildContext context) {
+    return Info();
+
+    },
+    ).whenComplete(() {
+
+    });
+    }
+
+    },
+                  )
+
+                ],)
+
+
+
               ],
             ),
           ),
           Expanded(
-            child: favorites.isEmpty ? Center(
+            child: widget.materials.isEmpty ? Center(
               child: Text('you_dont_have_favorites'.tr(), style: TextStyle(color: Colors.grey, fontSize: 20.0, fontFamily: 'GothamProNarrow-Medium'),),
             )
                 : ListView.builder(
               shrinkWrap: true,
-              itemCount: favorites.length,
+              itemCount: widget.materials.length,
               itemBuilder: (BuildContext context, int index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                  child: Container(
+                  child:
+                  InkWell(
+                  onTap: () {
+                    setState(() {
+                      widget.materials[index].selectedRawMaterials = !widget.materials[index].selectedRawMaterials;
+                      if (widget.materials[index].selectedRawMaterials == false) {
+                        removeFilter(widget.materials[index].id);
+                      } else {
+                        getSelectedMaterialsIdAddToList(widget.materials[index].id);
+                      }
+                    });
+                  },
+                  child:Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16.0),
                       color: Colors.white,
@@ -104,6 +181,7 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
                         ),
                       ],
                     ),
+
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                       child: Column(
@@ -114,94 +192,116 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
                             children: [
                               Expanded(
                                   child: Text(
-                                    favorites[index].item.address,
+                                    widget.materials[index].name,
                                     style: kTextStyle2,
                                     softWrap: true,
                                   ),
                               ),
-                              InkWell(
-                                onTap: () {
-                                  deleteFavorite(context, favorites[index].itemId).then((value) {
-                                    if (value) setState(() {
-                                      favorites.removeAt(index);
-                                    });
-                                  });
-                                },
-                                  child: Icon(Icons.star, color: Colors.yellow),
-                              ),
+                              if(widget.materials[index].amount>0)
+                                ...[Image(image: AssetImage("images/ptichka.png"))]
+
                             ],
                           ),
+
+
                           SizedBox(height: 5.0),
-                          Text(getWorkingHours(favorites[index].item.workingHours)),
-                          SizedBox(height: 5.0),
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(text: 'types_of_raw_materials'.tr(), style: kBottomSheetTextStyle2),
-                                TextSpan(text: getMaterials(favorites[index].item.raws), style: kBottomSheetTextStyle),
-                              ],
-                            ),
-                          ),
+                        if(widget.materials[index].selectedRawMaterials)
+                          ...[Image(image: AssetImage(imageDefinitionInFilter(widget.materials[index].id))),
+                            SizedBox(height: 10.0),
+                            Text(widget.materials[index].text),
+                            SizedBox(height: 10.0),
+                            Row(children: [Text("price:".tr()), Text(widget.materials[index].price.toString()), Text("rub_per_100_kilo".tr())]),
+                            SizedBox(height: 10.0),
+                            Text("you_give".tr()),
+                            SizedBox(height: 10.0),
+
+                            ButtonSecondary(text: widget.materials[index].changedAmount.toString()+' '+"kg".tr(),onMinusTap:() => {setState(() {
+                              if(widget.materials[index].changedAmount>300){
+                                widget.materials[index].changedAmount = widget.materials[index].changedAmount - 10;
+                              }
+                              if(widget.materials[index].amount>0){
+                                widget.materials[index].amount = widget.materials[index].changedAmount;
+                                widget.income = getIncome();
+                              }
+                            })} ,
+                              onPlusTap: () => {setState(() {
+                                widget.materials[index].changedAmount = widget.materials[index].changedAmount + 10;
+                                if(widget.materials[index].amount>0){
+                                  widget.materials[index].amount = widget.materials[index].changedAmount;
+                                  widget.income = getIncome();
+                                }
+
+                            })},),
+                            SizedBox(height: 5.0),
+                            if(widget.materials[index].amount==0)
+                              ...[ButtonAddGarbage(text:"Add".tr(), onTap: () {
+                                setState(() {
+                                  widget.materials[index].selectedRawMaterials = !widget.materials[index].selectedRawMaterials;
+                                  if (widget.materials[index].selectedRawMaterials == false) {
+                                    removeFilter(widget.materials[index].id);
+                                  } else {
+                                    getSelectedMaterialsIdAddToList(widget.materials[index].id);
+                                  }
+
+                                  widget.materials[index].amount = widget.materials[index].changedAmount;
+
+                                  widget.income = getIncome();
+                                });
+                              },)]
+                            else
+                              ...[ButtonAddGarbage(text:"Delete".tr(), onTap: () {
+                                setState(() {
+                                  widget.materials[index].selectedRawMaterials = !widget.materials[index].selectedRawMaterials;
+                                  if (widget.materials[index].selectedRawMaterials == false) {
+                                    removeFilter(widget.materials[index].id);
+                                  } else {
+                                    getSelectedMaterialsIdAddToList(widget.materials[index].id);
+                                  }
+
+                                  widget.materials[index].amount = 0;
+
+                                  widget.income = getIncome();
+                                });
+                              },)]
+                            ,
+
+                          ]
+
                         ],
                       ),
                     ),
                   ),
+                  ),
                 );
               },
             ),
+          ),
+          ConfirmationButton(//46
+            text: 'your_income'.tr()+' '+widget.income.toString(),
+            onTap: () async {
+              Navigator.pop(context);
+              cbs.showModalBottomSheet(
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+                barrierColor: Colors.white.withOpacity(0),
+                context: context,
+                builder: (BuildContext context) {
+                  return Order(position:widget.position, income: widget.income, materials: widget.materials, address:widget.address);
+                },
+              ).whenComplete(() {
+
+              });
+            },
           ),
         ],
       ),
     );
   }
 
-  String selectedDayOfTheWeek = '';
-
-  String getDayString(int dayNumber) {
-    if (dayNumber == 0) {
-      selectedDayOfTheWeek = 'pn'.tr() + ': ';
-    } else if (dayNumber == 1) {
-      selectedDayOfTheWeek = 'vt'.tr() + ': ';
-    } else if (dayNumber == 2) {
-      selectedDayOfTheWeek = 'sr'.tr() + ': ';
-    } else if (dayNumber == 3) {
-      selectedDayOfTheWeek = 'cht'.tr() + ': ';
-    } else if (dayNumber == 4) {
-      selectedDayOfTheWeek = 'pt'.tr() + ': ';
-    } else if (dayNumber == 5) {
-      selectedDayOfTheWeek = 'sb'.tr() + ': ';
-    } else if (dayNumber == 6) {
-      selectedDayOfTheWeek = 'vs'.tr() + ': ';
-    }
-    return selectedDayOfTheWeek;
-  }
-
-  String getWorkingHours(List<WorkingHour> hours) {
-    String workingHours = '';
-    if (hours.isNotEmpty) {
-      for (var item in hours) {
-        if (item.day != hours.last.day) {
-          workingHours += getDayString(item.day) + getStartEnd(item.start, item.end) + '\n';
-        } else {
-          workingHours += getDayString(item.day) + getStartEnd(item.start, item.end);
-        }
-      }
-    }
-    return workingHours;
-  }
-
-  String getStartEnd(String start, String end) {
-    String startFormatted = formatHours(start);
-    String endFormatted = formatHours(end);
-    return startFormatted + '-' + endFormatted;
-  }
-
-  String formatHours(String date) {
-    DateTime parseDate = DateFormat('HH:mm:ss').parse(date);
-    var inputDate = DateTime.parse(parseDate.toString());
-    var outputFormat = DateFormat('HH:mm');
-    var outputDate = outputFormat.format(inputDate);
-    return outputDate;
+  double getIncome(){
+    double sum = 0;
+    widget.materials.forEach((element) { sum = sum + element.amount*element.price; });
+    return sum;
   }
 
   String getMaterials(List<Raw> raws) {
@@ -217,4 +317,13 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
     }
     return result;
   }
+  List<int> selectedMaterialsId = [];
+  //удаление фильтра
+  void removeFilter(int id) {
+    selectedMaterialsId.remove(id);
+  }
+  void getSelectedMaterialsIdAddToList(int id) {
+    selectedMaterialsId.add(id);
+  }
 }
+

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:app/constants/style_constants.dart';
 
-class BlockWithAllMaterials extends StatelessWidget {
-  const BlockWithAllMaterials({
+class BlockWithAllServices extends StatelessWidget {
+  const BlockWithAllServices({
     Key? key,
     required this.text,
     required this.onTap,
@@ -42,11 +42,11 @@ class BlockWithAllMaterials extends StatelessWidget {
             children: [
               Align(
                 alignment: Alignment.topRight,
-                  child: Image(image: AssetImage(assetImage),  fit: BoxFit.cover,),
+                child: Image(image: AssetImage(assetImage),  fit: BoxFit.cover,),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 10.0, left: 2.0),
-                  child: Text(text, style: kTextStyle7, softWrap: true,),
+                child: Text(text, style: kTextStyle7, softWrap: true,),
               ),
             ],
           ),

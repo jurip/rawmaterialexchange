@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/api/models/response_list_of_services.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -23,6 +24,9 @@ import 'package:location/location.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:latlong2/latlong.dart';
+
+import '../components/block_with_all_services.dart';
+import '../components/garbage_bottom_sheet.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -154,7 +158,7 @@ class _MapScreenState extends State<MapScreen> {
                     SizedBox(height: 20.0),
                     Expanded(
                       child: SingleChildScrollView(
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: AlwaysScrollableScrollPhysics(),
                         child: Column(
                           children: [
                             SizedBox(height: 4.0,),
@@ -192,6 +196,53 @@ class _MapScreenState extends State<MapScreen> {
                               ),
                             ),
                             SizedBox(height: 24.0),
+                            //Services
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 12.0),
+                          child:
+                            Align(child: Text("services".tr(), style: kAlertTextStyle,),
+
+                            alignment: Alignment.topLeft),
+                        ),
+                            SizedBox(height: 10.0),
+                            Container(
+                              margin: EdgeInsets.symmetric(horizontal: 12.0),
+                              color: Colors.white,
+                              constraints: BoxConstraints(
+
+                                maxHeight: MediaQuery.of(context).size.height - 36,
+                              ),
+                              child:
+                              StaggeredGridView.countBuilder(
+                                shrinkWrap: true,
+                                padding: EdgeInsets.only(top: 0),
+                                crossAxisCount: 4,
+                                itemCount: listOfServices.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return BlockWithAllServices(
+                                    colorShadow: listOfServices[index].selectedRawMaterials == true ? kColorShadowInFilter : Colors.transparent,
+                                    assetImage: imageDefinitionInFilter(listOfServices[index].id),
+                                    color: colorDefinitionInFilter(listOfServices[index].id),
+                                    onTap: () {
+                                      scaffoldKey.currentState!.showBottomSheet((context) => GarbageBottomSheet(materials:listOfRawMaterials, position: _position),
+                                        backgroundColor: Colors.transparent,
+                                      );
+                                    },
+                                    text: listOfServices[index].name,
+                                  );
+                                },
+                                staggeredTileBuilder: (int index) => StaggeredTile.count(2, 1),
+                                mainAxisSpacing: 4.0,
+                                crossAxisSpacing: 4.0,
+                              ),
+                            ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 12.0),
+                          child:
+                            Align(child: Text("filters".tr(), style: kAlertTextStyle,),
+                                alignment: Alignment.topLeft),
+                        ),
+                            SizedBox(height: 10.0),
                             Container(
                               margin: EdgeInsets.symmetric(horizontal: 12.0),
                               color: Colors.white,
@@ -477,6 +528,8 @@ class _MapScreenState extends State<MapScreen> {
       });
     }
   }
+  List<Service> listOfServices = [Service(id:101, name:"garbage_collection".tr()),
+    ];
 
   //запись маркеров в лист для их отображения
   List<Marker> markers = [];
@@ -1129,6 +1182,9 @@ class _MapScreenState extends State<MapScreen> {
       case 8:
         assetImage = 'images/copper.png';
         break;
+      case 101:
+        assetImage = 'images/garbage.png';
+        break;
       default:
         assetImage = 'images/Frame 54.png';
     }
@@ -1140,6 +1196,9 @@ class _MapScreenState extends State<MapScreen> {
     switch (id) {
       case 1:
         colorFilterElement = kColorGrey1InFilter;
+        break;
+      case 101:
+        colorFilterElement = Color(0xFFF2F2F2);
         break;
       case 2:
         colorFilterElement = kColorGrey2InFilter;

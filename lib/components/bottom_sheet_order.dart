@@ -1,3 +1,5 @@
+import 'package:app/api/models/response_list_of_row_materials.dart';
+import 'package:app/components/order_done.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:app/api/models/response_list_languages.dart';
@@ -8,22 +10,31 @@ import 'package:app/constants/style_constants.dart';
 import 'package:app/screens/registration.dart';
 import 'package:app/utils/progress_bar.dart';
 import 'package:app/utils/shared_preferences.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../../main.dart';
-import '../confirmation_button.dart';
-import 'information_column.dart';
+import '../utils/date_time_picker.dart';
+import '../utils/time_picker.dart';
+import 'bottom_sheet_setting_components/information_column.dart';
+import 'confirmation_button.dart';
+import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-class BottomSheetSetting extends StatefulWidget {
-  const BottomSheetSetting({
-    Key? key,
+class Order extends StatefulWidget {
+  LatLng? position;
+  String? address;
+  Order({
+    Key? key, this.position,this.address, required double income, required List<ListOfRawMaterials> materials,
+
   }) : super(key: key);
 
   @override
-  _BottomSheetSettingState createState() => _BottomSheetSettingState();
+  _OrderState createState() => _OrderState();
 }
 
-class _BottomSheetSettingState extends State<BottomSheetSetting> {
+class _OrderState extends State<Order> {
 
   List<PopupMenuEntry<PopupItem>> popUpMenuItem = [ ];
 
@@ -147,99 +158,44 @@ class _BottomSheetSettingState extends State<BottomSheetSetting> {
                 ),
               ),
               Padding(
+                padding: const EdgeInsets.only(top: 23.0, left: 16.0, right: 16.0),
+                child: Stack(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.keyboard_arrow_left, size: 30.0,),
+                          Text('main'.tr(), style: TextStyle(
+                            color: Color(0xFF2E2E2E),
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'GothamProNarrow-Medium',
+                            fontSize: 18.0,
+                          ))
+                        ],
+                      )
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
                 padding: EdgeInsets.only(top: topPadding2),
-                child: Center(child: Text('settings'.tr(), style: kAlertTextStyle)),
+                child: Center(child: Text('order'.tr(), style: kAlertTextStyle)),
               ),
               Container(
                 constraints: BoxConstraints(
                   minHeight: 0,
                   maxWidth: double.infinity,
-                  maxHeight: definitionHeightBottomSheetSettings(),
+                  maxHeight: double.infinity//definitionHeightBottomSheetSettings(),
                 ),
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
+                      MyCustomForm(userData: userData, position: widget.position, address: widget.address,),
                       //66 * 4
-                      InformationColumn(
-                        text1: 'name'.tr(),
-                        text2: userData!.name,
-                      ),
-                      InformationColumn(
-                        text1: 'surname'.tr(),
-                        text2: userData!.surname,
-                      ),
-                      InformationColumn(
-                        text1: 'phone_number'.tr(),
-                        text2: userData!.phone,
-                      ),
-                      InformationColumn(
-                        text1: 'date_birthday'.tr(),
-                        text2: birthDateUser,
-                      ),
-                      SizedBox(height: sizedBoxHeight1),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                          child: Text('language'.tr(), style: kAlertTextStyle4),
-                      ),
-                      SizedBox(height: sizedBoxHeight2),
-                      Row(
-                        children: [
-                          DropdownButton<ListLanguages>(
-                            value: dropdownValue,
-                            icon: const Icon(Icons.keyboard_arrow_right), //TODO!!!!!!!!!!!!!!!!
-                            style: kTextStyle2,
-                            underline: Container(
-                              height: 0,
-                              color: Colors.transparent,
-                            ),
-                            onChanged: (ListLanguages? newValue) {
-                              setState(() {
-                                dropdownValue = newValue!;
-                                setState(() {
-                                  if (dropdownValue!.id == 1) {
-                                    selectedLanguageId = 1;
-                                    context.setLocale(Locale('ru'));
-                                  } else if (dropdownValue!.id == 2) {
-                                    selectedLanguageId = 2;
-                                    context.setLocale(Locale('uz'));
-                                  } else if (dropdownValue!.id == 3) {
-                                    selectedLanguageId = 3;
-                                    context.setLocale(Locale('kk'));
-                                  }
-                                  mainLocale = context.locale;
-                                  // } else if (value.image == 'images/Ellipse td.png') {
-                                  //   selectedLanguageId = 4;
-                                  //   //context.setLocale(Locale('tjk'));
-                                  //   //EasyLocalization.of(context)!.locale = Locale('ar', 'SA');
-                                  // }
-                                });
-                              });
-                            },
-                            items: listLanguage.map<DropdownMenuItem<ListLanguages>>((ListLanguages value) {
-                              return DropdownMenuItem<ListLanguages>(
-                                value: value,
-                                child: Text(value.name),//value.name
-                              );
-                            }).toList(),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: sizedBoxHeight3),
-                      Container(width: double.infinity, height: containerHeight2, color: kColorGrey1,),
-                      SizedBox(height: sizedBoxHeight4),
-                      ConfirmationButton(//46
-                        text: 'logout'.tr(),
-                        onTap: () {
-                          _sendingMsgProgressBar?.show(context);
-                          Settings.setTokenFromSharedPref('');
-                          logout(context).then((value) {
-                            _sendingMsgProgressBar?.hide();
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(value!.message.toString()),
-                            ));
-                          });
-                        },
-                      ),
+
                       SizedBox(height: sizedBoxHeight5),
                     ],
                   ),
@@ -263,6 +219,7 @@ class _BottomSheetSettingState extends State<BottomSheetSetting> {
     definitionLanguage();
     definitionBirthDate();
   }
+
 
   String language = '';
 
@@ -321,3 +278,238 @@ class _BottomSheetSettingState extends State<BottomSheetSetting> {
     }
   }
 }
+
+
+
+// Define a custom Form widget.
+class MyCustomForm extends StatefulWidget {
+  UserData? userData;
+  LatLng? position;
+  String? address;
+  MyCustomForm({
+    Key? key,
+    required this.userData,
+    required this.position,
+    required this.address,
+  }) : super(key: key);
+
+  @override
+  MyCustomFormState createState() {
+    return MyCustomFormState();
+
+  }
+
+}
+
+// Define a corresponding State class.
+// This class holds data related to the form.
+class MyCustomFormState extends State<MyCustomForm> {
+  //для выстраивания маршрута пешком
+  @override
+  void initState() {
+    super.initState();
+    //getAddressCoordinates  (context, widget.position!.latitude, widget.position!.longitude);
+
+  }
+  // Create a global key that uniquely identifies the Form widget
+  // and allows validation of the form.
+  //
+  // Note: This is a `GlobalKey<FormState>`,
+  // not a GlobalKey<MyCustomFormState>.
+  final _formKey = GlobalKey<FormState>();
+  var maskFormatter = new MaskTextInputFormatter(mask: '### ### ## ##');
+  final _dateController = TextEditingController();
+  String imageBirthday = '';
+
+  var dropdownValue;
+
+  String getValidateBirthday() {
+    if (_dateController.text.isNotEmpty) {
+      imageBirthday = 'images/icon.svg';
+    } else {
+      imageBirthday = 'images/icon1.svg';
+    }
+    return imageBirthday;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Build a Form widget using the _formKey created above.
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text('phone_number'.tr(), style: kAlertTextStyle4),
+          ),
+          TextFormField(
+            decoration: InputDecoration(
+              suffixIcon: imageBirthday == '' ? null : SvgPicture.asset(getValidateBirthday()),
+              suffixIconConstraints: BoxConstraints(
+                  minHeight: 22,
+                  minWidth: 22
+              ),
+              counterText: "",
+              hintText: 'phone_number'.tr(),
+              hintStyle: kHintStyle,
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(width: 2.0, color: kColorGrey1),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(width: 2.0, color: kColorGreen1),
+              ),
+            ),
+            // The validator receives the text that the user has entered.
+
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'required_field'.tr();
+              }
+              return null;
+            },
+            initialValue: widget.userData!.phone
+          ),
+          SizedBox(height: 10.0),
+
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text('where_from'.tr(), style: kAlertTextStyle4),
+          ),
+          TextFormField(
+            decoration: InputDecoration(
+              suffixIcon: imageBirthday == '' ? null : SvgPicture.asset(getValidateBirthday()),
+              suffixIconConstraints: BoxConstraints(
+                  minHeight: 22,
+                  minWidth: 22
+              ),
+              counterText: "",
+              hintText: 'where_from'.tr(),
+              hintStyle: kHintStyle,
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(width: 2.0, color: kColorGrey1),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(width: 2.0, color: kColorGreen1),
+              ),
+            ),
+            // The validator receives the text that the user has entered.
+
+            // The validator receives the text that the user has entered.
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'required_field'.tr();
+              }
+              return null;
+            },
+            initialValue: widget.address,
+          ),
+          SizedBox(height: 10.0),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text('when_take'.tr(), style: kAlertTextStyle4),
+          ),
+          TextFormField(
+
+            autofocus: false,
+            maxLength: 10,
+            inputFormatters: [
+              maskFormatter,
+            ],
+            onTap: () {
+              FocusScope.of(context).requestFocus(new FocusNode());
+              DateTimePicker.showSheetDate(context,
+                  dateTime: DateTime.now(), onClicked: (date) {
+                    setState(() {
+                      DateTime newDate = DateFormat('yyyy-MM-dd').parse(date);
+                      _dateController.text = DateFormat("yyyy-MM-dd").format(newDate);
+                    });
+                  });
+            },
+            controller: _dateController,
+            style: kTextStyle2,
+            decoration: InputDecoration(
+              suffixIcon: imageBirthday == '' ? null : SvgPicture.asset(getValidateBirthday()),
+              suffixIconConstraints: BoxConstraints(
+                  minHeight: 22,
+                  minWidth: 22
+              ),
+              counterText: "",
+              hintText: 'dd.mm.yyyy'.tr(),
+              hintStyle: kHintStyle,
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(width: 2.0, color: kColorGrey1),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(width: 2.0, color: kColorGreen1),
+              ),
+            ),
+          ),
+          SizedBox(height: 10.0),
+
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text('take_time'.tr(), style: kAlertTextStyle4),
+          ),
+          CupertinoPickerSample(),
+          SizedBox(height: 10.0),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text('comment'.tr(), style: kAlertTextStyle4),
+          ),
+          TextFormField(
+            // The validator receives the text that the user has entered.
+            decoration: InputDecoration(
+              suffixIcon: imageBirthday == '' ? null : SvgPicture.asset(getValidateBirthday()),
+              suffixIconConstraints: BoxConstraints(
+                  minHeight: 22,
+                  minWidth: 22
+              ),
+              counterText: "",
+              hintText: 'comment'.tr(),
+              hintStyle: kHintStyle,
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(width: 2.0, color: kColorGrey1),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(width: 2.0, color: kColorGreen1),
+              ),
+            ),
+          ),
+          SizedBox(height: 10.0),
+          Text("order_text".tr()),
+          SizedBox(height: 40.0),
+          ConfirmationButton(//46
+            text: 'make_order'.tr(),
+            onTap: () async {
+
+              if (_formKey.currentState!.validate()) {
+                // If the form is valid, display a snackbar. In the real world,
+                // you'd often call a server or save the information in a database.
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Processing Data')),
+                );
+    Navigator.pop(context);
+
+    cbs.showModalBottomSheet(
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    barrierColor: Colors.white.withOpacity(0),
+    context: context,
+    builder: (BuildContext context) {
+    return OrderDone();
+
+    },
+    ).whenComplete(() {
+
+    });
+    }
+
+              },
+          ),
+        ],
+      ),
+    );
+  }
+}
+

@@ -80,6 +80,13 @@ const kAlertTextStyle = TextStyle(
   fontWeight: FontWeight.w700,
   fontSize: 20.0,
 );
+const linkStyle = TextStyle(
+  fontFamily: 'GothamProNarrow-Medium',
+  fontWeight: FontWeight.bold,
+  fontSize: 16.0,
+  color: kColorGreen1,
+  decoration: TextDecoration.underline,
+);
 
 const kAlertTextStyle2 = TextStyle(
   fontFamily: 'GothamProNarrow-Medium',
