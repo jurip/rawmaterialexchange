@@ -15,6 +15,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../../main.dart';
 import '../utils/date_time_picker.dart';
+import '../utils/order_date_time_picker.dart';
 import '../utils/time_picker.dart';
 import 'bottom_sheet_setting_components/information_column.dart';
 import 'confirmation_button.dart';
@@ -418,7 +419,7 @@ class MyCustomFormState extends State<MyCustomForm> {
             ],
             onTap: () {
               FocusScope.of(context).requestFocus(new FocusNode());
-              DateTimePicker.showSheetDate(context,
+              OrderDateTimePicker.showSheetDate(context,
                   dateTime: DateTime.now(), onClicked: (date) {
                     setState(() {
                       DateTime newDate = DateFormat('yyyy-MM-dd').parse(date);

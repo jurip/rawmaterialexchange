@@ -6,7 +6,7 @@ import 'package:app/constants/style_constants.dart';
 
 typedef StringToVoidFunc = void Function(String);
 
-class DateTimePicker {
+class OrderDateTimePicker {
 
   static void showSheetDate(
       BuildContext context, {
@@ -22,6 +22,7 @@ class DateTimePicker {
                 SizedBox(
                   height: 180.0,
                   child: CupertinoDatePicker(
+                      maximumDate: DateTime.now(),
                       backgroundColor: Colors.white,
                       initialDateTime: dateTime,
                       mode: CupertinoDatePickerMode.date,
