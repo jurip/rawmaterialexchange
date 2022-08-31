@@ -1,14 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
+import 'package:flutter/material.dart';
 
 class OrderButton extends StatelessWidget {
-  const OrderButton({
-    Key? key,
-    required this.text1,
-    required this.text2,
-    required this.onTap
-  }) : super(key: key);
+  const OrderButton(
+      {Key? key, required this.text1, required this.text2, required this.onTap})
+      : super(key: key);
 
   final text1;
   final text2;
@@ -24,11 +21,11 @@ class OrderButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(30.0),
           color: kColorGreen1,
         ),
-        child:
-          Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14.0,),
-          child:
-            Row(
+        child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 14.0,
+            ),
+            child: Row(
               children: [
                 Text(
                   text1,
@@ -42,9 +39,7 @@ class OrderButton extends StatelessWidget {
                 ),
                 Image(image: AssetImage("images/white_arrow"))
               ],
-            )
-
-        ),
+            )),
       ),
     );
   }

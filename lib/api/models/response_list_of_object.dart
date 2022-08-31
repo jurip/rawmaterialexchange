@@ -1,6 +1,8 @@
 import 'dart:convert';
 
-List<ListOfObjects> listOfObjectsFromJson(String str) => List<ListOfObjects>.from(json.decode(str).map((x) => ListOfObjects.fromJson(x)));
+List<ListOfObjects> listOfObjectsFromJson(String str) =>
+    List<ListOfObjects>.from(
+        json.decode(str).map((x) => ListOfObjects.fromJson(x)));
 
 //String listOfObjectsToJson(List<ListOfObjects> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
@@ -22,20 +24,20 @@ class ListOfObjects {
   bool pickUp;
 
   factory ListOfObjects.fromJson(Map<String, dynamic> json) => ListOfObjects(
-    id: json["id"],
-    address: json["address"],
-    latitude: json["latitude"].toDouble(),
-    longitude: json["longitude"].toDouble(),
-    website: json["website"] == null ? "" : json["website"],
-    pickUp: json["pick_up"],
-  );
+        id: json["id"],
+        address: json["address"],
+        latitude: json["latitude"].toDouble(),
+        longitude: json["longitude"].toDouble(),
+        website: json["website"] == null ? "" : json["website"],
+        pickUp: json["pick_up"],
+      );
 
-  // Map<String, dynamic> toJson() => {
-  //   "id": id,
-  //   "address": address,
-  //   "latitude": latitude,
-  //   "longitude": longitude,
-  //   "website": website == null ? null : website,
-  //   "pick_up": pickUp,
-  // };
+// Map<String, dynamic> toJson() => {
+//   "id": id,
+//   "address": address,
+//   "latitude": latitude,
+//   "longitude": longitude,
+//   "website": website == null ? null : website,
+//   "pick_up": pickUp,
+// };
 }

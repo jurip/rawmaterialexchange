@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
-
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 //Поле ввода для имени и фамилии
 class NameInputField extends StatelessWidget {
@@ -32,15 +31,13 @@ class NameInputField extends StatelessWidget {
         if (textChange != null) textChange!(str);
       },
       inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp("[a-z A-Z á-ú Á-Ú а-я А-Я а-ҳ А-Ҳ а-я А-Я ә Ә а-ю А-Ю Ӯ ӯ Ҷ ҷ Ӣ ӣ]")),
+        FilteringTextInputFormatter.allow(RegExp(
+            "[a-z A-Z á-ú Á-Ú а-я А-Я а-ҳ А-Ҳ а-я А-Я ә Ә а-ю А-Ю Ӯ ӯ Ҷ ҷ Ӣ ӣ]")),
       ],
       style: kTextStyle2,
       decoration: InputDecoration(
         suffixIcon: svgPicture,
-        suffixIconConstraints: BoxConstraints(
-            minHeight: 22,
-            minWidth: 22
-        ),
+        suffixIconConstraints: BoxConstraints(minHeight: 22, minWidth: 22),
         hintText: hintText,
         hintStyle: kHintStyle,
         enabledBorder: UnderlineInputBorder(
@@ -53,8 +50,6 @@ class NameInputField extends StatelessWidget {
     );
   }
 }
-
-
 
 //поле для ввода номера телефона
 class PhoneInputField extends StatelessWidget {
@@ -77,7 +72,6 @@ class PhoneInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-
       keyboardType: TextInputType.phone,
       onChanged: (str) {
         if (textChange != null) textChange!(str);
@@ -88,16 +82,14 @@ class PhoneInputField extends StatelessWidget {
         hintText: hintText,
         hintStyle: kHintStyle,
         suffixIcon: svgPicture,
-        suffixIconConstraints: BoxConstraints(
-            minHeight: 22,
-            minWidth: 22
-        ),
+        suffixIconConstraints: BoxConstraints(minHeight: 22, minWidth: 22),
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(width: 2.0, color: kColorGrey1),
         ),
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(width: 2.0, color: kColorGreen1),
-        ), floatingLabelBehavior: FloatingLabelBehavior.auto,
+        ),
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
       ),
     );
   }

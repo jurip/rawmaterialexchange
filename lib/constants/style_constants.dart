@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'color_constants.dart';
 
 const kTextStyle1 = TextStyle(
@@ -8,11 +9,10 @@ const kTextStyle1 = TextStyle(
 );
 
 const kTextStyle2 = TextStyle(
-  color: Colors.black,
+    color: Colors.black,
     fontSize: 18.0,
     fontFamily: 'GothamProNarrow-Medium',
-    fontWeight: FontWeight.w600
-);
+    fontWeight: FontWeight.w600);
 
 const kHintStyle = TextStyle(
   color: kColorGrey2,
@@ -56,11 +56,10 @@ const kTextStyle7 = TextStyle(
 );
 
 const kTextStyle8 = TextStyle(
-  color: kColorGreen1,
+    color: kColorGreen1,
     fontSize: 18.0,
     fontFamily: 'GothamProNarrow-Medium',
-    fontWeight: FontWeight.w600
-);
+    fontWeight: FontWeight.w600);
 
 const kTextStyle9 = TextStyle(
   fontFamily: 'GothamProNarrow-Medium',

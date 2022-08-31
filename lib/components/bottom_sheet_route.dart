@@ -1,11 +1,12 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class BottomSheetRoute extends StatefulWidget {
-  BottomSheetRoute({Key? key,
+  BottomSheetRoute({
+    Key? key,
     required this.address,
     required this.durationsWalkingToString,
     required this.durationsDrivingToString,
@@ -31,14 +32,16 @@ class BottomSheetRoute extends StatefulWidget {
   _BottomSheetRouteState createState() => _BottomSheetRouteState();
 }
 
-class _BottomSheetRouteState extends State<BottomSheetRoute> {_BottomSheetRouteState();
+class _BottomSheetRouteState extends State<BottomSheetRoute> {
+  _BottomSheetRouteState();
 
   int selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    timeAndDistance = '${widget.durationsWalkingToString} (${widget.distanceWalkingToString})';
+    timeAndDistance =
+        '${widget.durationsWalkingToString} (${widget.distanceWalkingToString})';
   }
 
   @override
@@ -57,8 +60,7 @@ class _BottomSheetRouteState extends State<BottomSheetRoute> {_BottomSheetRouteS
         ],
         color: Colors.white,
         borderRadius: BorderRadius.only(
-            topRight: Radius.circular(30.0),
-            topLeft: Radius.circular(30.0)),
+            topRight: Radius.circular(30.0), topLeft: Radius.circular(30.0)),
       ),
       child: Padding(
         padding: const EdgeInsets.only(top: 12.0),
@@ -85,8 +87,7 @@ class _BottomSheetRouteState extends State<BottomSheetRoute> {_BottomSheetRouteS
                       widget.removeRoute();
                       widget.returnMarkers();
                     },
-                    child:
-                    Icon(Icons.arrow_back_ios_outlined, size: 24.0),
+                    child: Icon(Icons.arrow_back_ios_outlined, size: 24.0),
                   ),
                   Expanded(
                     child: Padding(
@@ -96,30 +97,44 @@ class _BottomSheetRouteState extends State<BottomSheetRoute> {_BottomSheetRouteS
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('your_position'.tr(), style: kTextStyle7,),
+                              Text(
+                                'your_position'.tr(),
+                                style: kTextStyle7,
+                              ),
                               Icon(Icons.location_on, color: Colors.yellow),
                             ],
                           ),
                           SizedBox(height: 12.0),
-                          Container(width: double.infinity, height: 2.0, color: kColorGrey1,),
+                          Container(
+                            width: double.infinity,
+                            height: 2.0,
+                            color: kColorGrey1,
+                          ),
                           SizedBox(height: 12.0),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Expanded(child: Text(widget.address, style: kTextStyle7, softWrap: true)),
+                              Expanded(
+                                  child: Text(widget.address,
+                                      style: kTextStyle7, softWrap: true)),
                               Container(
                                 height: 22.0,
                                 width: 22.0,
                                 decoration: BoxDecoration(
                                   color: kColorGreen1,
                                   borderRadius: BorderRadius.circular(20.0),
-                                  border: Border.all(width: 4.0, color: Colors.white),
+                                  border: Border.all(
+                                      width: 4.0, color: Colors.white),
                                 ),
                               ),
                             ],
                           ),
                           SizedBox(height: 12.0),
-                          Container(width: double.infinity, height: 2.0, color: kColorGrey1,),
+                          Container(
+                            width: double.infinity,
+                            height: 2.0,
+                            color: kColorGrey1,
+                          ),
                           SizedBox(height: 12.0),
                           Container(
                             decoration: BoxDecoration(
@@ -133,19 +148,27 @@ class _BottomSheetRouteState extends State<BottomSheetRoute> {_BottomSheetRouteS
                                 fontSize: 18.0,
                                 minWidth: 80.0,
                                 cornerRadius: 20.0,
-                                activeBgColors: [[Colors.white], [Colors.white]],
+                                activeBgColors: [
+                                  [Colors.white],
+                                  [Colors.white]
+                                ],
                                 inactiveBgColor: kColorGrey1,
                                 inactiveFgColor: Colors.black,
                                 activeFgColor: Colors.black,
                                 initialLabelIndex: selectedIndex,
                                 totalSwitches: 2,
-                                icons: [Icons.directions_walk, Icons.directions_car],
+                                icons: [
+                                  Icons.directions_walk,
+                                  Icons.directions_car
+                                ],
                                 radiusStyle: true,
                                 onToggle: (index) {
                                   setState(() {
                                     selectedIndex = index!;
-                                    widget.selectedToggleSwitch = !widget.selectedToggleSwitch;
-                                    widget.onSelectedToggleSwitchChange(widget.selectedToggleSwitch);
+                                    widget.selectedToggleSwitch =
+                                        !widget.selectedToggleSwitch;
+                                    widget.onSelectedToggleSwitchChange(
+                                        widget.selectedToggleSwitch);
                                     getTimeAndDistance(index);
                                   });
                                 },
@@ -153,9 +176,15 @@ class _BottomSheetRouteState extends State<BottomSheetRoute> {_BottomSheetRouteS
                             ),
                           ),
                           SizedBox(height: 16.0),
-                          Text('travel_time'.tr(), style: kBottomSheetTextStyle3, textAlign: TextAlign.center,),
+                          Text(
+                            'travel_time'.tr(),
+                            style: kBottomSheetTextStyle3,
+                            textAlign: TextAlign.center,
+                          ),
                           SizedBox(height: 8.0),
-                          Text(timeAndDistance, style: kAlertTextStyle, textAlign: TextAlign.center),
+                          Text(timeAndDistance,
+                              style: kAlertTextStyle,
+                              textAlign: TextAlign.center),
                         ],
                       ),
                     ),
@@ -176,11 +205,13 @@ class _BottomSheetRouteState extends State<BottomSheetRoute> {_BottomSheetRouteS
   String getTimeAndDistance(int index) {
     if (index == 1) {
       setState(() {
-        timeAndDistance = '${widget.durationsDrivingToString} (${widget.distanceDrivingToString})';
+        timeAndDistance =
+            '${widget.durationsDrivingToString} (${widget.distanceDrivingToString})';
       });
     } else {
       setState(() {
-        timeAndDistance = '${widget.durationsWalkingToString} (${widget.distanceWalkingToString})';
+        timeAndDistance =
+            '${widget.durationsWalkingToString} (${widget.distanceWalkingToString})';
       });
     }
     return timeAndDistance;

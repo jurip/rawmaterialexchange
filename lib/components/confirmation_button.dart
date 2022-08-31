@@ -1,13 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
+import 'package:flutter/material.dart';
 
 class ConfirmationButton extends StatelessWidget {
-  const ConfirmationButton({
-    Key? key,
-    required this.text,
-    required this.onTap
-  }) : super(key: key);
+  const ConfirmationButton({Key? key, required this.text, required this.onTap})
+      : super(key: key);
 
   final text;
   final GestureTapCallback onTap;
@@ -22,9 +19,10 @@ class ConfirmationButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(30.0),
           color: kColorGreen1,
         ),
-        child:
-          Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14.0,),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 14.0,
+          ),
           child: Text(
             text,
             textAlign: TextAlign.center,

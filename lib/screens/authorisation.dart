@@ -1,18 +1,18 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/confirmation_button.dart';
-import 'package:app/components/input_fields.dart';
 import 'package:app/components/exit_alert.dart';
+import 'package:app/components/input_fields.dart';
 import 'package:app/components/language_popup_menu.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/screens/registration.dart';
 import 'package:app/screens/verification.dart';
 import 'package:app/utils/progress_bar.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../main.dart';
 
@@ -24,7 +24,6 @@ class Authorisation extends StatefulWidget {
 }
 
 class _AuthorisationState extends State<Authorisation> {
-
   List<PopupItem> items = [
     PopupItem(title: "Русский", image: 'images/Ellipse ru.png'),
     PopupItem(title: "Узбекский", image: 'images/Ellipse uz.png'),
@@ -33,15 +32,38 @@ class _AuthorisationState extends State<Authorisation> {
   ];
 
   List<Widget> languages2 = [
-    Row(children: [Image(image: AssetImage('images/Ellipse ru.png'), width: 20, height: 20,), SizedBox(width: 10.0,),Text('Русский')]),
-    Row(children: [Image(image: AssetImage('images/Ellipse uz.png'), width: 20, height: 20), SizedBox(width: 10.0,),Text('Узбекский')]),
+    Row(children: [
+      Image(
+        image: AssetImage('images/Ellipse ru.png'),
+        width: 20,
+        height: 20,
+      ),
+      SizedBox(
+        width: 10.0,
+      ),
+      Text('Русский')
+    ]),
+    Row(children: [
+      Image(image: AssetImage('images/Ellipse uz.png'), width: 20, height: 20),
+      SizedBox(
+        width: 10.0,
+      ),
+      Text('Узбекский')
+    ]),
     //Row(children: [Image(image: AssetImage('images/Ellipse td.png'), width: 20, height: 20), SizedBox(width: 10.0,),Text('Таджикский')]),
-    Row(children: [Image(image: AssetImage('images/Ellipse kz.png'), width: 20, height: 20), SizedBox(width: 10.0,),Text('Киргизский')]),
+    Row(children: [
+      Image(image: AssetImage('images/Ellipse kz.png'), width: 20, height: 20),
+      SizedBox(
+        width: 10.0,
+      ),
+      Text('Киргизский')
+    ]),
   ];
 
-  List<PopupMenuEntry<PopupItem>> popUpMenuItem = [ ];
+  List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
 
   List<String> _numberForm = ['### ### ## ##', '## ### ## ##', '### ## ####'];
+
   //Россия Казахстан +7 XXX XXX XX XX
   //Узбекистан +998 XX ХХХ-ХХ-ХХ
   //Таджикистан +992 XXX XX XXXX
@@ -49,14 +71,19 @@ class _AuthorisationState extends State<Authorisation> {
 
   var maskFormatter = new MaskTextInputFormatter(mask: '### ### ## ##');
 
-  var selectedLanguage = PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
+  var selectedLanguage =
+      PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
+
   void languageDefinition() {
     if (mainLocale!.languageCode == 'ru') {
-      selectedLanguage = PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
+      selectedLanguage =
+          PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
     } else if (mainLocale!.languageCode == 'kk') {
-      selectedLanguage = PopupItem(title: "Казахский", image: 'images/Ellipse kz.png');
+      selectedLanguage =
+          PopupItem(title: "Казахский", image: 'images/Ellipse kz.png');
     } else if (mainLocale!.languageCode == 'uz') {
-      selectedLanguage = PopupItem(title: "Узбекский", image: 'images/Ellipse uz.png');
+      selectedLanguage =
+          PopupItem(title: "Узбекский", image: 'images/Ellipse uz.png');
     }
   }
 
@@ -82,28 +109,30 @@ class _AuthorisationState extends State<Authorisation> {
     super.initState();
     languageDefinition();
     getListOfLanguageAddDataToList().then((value) {
-      if(listLanguage.isNotEmpty)
-      listLanguage.forEach((element) {
-        if(element.id!=4)
-          popUpMenuItem.add(
-              PopupMenuItem(
-                  value: PopupItem(title: element.name, image: definitionLanguageImage(element.id)),
-                  child: Row(children: [
-                    Image(
-                        image: AssetImage(definitionLanguageImage(element.id)),
-                        width: 20,
-                        height: 20),
-                    SizedBox(width: 10.0),
-                    Text(element.name)
-                  ])));
-      });
+      if (listLanguage.isNotEmpty)
+        listLanguage.forEach((element) {
+          if (element.id != 4)
+            popUpMenuItem.add(PopupMenuItem(
+                value: PopupItem(
+                    title: element.name,
+                    image: definitionLanguageImage(element.id)),
+                child: Row(children: [
+                  Image(
+                      image: AssetImage(definitionLanguageImage(element.id)),
+                      width: 20,
+                      height: 20),
+                  SizedBox(width: 10.0),
+                  Text(element.name)
+                ])));
+        });
     });
     _sendingMsgProgressBar = ProgressBar();
   }
 
   String languageImage = '';
+
   String definitionLanguageImage(int languageId) {
-    switch(languageId) {
+    switch (languageId) {
       case 1:
         languageImage = 'images/Ellipse ru.png';
         break;
@@ -125,7 +154,9 @@ class _AuthorisationState extends State<Authorisation> {
     return WillPopScope(
       onWillPop: MyWillPop(context: context).onWillPop,
       child: GestureDetector(
-        onTap: () {FocusScope.of(context).requestFocus(new FocusNode());},
+        onTap: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
         child: Scaffold(
           body: SafeArea(
             child: Padding(
@@ -137,41 +168,43 @@ class _AuthorisationState extends State<Authorisation> {
                       SizedBox(height: 16.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('entrance'.tr(), style: kTextStyle1),
-                            LanguagePopupMenu(
-                              onSelected: (value) {
-                                setState(() {
-                                  selectedLanguage = value;
-                                  if (value.image == 'images/Ellipse ru.png') {
-                                    selectedLanguageId = 1;
-                                    context.setLocale(Locale('ru'));
-                                  } else if (value.image == 'images/Ellipse uz.png') {
-                                    selectedLanguageId = 2;
-                                    context.setLocale(Locale('uz'));
-                                  } else if (value.image == 'images/Ellipse kz.png') {
-                                    selectedLanguageId = 3;
-                                    context.setLocale(Locale('kk'));
-                                  }
-                                  mainLocale = context.locale;
-                                  // } else if (value.image == 'images/Ellipse td.png') {
-                                  //   selectedLanguageId = 4;
-                                  //   //context.setLocale(Locale('tjk'));
-                                  //   //EasyLocalization.of(context)!.locale = Locale('ar', 'SA');
-                                  // }
-                                });
-                              },
-                              assetImage: AssetImage(selectedLanguage.image),
-                              itemBuilder: (context) => popUpMenuItem,
-                            ),
-                          ],
+                        children: [
+                          Text('entrance'.tr(), style: kTextStyle1),
+                          LanguagePopupMenu(
+                            onSelected: (value) {
+                              setState(() {
+                                selectedLanguage = value;
+                                if (value.image == 'images/Ellipse ru.png') {
+                                  selectedLanguageId = 1;
+                                  context.setLocale(Locale('ru'));
+                                } else if (value.image ==
+                                    'images/Ellipse uz.png') {
+                                  selectedLanguageId = 2;
+                                  context.setLocale(Locale('uz'));
+                                } else if (value.image ==
+                                    'images/Ellipse kz.png') {
+                                  selectedLanguageId = 3;
+                                  context.setLocale(Locale('kk'));
+                                }
+                                mainLocale = context.locale;
+                                // } else if (value.image == 'images/Ellipse td.png') {
+                                //   selectedLanguageId = 4;
+                                //   //context.setLocale(Locale('tjk'));
+                                //   //EasyLocalization.of(context)!.locale = Locale('ar', 'SA');
+                                // }
+                              });
+                            },
+                            assetImage: AssetImage(selectedLanguage.image),
+                            itemBuilder: (context) => popUpMenuItem,
+                          ),
+                        ],
                       ),
                       SizedBox(height: 32.0),
                       Row(
                         children: [
-                          Expanded(flex: 1,
-                            child:
-                            DropdownButton(
+                          Expanded(
+                            flex: 1,
+                            child: DropdownButton(
                               underline: Container(
                                 height: 2,
                                 color: kColorGrey1,
@@ -179,7 +212,8 @@ class _AuthorisationState extends State<Authorisation> {
                               style: kTextStyle2,
                               itemHeight: 66.0,
                               value: _region,
-                              items: _regionNumber.map<DropdownMenuItem<String>>((String item) {
+                              items: _regionNumber
+                                  .map<DropdownMenuItem<String>>((String item) {
                                 return DropdownMenuItem<String>(
                                   value: item,
                                   child: Text(item),
@@ -195,14 +229,17 @@ class _AuthorisationState extends State<Authorisation> {
                             ),
                           ),
                           SizedBox(width: 16),
-                          Expanded(flex: 3,
+                          Expanded(
+                            flex: 3,
                             child: PhoneInputField(
                               hintText: definitionPlaceHolder(),
                               inputFormatters: [maskFormatter],
                               controller: _phoneController,
                               //_phoneController,
-                                //maskFormatter.getUnmaskedText(phoneNumber);
-                              svgPicture: imagePhone == '' ? null : SvgPicture.asset(getValidatePhone()),
+                              //maskFormatter.getUnmaskedText(phoneNumber);
+                              svgPicture: imagePhone == ''
+                                  ? null
+                                  : SvgPicture.asset(getValidatePhone()),
                               textChange: (str) {
                                 setState(() {});
                                 return null;
@@ -212,38 +249,50 @@ class _AuthorisationState extends State<Authorisation> {
                         ],
                       ),
                       SizedBox(height: 16.0),
-                      Text('enter_your_authorization_number'.tr(), style: kTextStyle5),
+                      Text('enter_your_authorization_number'.tr(),
+                          style: kTextStyle5),
                       SizedBox(height: 40.0),
                       ConfirmationButton(
-                          text: 'enter'.tr(),
-                          onTap: () {
-                            getValidatePhone();
-                            if (_phoneController.text != '' &&
-                                _region != ''
-                            /* && imagePhone == 'images/icon.svg'*/) {
-                              _sendingMsgProgressBar?.show(context);
-                              changingNumber();
-                              getAuthorization(phoneNumber).then((data) {
-                                _sendingMsgProgressBar?.hide();
-                                if (data != null) {
-                                  if (data.smsSended != null  /* && data.smsCode != null */) {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) {return Verification(phone: phoneNumber, smsCode: data.smsCode,);}));
-                                  } else {
-                                    if (data.errors != null && data.errors!.isNotEmpty) {
-                                      String toastMessage = data.errors!.first;
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                        content: Text(toastMessage),
-                                      ));
-                                    }
-                                  }
+                        text: 'enter'.tr(),
+                        onTap: () {
+                          getValidatePhone();
+                          if (_phoneController.text != '' &&
+                              _region !=
+                                  '' /* && imagePhone == 'images/icon.svg'*/) {
+                            _sendingMsgProgressBar?.show(context);
+                            changingNumber();
+                            getAuthorization(phoneNumber).then((data) {
+                              _sendingMsgProgressBar?.hide();
+                              if (data != null) {
+                                if (data.smsSended !=
+                                    null /* && data.smsCode != null */) {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return Verification(
+                                      phone: phoneNumber,
+                                      smsCode: data.smsCode,
+                                    );
+                                  }));
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text('check_your_network_connection'.tr()),
-                                  ));
+                                  if (data.errors != null &&
+                                      data.errors!.isNotEmpty) {
+                                    String toastMessage = data.errors!.first;
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text(toastMessage),
+                                    ));
+                                  }
                                 }
-                              });
-                            }
-                          },
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(
+                                      'check_your_network_connection'.tr()),
+                                ));
+                              }
+                            });
+                          }
+                        },
                       ),
                       SizedBox(height: 16.0),
                       Text('dont_have_account_yet'.tr(), style: kTextStyle5),
@@ -251,7 +300,12 @@ class _AuthorisationState extends State<Authorisation> {
                       InkWell(
                         child: Text('register'.tr(), style: kTextStyle4),
                         onTap: () {
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context) => Registration()), (route) => false);
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      Registration()),
+                              (route) => false);
                         },
                       ),
                     ],
@@ -280,9 +334,9 @@ class _AuthorisationState extends State<Authorisation> {
     return placeHolder;
   }
 
-  void changeForm (String str) {
+  void changeForm(String str) {
     int position = 0;
-    for(int index = 0; index < _regionNumber.length; index++) {
+    for (int index = 0; index < _regionNumber.length; index++) {
       if (_regionNumber[index] == str) {
         position = index;
       }
@@ -333,7 +387,7 @@ class _AuthorisationState extends State<Authorisation> {
     } else if (_region == '+992') {
       tempRegion = '992';
     }
-    var unformattedStr =  maskFormatter.getUnmaskedText();
+    var unformattedStr = maskFormatter.getUnmaskedText();
     phoneNumber = tempRegion + unformattedStr;
   }
 
@@ -341,6 +395,7 @@ class _AuthorisationState extends State<Authorisation> {
 
   //получение списка языков
   List<ListLanguages> listLanguage = [];
+
   Future<void> getListOfLanguageAddDataToList() async {
     _sendingMsgProgressBar?.show(context);
     var dataLanguage = await getLanguages();

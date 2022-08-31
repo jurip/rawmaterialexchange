@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
+import 'package:flutter/material.dart';
 
 class InformationColumn extends StatelessWidget {
   const InformationColumn({
@@ -19,11 +19,21 @@ class InformationColumn extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(text1, style: kAlertTextStyle4,),
+          Text(
+            text1,
+            style: kAlertTextStyle4,
+          ),
           SizedBox(height: 4.0),
-          Text(text2, style: kTextStyle2,),
+          Text(
+            text2,
+            style: kTextStyle2,
+          ),
           SizedBox(height: 8.0),
-          Container(width: double.infinity, height: 2.0, color: kColorGrey1,),
+          Container(
+            width: double.infinity,
+            height: 2.0,
+            color: kColorGrey1,
+          ),
         ],
       ),
     );

@@ -10,6 +10,6 @@ class Logout {
   String? message;
 
   factory Logout.fromJson(Map<String, dynamic> json) => Logout(
-    message: json["message"],
-  );
+        message: json["message"],
+      );
 }

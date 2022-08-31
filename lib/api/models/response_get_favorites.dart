@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-List<GetFavorites> getFavoritesFromJson(String str) => List<GetFavorites>.from(json.decode(str).map((x) => GetFavorites.fromJson(x)));
+List<GetFavorites> getFavoritesFromJson(String str) => List<GetFavorites>.from(
+    json.decode(str).map((x) => GetFavorites.fromJson(x)));
 
 class GetFavorites {
   GetFavorites({
@@ -12,9 +13,9 @@ class GetFavorites {
   Item item;
 
   factory GetFavorites.fromJson(Map<String, dynamic> json) => GetFavorites(
-    itemId: json["item_id"],
-    item: Item.fromJson(json["item"]),
-  );
+        itemId: json["item_id"],
+        item: Item.fromJson(json["item"]),
+      );
 }
 
 class Item {
@@ -43,17 +44,19 @@ class Item {
   List<WorkingHour> workingHours;
 
   factory Item.fromJson(Map<String, dynamic> json) => Item(
-    id: json["id"],
-    address: json["address"],
-    latitude: json["latitude"].toDouble(),
-    longitude: json["longitude"].toDouble(),
-    website: json["website"] == null ? '' : json["website"],
-    pickUp: json["pick_up"],
-    faved: json["faved"],
-    contacts: List<Contact>.from(json["contacts"].map((x) => Contact.fromJson(x))),
-    raws: List<Raw>.from(json["raws"].map((x) => Raw.fromJson(x))),
-    workingHours: List<WorkingHour>.from(json["working_hours"].map((x) => WorkingHour.fromJson(x))),
-  );
+        id: json["id"],
+        address: json["address"],
+        latitude: json["latitude"].toDouble(),
+        longitude: json["longitude"].toDouble(),
+        website: json["website"] == null ? '' : json["website"],
+        pickUp: json["pick_up"],
+        faved: json["faved"],
+        contacts: List<Contact>.from(
+            json["contacts"].map((x) => Contact.fromJson(x))),
+        raws: List<Raw>.from(json["raws"].map((x) => Raw.fromJson(x))),
+        workingHours: List<WorkingHour>.from(
+            json["working_hours"].map((x) => WorkingHour.fromJson(x))),
+      );
 }
 
 class Contact {
@@ -64,8 +67,8 @@ class Contact {
   String value;
 
   factory Contact.fromJson(Map<String, dynamic> json) => Contact(
-    value: json["value"],
-  );
+        value: json["value"],
+      );
 }
 
 class Raw {
@@ -78,9 +81,9 @@ class Raw {
   String name;
 
   factory Raw.fromJson(Map<String, dynamic> json) => Raw(
-    id: json["id"],
-    name: json["name"],
-  );
+        id: json["id"],
+        name: json["name"],
+      );
 }
 
 class WorkingHour {
@@ -95,8 +98,8 @@ class WorkingHour {
   String end;
 
   factory WorkingHour.fromJson(Map<String, dynamic> json) => WorkingHour(
-    day: json["day"],
-    start: json["start"],
-    end: json["end"],
-  );
+        day: json["day"],
+        start: json["start"],
+        end: json["end"],
+      );
 }

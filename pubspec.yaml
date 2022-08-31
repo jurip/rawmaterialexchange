@@ -70,11 +70,11 @@ flutter:
 
 
   fonts:
-  - family: GothamPro
-    fonts:
-    - asset: fonts/GothamPro.ttf
-    - asset: fonts/GothamProNarrow-Bold.ttf
-    - asset: fonts/GothamProNarrow-Medium.ttf
+    - family: GothamPro
+      fonts:
+        - asset: fonts/GothamPro.ttf
+        - asset: fonts/GothamProNarrow-Bold.ttf
+        - asset: fonts/GothamProNarrow-Medium.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

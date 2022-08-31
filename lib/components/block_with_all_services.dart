@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app/constants/style_constants.dart';
+import 'package:flutter/material.dart';
 
 class BlockWithAllServices extends StatelessWidget {
   const BlockWithAllServices({
@@ -42,11 +42,18 @@ class BlockWithAllServices extends StatelessWidget {
             children: [
               Align(
                 alignment: Alignment.topRight,
-                child: Image(image: AssetImage(assetImage),  fit: BoxFit.cover,),
+                child: Image(
+                  image: AssetImage(assetImage),
+                  fit: BoxFit.cover,
+                ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 10.0, left: 2.0),
-                child: Text(text, style: kTextStyle7, softWrap: true,),
+                child: Text(
+                  text,
+                  style: kTextStyle7,
+                  softWrap: true,
+                ),
               ),
             ],
           ),

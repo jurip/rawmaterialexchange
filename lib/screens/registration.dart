@@ -1,19 +1,20 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/confirmation_button.dart';
-import 'package:app/components/input_fields.dart';
 import 'package:app/components/exit_alert.dart';
+import 'package:app/components/input_fields.dart';
 import 'package:app/components/language_popup_menu.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:app/main.dart';
 import 'package:app/screens/verification.dart';
 import 'package:app/utils/date_time_picker.dart';
 import 'package:app/utils/progress_bar.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+
 import 'authorisation.dart';
 
 class Registration extends StatefulWidget {
@@ -24,7 +25,6 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
-
   List<PopupItem> items = [
     PopupItem(title: "Русский", image: 'images/Ellipse ru.png'),
     PopupItem(title: "Узбекский", image: 'images/Ellipse uz.png'),
@@ -55,23 +55,28 @@ class _RegistrationState extends State<Registration> {
     // ]),
   ];
 
-  List<PopupMenuEntry<PopupItem>> popUpMenuItem = [ ];
+  List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
 
   List<String> _numberForm = ['### ### ## ##', '## ### ## ##', '### ## ####'];
+
   //Россия Казахстан +7 XXX XXX XX XX
   //Узбекистан +998 XX ХХХ-ХХ-ХХ
   //Таджикистан +992 XXX XX XXXX
   List<String> _regionNumber = ['+7', '+998', '+992'];
 
-  var selectedLanguage = PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
+  var selectedLanguage =
+      PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
 
   void languageDefinition() {
     if (mainLocale!.languageCode == 'ru') {
-      selectedLanguage = PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
+      selectedLanguage =
+          PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
     } else if (mainLocale!.languageCode == 'kk') {
-      selectedLanguage = PopupItem(title: "Казахский", image: 'images/Ellipse kz.png');
+      selectedLanguage =
+          PopupItem(title: "Казахский", image: 'images/Ellipse kz.png');
     } else if (mainLocale!.languageCode == 'uz') {
-      selectedLanguage = PopupItem(title: "Узбекский", image: 'images/Ellipse uz.png');
+      selectedLanguage =
+          PopupItem(title: "Узбекский", image: 'images/Ellipse uz.png');
     }
   }
 
@@ -96,32 +101,36 @@ class _RegistrationState extends State<Registration> {
     languageDefinition();
     //mainLocale = context.locale;
     getListOfLanguageAddDataToList().then((value) {
-      if(listLanguage.isNotEmpty)
-          listLanguage.forEach((element) {
-            if(element.id!=4)
+      if (listLanguage.isNotEmpty)
+        listLanguage.forEach((element) {
+          if (element.id != 4)
             popUpMenuItem.add(
-                PopupMenuItem(
-                value: PopupItem(title: element.name, image: definitionLanguageImage(element.id)),
+              PopupMenuItem(
+                value: PopupItem(
+                    title: element.name,
+                    image: definitionLanguageImage(element.id)),
                 child: Row(
-                    children: [
-                  Image(image: AssetImage(definitionLanguageImage(element.id)),
+                  children: [
+                    Image(
+                      image: AssetImage(definitionLanguageImage(element.id)),
                       width: 20,
                       height: 20,
-                  ),
-                  SizedBox(width: 10.0),
-                  Text(element.name)
+                    ),
+                    SizedBox(width: 10.0),
+                    Text(element.name)
                   ],
                 ),
-                ),
+              ),
             );
-          });
         });
+    });
     _sendingMsgProgressBar = ProgressBar();
   }
 
   String languageImage = '';
+
   String definitionLanguageImage(int languageId) {
-    switch(languageId) {
+    switch (languageId) {
       case 1:
         languageImage = 'images/Ellipse ru.png';
         break;
@@ -156,7 +165,9 @@ class _RegistrationState extends State<Registration> {
     return WillPopScope(
       onWillPop: MyWillPop(context: context).onWillPop,
       child: GestureDetector(
-        onTap: () {FocusScope.of(context).requestFocus(new FocusNode());},
+        onTap: () {
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
         child: Scaffold(
           backgroundColor: Colors.white,
           body: SafeArea(
@@ -181,10 +192,12 @@ class _RegistrationState extends State<Registration> {
                                   if (value.image == 'images/Ellipse ru.png') {
                                     selectedLanguageId = 1;
                                     context.setLocale(Locale('ru'));
-                                  } else if (value.image == 'images/Ellipse uz.png') {
+                                  } else if (value.image ==
+                                      'images/Ellipse uz.png') {
                                     selectedLanguageId = 2;
                                     context.setLocale(Locale('uz'));
-                                  } else if (value.image == 'images/Ellipse kz.png') {
+                                  } else if (value.image ==
+                                      'images/Ellipse kz.png') {
                                     selectedLanguageId = 3;
                                     context.setLocale(Locale('kk'));
                                   }
@@ -205,7 +218,9 @@ class _RegistrationState extends State<Registration> {
                         NameInputField(
                           hintText: 'name'.tr(),
                           controller: _nameController,
-                          svgPicture: imageName == '' ? null : SvgPicture.asset(getValidateName()),
+                          svgPicture: imageName == ''
+                              ? null
+                              : SvgPicture.asset(getValidateName()),
                           textChange: (_) {
                             setState(() {});
                             return null;
@@ -215,7 +230,9 @@ class _RegistrationState extends State<Registration> {
                         NameInputField(
                           hintText: 'surname'.tr(),
                           controller: _surnameController,
-                          svgPicture: imageSurname == '' ? null : SvgPicture.asset(getValidateSurname()),
+                          svgPicture: imageSurname == ''
+                              ? null
+                              : SvgPicture.asset(getValidateSurname()),
                           textChange: (_) {
                             setState(() {});
                             return null;
@@ -234,7 +251,9 @@ class _RegistrationState extends State<Registration> {
                                 style: kTextStyle2,
                                 itemHeight: 66.0,
                                 value: _region,
-                                items: _regionNumber.map<DropdownMenuItem<String>>((String item) {
+                                items: _regionNumber
+                                    .map<DropdownMenuItem<String>>(
+                                        (String item) {
                                   return DropdownMenuItem<String>(
                                     value: item,
                                     child: Text(item),
@@ -256,7 +275,9 @@ class _RegistrationState extends State<Registration> {
                                 hintText: definitionPlaceHolder(),
                                 inputFormatters: [maskFormatter],
                                 controller: _phoneController,
-                                svgPicture: imagePhone == '' ? null : SvgPicture.asset(getValidatePhone()),
+                                svgPicture: imagePhone == ''
+                                    ? null
+                                    : SvgPicture.asset(getValidatePhone()),
                                 textChange: (str) {
                                   setState(() {});
                                   return null;
@@ -273,31 +294,36 @@ class _RegistrationState extends State<Registration> {
                             maskFormatter,
                           ],
                           onTap: () {
-                            FocusScope.of(context).requestFocus(new FocusNode());
+                            FocusScope.of(context)
+                                .requestFocus(new FocusNode());
                             DateTimePicker.showSheetDate(context,
                                 dateTime: DateTime.now(), onClicked: (date) {
                               setState(() {
-                                DateTime newDate = DateFormat('yyyy-MM-dd').parse(date);
-                                _dateController.text = DateFormat("yyyy-MM-dd").format(newDate);
+                                DateTime newDate =
+                                    DateFormat('yyyy-MM-dd').parse(date);
+                                _dateController.text =
+                                    DateFormat("yyyy-MM-dd").format(newDate);
                               });
                             });
                           },
                           controller: _dateController,
                           style: kTextStyle2,
                           decoration: InputDecoration(
-                            suffixIcon: imageBirthday == '' ? null : SvgPicture.asset(getValidateBirthday()),
-                            suffixIconConstraints: BoxConstraints(
-                                minHeight: 22,
-                                minWidth: 22
-                            ),
+                            suffixIcon: imageBirthday == ''
+                                ? null
+                                : SvgPicture.asset(getValidateBirthday()),
+                            suffixIconConstraints:
+                                BoxConstraints(minHeight: 22, minWidth: 22),
                             counterText: "",
                             hintText: 'date_birthday'.tr(),
                             hintStyle: kHintStyle,
                             enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(width: 2.0, color: kColorGrey1),
+                              borderSide:
+                                  BorderSide(width: 2.0, color: kColorGrey1),
                             ),
                             focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(width: 2.0, color: kColorGreen1),
+                              borderSide:
+                                  BorderSide(width: 2.0, color: kColorGreen1),
                             ),
                           ),
                         ),
@@ -314,33 +340,41 @@ class _RegistrationState extends State<Registration> {
                               _sendingMsgProgressBar?.show(context);
                               changingNumber();
                               getRegistration(
-                                  _nameController.text,
-                                  _surnameController.text,
-                                  phoneNumber,
-                                  _dateController.text,
-                                  selectedLanguageId).then((data) {
+                                      _nameController.text,
+                                      _surnameController.text,
+                                      phoneNumber,
+                                      _dateController.text,
+                                      selectedLanguageId)
+                                  .then((data) {
                                 _sendingMsgProgressBar?.hide();
                                 if (data != null) {
                                   if (data.sms_sended != null) {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) {return Verification(
-                                      phone: phoneNumber,
-                                      smsCode: data.sms_code,
-                                      name: _nameController.text,
-                                      surname: _surnameController.text,
-                                      dateBirthday: _dateController.text,
-                                      selectedLanguageId: selectedLanguageId,
-                                    );}));
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return Verification(
+                                        phone: phoneNumber,
+                                        smsCode: data.sms_code,
+                                        name: _nameController.text,
+                                        surname: _surnameController.text,
+                                        dateBirthday: _dateController.text,
+                                        selectedLanguageId: selectedLanguageId,
+                                      );
+                                    }));
                                   } else {
-                                    if (data.errors != null && data.errors!.isNotEmpty) {
+                                    if (data.errors != null &&
+                                        data.errors!.isNotEmpty) {
                                       String toastMessage = data.errors!.first;
-                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
                                         content: Text(toastMessage),
                                       ));
                                     }
                                   }
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text('check_your_network_connection'.tr()),
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: Text(
+                                        'check_your_network_connection'.tr()),
                                   ));
                                 }
                               });
@@ -356,7 +390,12 @@ class _RegistrationState extends State<Registration> {
                             InkWell(
                               child: Text('enter'.tr(), style: kTextStyle4),
                               onTap: () {
-                                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context) => Authorisation()), (route) => false);
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            Authorisation()),
+                                    (route) => false);
                               },
                             ),
                           ],
@@ -392,6 +431,7 @@ class _RegistrationState extends State<Registration> {
 
   //получение списка языков
   List<ListLanguages> listLanguage = [];
+
   Future<void> getListOfLanguageAddDataToList() async {
     _sendingMsgProgressBar?.show(context);
     var dataLanguage = await getLanguages();
@@ -503,7 +543,7 @@ class _RegistrationState extends State<Registration> {
     } else if (_region == '+992') {
       tempRegion = '992';
     }
-    var unformattedStr =  maskFormatter.getUnmaskedText();
+    var unformattedStr = maskFormatter.getUnmaskedText();
     phoneNumber = tempRegion + unformattedStr;
   }
 }
@@ -511,5 +551,6 @@ class _RegistrationState extends State<Registration> {
 class PopupItem {
   final String title;
   final String image;
+
   PopupItem({required this.title, required this.image});
 }

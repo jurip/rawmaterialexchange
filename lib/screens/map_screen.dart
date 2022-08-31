@@ -1,12 +1,9 @@
 import 'dart:async';
 
-import 'package:app/api/models/response_list_of_services.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:app/api/models/response_list_of_raw_materials_of_specific_object.dart';
 import 'package:app/api/models/response_list_of_object.dart';
+import 'package:app/api/models/response_list_of_raw_materials_of_specific_object.dart';
 import 'package:app/api/models/response_list_of_row_materials.dart';
+import 'package:app/api/models/response_list_of_services.dart';
 import 'package:app/api/models/response_objects_from_filter.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/block_with_all_materials.dart';
@@ -20,13 +17,16 @@ import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 import 'package:app/utils/progress_bar.dart';
-import 'package:location/location.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../components/block_with_all_services.dart';
-import '../components/garbage_bottom_sheet.dart';
+import '../components/garbage.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -38,7 +38,6 @@ class MapScreen extends StatefulWidget {
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 class _MapScreenState extends State<MapScreen> {
-
   MapController _mapController = MapController();
 
   ProgressBar? _sendingMsgProgressBar;
@@ -72,9 +71,11 @@ class _MapScreenState extends State<MapScreen> {
 
   void getLocation() {
     location.onLocationChanged.listen((LocationData currentLocation) {
-      if (currentLocation.latitude != null && currentLocation.longitude != null) {
+      if (currentLocation.latitude != null &&
+          currentLocation.longitude != null) {
         setState(() {
-          _position = LatLng(currentLocation.latitude!, currentLocation.longitude!);
+          _position =
+              LatLng(currentLocation.latitude!, currentLocation.longitude!);
         });
       }
     });
@@ -90,275 +91,326 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return listOfRawMaterials.isEmpty || listOfObject.isEmpty || _position == null
+    return listOfRawMaterials.isEmpty ||
+            listOfObject.isEmpty ||
+            _position == null
         ? Scaffold(
-          backgroundColor: Colors.white,
-          body: Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.green,
-              color: Colors.white,
+            backgroundColor: Colors.white,
+            body: Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.green,
+                color: Colors.white,
+              ),
             ),
-          ),
-        )
-      : WillPopScope(
-    onWillPop: MyWillPop(context: context).onWillPop,
-        child: Scaffold(
-            extendBodyBehindAppBar: true,
-            appBar: CustomAppBar(
-              showUserSettingsInfo: () async {
-                cbs.showModalBottomSheet(
-                  backgroundColor: Colors.transparent,
-                  isScrollControlled: true,
-                  barrierColor: Colors.white.withOpacity(0),
-                  context: context,
-                  builder: (BuildContext context) {
-                    return BottomSheetSetting();
-                  },
-                ).whenComplete(() {
-                  getListOfRawMaterialsAddDataToList();
-                  if (userInfoClicked) getListOfRawMaterialsOfSpecificObjectAddDataToList(selectedIndexMarker, false);
-                });
-              },
-              returnListOfSelectedMarkerBottomSheet: () {
-              },
-              removeRoute: () {
-                latLngDriving.clear();
-                latLngWalking.clear();
-                _pc.close();
-                _closeRoutBottomSheet();
-                setState(() {});
-              },
-              returnMarkers: () {
-                setState(() {
-                  getListOfObjectAddDataToList();
-                });
-              },
-              updatingLanguageInTheFilter: () {
-            },
-            ),
-            key: scaffoldKey,
-            body: SlidingUpPanel(
-              margin: EdgeInsets.only(top: 110.0),
-              controller: _pc,
-              minHeight: 64 * 4,
-              maxHeight: listOfRawMaterials.length * 64,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(30.0), topLeft: Radius.circular(30.0)),
-              panel: Padding(
-                padding: EdgeInsets.only(top: 12.0),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30.0),
-                        color: kColorGrey1,
+          )
+        : WillPopScope(
+            onWillPop: MyWillPop(context: context).onWillPop,
+            child: Scaffold(
+              extendBodyBehindAppBar: true,
+              appBar: CustomAppBar(
+                showUserSettingsInfo: () async {
+                  cbs
+                      .showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    barrierColor: Colors.white.withOpacity(0),
+                    context: context,
+                    builder: (BuildContext context) {
+                      return BottomSheetSetting();
+                    },
+                  )
+                      .whenComplete(() {
+                    getListOfRawMaterialsAddDataToList();
+                    if (userInfoClicked)
+                      getListOfRawMaterialsOfSpecificObjectAddDataToList(
+                          selectedIndexMarker, false);
+                  });
+                },
+                returnListOfSelectedMarkerBottomSheet: () {},
+                removeRoute: () {
+                  latLngDriving.clear();
+                  latLngWalking.clear();
+                  _pc.close();
+                  _closeRoutBottomSheet();
+                  setState(() {});
+                },
+                returnMarkers: () {
+                  setState(() {
+                    getListOfObjectAddDataToList();
+                  });
+                },
+                updatingLanguageInTheFilter: () {},
+              ),
+              key: scaffoldKey,
+              body: SlidingUpPanel(
+                margin: EdgeInsets.only(top: 110.0),
+                controller: _pc,
+                minHeight: 64 * 4,
+                maxHeight: listOfRawMaterials.length * 64,
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(30.0),
+                    topLeft: Radius.circular(30.0)),
+                panel: Padding(
+                  padding: EdgeInsets.only(top: 12.0),
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30.0),
+                          color: kColorGrey1,
+                        ),
+                        height: 4.0,
+                        width: 42.0,
                       ),
-                      height: 4.0,
-                      width: 42.0,
-                    ),
-                    SizedBox(height: 20.0),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        child: Column(
-                          children: [
-                            SizedBox(height: 4.0,),
-                            InkWell(
-                              onTap: () {
-                                scaffoldKey.currentState!.showBottomSheet((context) => FavouritesBottomSheet(),
-                                  backgroundColor: Colors.transparent,
-                                );
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.star_border, color: Colors.yellow),
-                                      SizedBox(width: 4.0),
-                                      Text('favourites'.tr(), style: kTextStyle2,),
+                      SizedBox(height: 20.0),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 4.0,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  scaffoldKey.currentState!.showBottomSheet(
+                                    (context) => FavouritesBottomSheet(),
+                                    backgroundColor: Colors.transparent,
+                                  );
+                                },
+                                child: Container(
+                                  margin:
+                                      EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.star_border,
+                                            color: Colors.yellow),
+                                        SizedBox(width: 4.0),
+                                        Text(
+                                          'favourites'.tr(),
+                                          style: kTextStyle2,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        spreadRadius: 1,
+                                        blurRadius: 7,
+                                        offset: Offset(0, 2),
+                                      ),
                                     ],
                                   ),
                                 ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.3),
-                                      spreadRadius: 1,
-                                      blurRadius: 7,
-                                      offset: Offset(0, 2),
+                              ),
+                              SizedBox(height: 24.0),
+                              //Services
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 12.0),
+                                child: Align(
+                                    child: Text(
+                                      "services".tr(),
+                                      style: kAlertTextStyle,
                                     ),
-                                  ],
+                                    alignment: Alignment.topLeft),
+                              ),
+                              SizedBox(height: 10.0),
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 12.0),
+                                color: Colors.white,
+                                constraints: BoxConstraints(
+                                  maxHeight:
+                                      MediaQuery.of(context).size.height - 36,
+                                ),
+                                child: StaggeredGridView.countBuilder(
+                                  shrinkWrap: true,
+                                  padding: EdgeInsets.only(top: 0),
+                                  crossAxisCount: 4,
+                                  itemCount: listOfServices.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return BlockWithAllServices(
+                                      colorShadow: listOfServices[index]
+                                                  .selectedRawMaterials ==
+                                              true
+                                          ? kColorShadowInFilter
+                                          : Colors.transparent,
+                                      assetImage: imageDefinitionInFilter(
+                                          listOfServices[index].id),
+                                      color: colorDefinitionInFilter(
+                                          listOfServices[index].id),
+                                      onTap: () {
+                                        scaffoldKey.currentState!
+                                            .showBottomSheet(
+                                          (context) => GarbageBottomSheet(
+                                              materials: listOfRawMaterials,
+                                              position: _position),
+                                          backgroundColor: Colors.transparent,
+                                        );
+                                      },
+                                      text: listOfServices[index].name,
+                                    );
+                                  },
+                                  staggeredTileBuilder: (int index) =>
+                                      StaggeredTile.count(2, 1),
+                                  mainAxisSpacing: 4.0,
+                                  crossAxisSpacing: 4.0,
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 24.0),
-                            //Services
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 12.0),
-                          child:
-                            Align(child: Text("services".tr(), style: kAlertTextStyle,),
-
-                            alignment: Alignment.topLeft),
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 12.0),
+                                child: Align(
+                                    child: Text(
+                                      "filters".tr(),
+                                      style: kAlertTextStyle,
+                                    ),
+                                    alignment: Alignment.topLeft),
+                              ),
+                              SizedBox(height: 10.0),
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 12.0),
+                                color: Colors.white,
+                                constraints: BoxConstraints(
+                                  minHeight: 64.0,
+                                  maxWidth: double.infinity,
+                                  maxHeight:
+                                      MediaQuery.of(context).size.height - 36,
+                                ),
+                                child: StaggeredGridView.countBuilder(
+                                  shrinkWrap: true,
+                                  padding: EdgeInsets.only(top: 0),
+                                  crossAxisCount: 4,
+                                  itemCount: listOfRawMaterials.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return BlockWithAllMaterials(
+                                      colorShadow: listOfRawMaterials[index]
+                                                  .selectedRawMaterials ==
+                                              true
+                                          ? kColorShadowInFilter
+                                          : Colors.transparent,
+                                      assetImage: imageDefinitionInFilter(
+                                          listOfRawMaterials[index].id),
+                                      color: colorDefinitionInFilter(
+                                          listOfRawMaterials[index].id),
+                                      onTap: () {
+                                        setState(() {
+                                          listOfRawMaterials[index]
+                                                  .selectedRawMaterials =
+                                              !listOfRawMaterials[index]
+                                                  .selectedRawMaterials;
+                                          if (listOfRawMaterials[index]
+                                                  .selectedRawMaterials ==
+                                              false) {
+                                            removeFilter(
+                                                listOfRawMaterials[index].id);
+                                          } else {
+                                            getSelectedMaterialsIdAddToList(
+                                                listOfRawMaterials[index].id);
+                                          }
+                                        });
+                                      },
+                                      text: listOfRawMaterials[index].name,
+                                    );
+                                  },
+                                  staggeredTileBuilder: (int index) =>
+                                      StaggeredTile.count(2, 1),
+                                  mainAxisSpacing: 4.0,
+                                  crossAxisSpacing: 4.0,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                            SizedBox(height: 10.0),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 12.0),
-                              color: Colors.white,
-                              constraints: BoxConstraints(
-
-                                maxHeight: MediaQuery.of(context).size.height - 36,
-                              ),
-                              child:
-                              StaggeredGridView.countBuilder(
-                                shrinkWrap: true,
-                                padding: EdgeInsets.only(top: 0),
-                                crossAxisCount: 4,
-                                itemCount: listOfServices.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return BlockWithAllServices(
-                                    colorShadow: listOfServices[index].selectedRawMaterials == true ? kColorShadowInFilter : Colors.transparent,
-                                    assetImage: imageDefinitionInFilter(listOfServices[index].id),
-                                    color: colorDefinitionInFilter(listOfServices[index].id),
-                                    onTap: () {
-                                      scaffoldKey.currentState!.showBottomSheet((context) => GarbageBottomSheet(materials:listOfRawMaterials, position: _position),
-                                        backgroundColor: Colors.transparent,
-                                      );
-                                    },
-                                    text: listOfServices[index].name,
-                                  );
-                                },
-                                staggeredTileBuilder: (int index) => StaggeredTile.count(2, 1),
-                                mainAxisSpacing: 4.0,
-                                crossAxisSpacing: 4.0,
-                              ),
-                            ),
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 12.0),
-                          child:
-                            Align(child: Text("filters".tr(), style: kAlertTextStyle,),
-                                alignment: Alignment.topLeft),
-                        ),
-                            SizedBox(height: 10.0),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 12.0),
-                              color: Colors.white,
-                              constraints: BoxConstraints(
-                                minHeight: 64.0,
-                                maxWidth: double.infinity,
-                                maxHeight: MediaQuery.of(context).size.height - 36,
-                              ),
-                              child:
-                              StaggeredGridView.countBuilder(
-                                shrinkWrap: true,
-                                padding: EdgeInsets.only(top: 0),
-                                crossAxisCount: 4,
-                                itemCount: listOfRawMaterials.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return BlockWithAllMaterials(
-                                    colorShadow: listOfRawMaterials[index].selectedRawMaterials == true ? kColorShadowInFilter : Colors.transparent,
-                                    assetImage: imageDefinitionInFilter(listOfRawMaterials[index].id),
-                                    color: colorDefinitionInFilter(listOfRawMaterials[index].id),
-                                    onTap: () {
-                                      setState(() {
-                                        listOfRawMaterials[index].selectedRawMaterials = !listOfRawMaterials[index].selectedRawMaterials;
-                                        if (listOfRawMaterials[index].selectedRawMaterials == false) {
-                                          removeFilter(listOfRawMaterials[index].id);
-                                        } else {
-                                          getSelectedMaterialsIdAddToList(listOfRawMaterials[index].id);
-                                        }
-                                      });
-                                    },
-                                    text: listOfRawMaterials[index].name,
-                                  );
-                                },
-                                staggeredTileBuilder: (int index) => StaggeredTile.count(2, 1),
-                                mainAxisSpacing: 4.0,
-                                crossAxisSpacing: 4.0,
-                              ),
+                      ),
+                    ],
+                  ),
+                ),
+                body: Stack(
+                  children: [
+                    FlutterMap(
+                      mapController: _mapController,
+                      options: MapOptions(
+                        boundsOptions:
+                            FitBoundsOptions(padding: EdgeInsets.all(800.0)),
+                        center: _position,
+                        minZoom: 3.0,
+                        maxZoom: 18.4,
+                      ),
+                      layers: [
+                        TileLayerOptions(
+                            urlTemplate:
+                                'https://api.mapbox.com/styles/v1/logiman/ckweydbul0r7015mv54fy9u17/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
+                            additionalOptions: {
+                              'accessToken':
+                                  'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
+                              'id': 'mapbox.mapbox-streets-v8'
+                            }),
+                        PolylineLayerOptions(
+                          polylines: [
+                            Polyline(
+                              points: getSelectedToggleSwitch(),
+                              strokeWidth: 4.0,
+                              color: Colors.green,
+                              isDotted: true,
                             ),
                           ],
+                        ),
+                        MarkerLayerOptions(
+                          rotate: true,
+                          markers: getMarkersAndUserLocation(),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).size.width * 0.8,
+                        left: MediaQuery.of(context).size.width * 0.85,
+                      ),
+                      child: Container(
+                        height: 48.0,
+                        width: 48.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 3,
+                              blurRadius: 5,
+                              offset: Offset(0, 0),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          color: Colors.white,
+                          onPressed: () {
+                            if (_position != null) {
+                              _mapController.move(_position!, 18);
+                            }
+                          },
+                          icon: Icon(
+                            Icons.location_on,
+                            color: kColorGrey2,
+                            size: 30.0,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              body: Stack(
-                children: [
-                  FlutterMap(
-                    mapController: _mapController,
-                    options: MapOptions(
-                      boundsOptions: FitBoundsOptions(padding: EdgeInsets.all(800.0)),
-                        center: _position,
-                        minZoom: 3.0,
-                        maxZoom: 18.4,
-                    ),
-                    layers: [
-                      TileLayerOptions(
-              urlTemplate: 'https://api.mapbox.com/styles/v1/logiman/ckweydbul0r7015mv54fy9u17/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA'
-                  ,
-              additionalOptions: {
-                            'accessToken': 'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
-                            'id': 'mapbox.mapbox-streets-v8'
-                          }
-
             ),
-                      PolylineLayerOptions(
-                        polylines: [
-                          Polyline(
-                              points: getSelectedToggleSwitch(),
-                              strokeWidth: 4.0,
-                              color: Colors.green,
-                              isDotted: true,
-                          ),
-                        ],
-                      ),
-                      MarkerLayerOptions(
-                        rotate: true,
-                        markers: getMarkersAndUserLocation(),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.width * 0.8,
-                        left: MediaQuery.of(context).size.width * 0.85,
-                    ),
-                    child: Container(
-                      height: 48.0,
-                      width: 48.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 3,
-                            blurRadius: 5,
-                            offset: Offset(0, 0),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        color: Colors.white,
-                          onPressed: () {
-                            if (_position != null) {
-                              _mapController.move(_position!, 18);
-                            }
-                          },
-                          icon: Icon(Icons.location_on, color: kColorGrey2, size: 30.0,),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-      );
+          );
   }
 
   //запрос на использование геоданных
@@ -388,7 +440,6 @@ class _MapScreenState extends State<MapScreen> {
 
   //запись в лист всех маркеров точек и отдельно маркер местоположения
   List<Marker> getMarkersAndUserLocation() {
-
     List<Marker> newList = [];
     newList.addAll(markers);
 
@@ -398,22 +449,21 @@ class _MapScreenState extends State<MapScreen> {
           width: 30.0,
           height: 30.0,
           point: _position!,
-          builder: (context) =>
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 4.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.3),
-                      spreadRadius: 1,
-                      blurRadius: 7,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
+          builder: (context) => Container(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 4.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 2),
                 ),
-              ),
+              ],
+            ),
+          ),
         ),
       );
     }
@@ -500,6 +550,7 @@ class _MapScreenState extends State<MapScreen> {
 
   //получение всех маркеров
   List<ListOfObjects> listOfObject = [];
+
   Future<void> getListOfObjectAddDataToList() async {
     var dataObjects = await getListOfObjects(context);
     if (dataObjects != null) {
@@ -516,6 +567,7 @@ class _MapScreenState extends State<MapScreen> {
 
   //получение списка сырья
   List<ListOfRawMaterials> listOfRawMaterials = [];
+
   Future<void> getListOfRawMaterialsAddDataToList() async {
     var dataListOfRawMaterials = await getListOfRawMaterials();
     if (dataListOfRawMaterials != null) {
@@ -528,11 +580,14 @@ class _MapScreenState extends State<MapScreen> {
       });
     }
   }
-  List<Service> listOfServices = [Service(id:101, name:"garbage_collection".tr()),
-    ];
+
+  List<Service> listOfServices = [
+    Service(id: 101, name: "garbage_collection".tr()),
+  ];
 
   //запись маркеров в лист для их отображения
   List<Marker> markers = [];
+
   void addMarkers() {
     if (listOfObject.isEmpty) return;
     markers.clear();
@@ -543,43 +598,45 @@ class _MapScreenState extends State<MapScreen> {
             height: selectedIndexMarker == item.id ? 90.0 : 30.0,
             width: selectedIndexMarker == item.id ? 60.0 : 30.0,
             point: LatLng(item.latitude, item.longitude),
-            builder: (context) =>
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      selectedIndexMarker = item.id;
-                      addMarkers();
-                    });
-                    getListOfRawMaterialsOfSpecificObjectAddDataToList(selectedIndexMarker, true);
-                  },
-                  child: selectedIndexMarker != item.id ? Container(
-                    decoration: BoxDecoration(
-                      color: kColorGreen1,
-                      borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(color: Colors.white, width: 4.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          spreadRadius: 1,
-                          blurRadius: 7,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
+            builder: (context) => InkWell(
+              onTap: () {
+                setState(() {
+                  selectedIndexMarker = item.id;
+                  addMarkers();
+                });
+                getListOfRawMaterialsOfSpecificObjectAddDataToList(
+                    selectedIndexMarker, true);
+              },
+              child: selectedIndexMarker != item.id
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: kColorGreen1,
+                        borderRadius: BorderRadius.circular(20.0),
+                        border: Border.all(color: Colors.white, width: 4.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 7,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.withOpacity(0.1),
+                        //kPurpleTransparent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 30),
+                        child: Image(image: AssetImage('images/Pin.png')),
+                      ),
                     ),
-                  ) : Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.deepPurple.withOpacity(0.1),
-                      //kPurpleTransparent,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 30),
-                      child: Image(image: AssetImage('images/Pin.png')),
-                    ),
-                  ),
-                ),
+            ),
           ),
         );
       }
@@ -593,43 +650,45 @@ class _MapScreenState extends State<MapScreen> {
             height: selectedIndexMarker == item.id ? 90.0 : 30.0,
             width: selectedIndexMarker == item.id ? 60.0 : 30.0,
             point: LatLng(item.latitude, item.longitude),
-            builder: (context) =>
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      selectedIndexMarker = item.id;
-                      addMarkers();
-                    });
-                    getListOfRawMaterialsOfSpecificObjectAddDataToList(selectedIndexMarker, true);
-                  },
-                  child: selectedIndexMarker != item.id ? Container(
-                    decoration: BoxDecoration(
-                      color: kColorGreen1,
-                      borderRadius: BorderRadius.circular(20.0),
-                      border: Border.all(color: Colors.white, width: 4.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.3),
-                          spreadRadius: 1,
-                          blurRadius: 7,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
+            builder: (context) => InkWell(
+              onTap: () {
+                setState(() {
+                  selectedIndexMarker = item.id;
+                  addMarkers();
+                });
+                getListOfRawMaterialsOfSpecificObjectAddDataToList(
+                    selectedIndexMarker, true);
+              },
+              child: selectedIndexMarker != item.id
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: kColorGreen1,
+                        borderRadius: BorderRadius.circular(20.0),
+                        border: Border.all(color: Colors.white, width: 4.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 7,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                    )
+                  : Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.withOpacity(0.1),
+                        //kPurpleTransparent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 30),
+                        child: Image(image: AssetImage('images/Pin.png')),
+                      ),
                     ),
-                  ) : Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.deepPurple.withOpacity(0.1),
-                      //kPurpleTransparent,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 30),
-                      child: Image(image: AssetImage('images/Pin.png')),
-                    ),
-                  ),
-                ),
+            ),
           ),
         );
       }
@@ -639,7 +698,8 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  List<ListOfRawMaterialsOfSpecificObject> listOfRawMaterialsOfSpecificObject = [];
+  List<ListOfRawMaterialsOfSpecificObject> listOfRawMaterialsOfSpecificObject =
+      [];
 
   //лист для точек маршрута на машине
   List<LatLng> latLngDriving = [];
@@ -661,64 +721,74 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  List<ListOfRawMaterialsOfSpecificObject>? dataListOfRawMaterialsOfSpecificObject;
+  List<ListOfRawMaterialsOfSpecificObject>?
+      dataListOfRawMaterialsOfSpecificObject;
 
-  Future<void> getListOfRawMaterialsOfSpecificObjectAddDataToList(int selectedIndexMarker, bool update) async {
-    if (update) dataListOfRawMaterialsOfSpecificObject = await getListOfRawMaterialsOfSpecificObject(selectedIndexMarker, context);
+  Future<void> getListOfRawMaterialsOfSpecificObjectAddDataToList(
+      int selectedIndexMarker, bool update) async {
+    if (update)
+      dataListOfRawMaterialsOfSpecificObject =
+          await getListOfRawMaterialsOfSpecificObject(
+              selectedIndexMarker, context);
     if (dataListOfRawMaterialsOfSpecificObject != null) {
       setState(() {
-        listOfRawMaterialsOfSpecificObject = dataListOfRawMaterialsOfSpecificObject!;
+        listOfRawMaterialsOfSpecificObject =
+            dataListOfRawMaterialsOfSpecificObject!;
 
-        cbs.showModalBottomSheet(
-            backgroundColor: Colors.transparent,
-            isScrollControlled: true,
-            barrierColor: Colors.white.withOpacity(0),
-            context: context,
-            builder: (BuildContext context) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  BottomSheetOfSelectedMarker(
-                    listOfRawMaterialsOfSpecificObject: listOfRawMaterialsOfSpecificObject,
-                    selectedIndexMarker: selectedIndexMarker,
-                    position: _position,
-                    onAddressChange: (val) {
-                      setState(() {
-                        address = val;
-                      });
-                    },
-                    onDistanceDrivingChange: (val) {
-                      setState(() {
-                        distanceDriving = val;
-                      });
-                    },
-                    onDurationDrivingChange: (val) {
-                      setState(() {
-                        durationsDriving = val;
-                      });
-                    },
-                    onDistanceWalkingChange: (val) {
-                      setState(() {
-                        distanceWalking = val;
-                      });
-                    },
-                    onDurationWalkingChange: (val) {
-                      setState(() {
-                        durationsWalking = val;
-                      });
-                    },
-                    onRouteWalkingChange: (val) {
-                      setState(() {
-                        latLngWalking = val;
-                        converterDistanceDriving();
-                      });
-                      Navigator.pop(context);
-                      controllerBottomSheetRout = scaffoldKey.currentState!.showBottomSheet<Null>((BuildContext context) {
+        cbs
+            .showModalBottomSheet(
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+                barrierColor: Colors.white.withOpacity(0),
+                context: context,
+                builder: (BuildContext context) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      BottomSheetOfSelectedMarker(
+                        listOfRawMaterialsOfSpecificObject:
+                            listOfRawMaterialsOfSpecificObject,
+                        selectedIndexMarker: selectedIndexMarker,
+                        position: _position,
+                        onAddressChange: (val) {
+                          setState(() {
+                            address = val;
+                          });
+                        },
+                        onDistanceDrivingChange: (val) {
+                          setState(() {
+                            distanceDriving = val;
+                          });
+                        },
+                        onDurationDrivingChange: (val) {
+                          setState(() {
+                            durationsDriving = val;
+                          });
+                        },
+                        onDistanceWalkingChange: (val) {
+                          setState(() {
+                            distanceWalking = val;
+                          });
+                        },
+                        onDurationWalkingChange: (val) {
+                          setState(() {
+                            durationsWalking = val;
+                          });
+                        },
+                        onRouteWalkingChange: (val) {
+                          setState(() {
+                            latLngWalking = val;
+                            converterDistanceDriving();
+                          });
+                          Navigator.pop(context);
+                          controllerBottomSheetRout = scaffoldKey.currentState!
+                              .showBottomSheet<Null>((BuildContext context) {
                             return BottomSheetRoute(
-
                               address: address,
-                              durationsWalkingToString: durationsWalkingToString,
-                              durationsDrivingToString: durationsDrivingToString,
+                              durationsWalkingToString:
+                                  durationsWalkingToString,
+                              durationsDrivingToString:
+                                  durationsDrivingToString,
                               selectedToggleSwitch: selectedToggleSwitch,
                               onSelectedToggleSwitchChange: (bool) {
                                 updatedSelectedToggleSwitch = bool;
@@ -738,42 +808,46 @@ class _MapScreenState extends State<MapScreen> {
                               },
                             );
                           });
-                      controllerBottomSheetRout!.closed.then((value) {
-                        setState(() {
-                          latLngDriving.clear();
-                          latLngWalking.clear();
-                          getListOfObjectAddDataToList();
-                          if (!userInfoClicked) getListOfRawMaterialsOfSpecificObjectAddDataToList(selectedIndexMarker, false);
-                        });
-                      });
-                    },
-                    onRouteDrivingChange: (val) {
-                      setState(() {
-                        latLngDriving = val;
-                      });
-                    },
-                    removeMarkers: () {
-                      setState(() {
-                        markers.clear();
-                      });
-                    },
-                    latLngSelectedObject: (latSelectedObject, lngSelectedObject) {
-                      setState(() {
-                        latSelectedObject = latSelectedObject;
-                        lngSelectedObject = lngSelectedObject;
-                        markers.add(
-                          Marker(
-                            height: 30.0,
-                            width: 30.0,
-                            point: LatLng(latSelectedObject, lngSelectedObject),
-                            builder: (context) =>
-                                InkWell(
+                          controllerBottomSheetRout!.closed.then((value) {
+                            setState(() {
+                              latLngDriving.clear();
+                              latLngWalking.clear();
+                              getListOfObjectAddDataToList();
+                              if (!userInfoClicked)
+                                getListOfRawMaterialsOfSpecificObjectAddDataToList(
+                                    selectedIndexMarker, false);
+                            });
+                          });
+                        },
+                        onRouteDrivingChange: (val) {
+                          setState(() {
+                            latLngDriving = val;
+                          });
+                        },
+                        removeMarkers: () {
+                          setState(() {
+                            markers.clear();
+                          });
+                        },
+                        latLngSelectedObject:
+                            (latSelectedObject, lngSelectedObject) {
+                          setState(() {
+                            latSelectedObject = latSelectedObject;
+                            lngSelectedObject = lngSelectedObject;
+                            markers.add(
+                              Marker(
+                                height: 30.0,
+                                width: 30.0,
+                                point: LatLng(
+                                    latSelectedObject, lngSelectedObject),
+                                builder: (context) => InkWell(
                                   onTap: () {},
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: kColorGreen1,
                                       borderRadius: BorderRadius.circular(20.0),
-                                      border: Border.all(color: Colors.white, width: 4.0),
+                                      border: Border.all(
+                                          color: Colors.white, width: 4.0),
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.grey.withOpacity(0.3),
@@ -785,15 +859,15 @@ class _MapScreenState extends State<MapScreen> {
                                     ),
                                   ),
                                 ),
-                          ),
-                        );
-                      });
-                    },
-                  ),
-                ],
-              );
-            }
-        ).whenComplete(() {
+                              ),
+                            );
+                          });
+                        },
+                      ),
+                    ],
+                  );
+                })
+            .whenComplete(() {
           userInfoClicked = false;
         });
       });
@@ -821,17 +895,18 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _sendingMsgProgressBar?.show(context);
     });
-      var dataObjects = await getListOfObjectsInFilter(selectedMaterialsId, context);
-      if (dataObjects != null) {
-        listOfObjectFromFilter = dataObjects;
-      } else {
-        setState(() {
-          _sendingMsgProgressBar?.hide();
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('no_dots'.tr()),
-          ));
-        });
-      }
+    var dataObjects =
+        await getListOfObjectsInFilter(selectedMaterialsId, context);
+    if (dataObjects != null) {
+      listOfObjectFromFilter = dataObjects;
+    } else {
+      setState(() {
+        _sendingMsgProgressBar?.hide();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('no_dots'.tr()),
+        ));
+      });
+    }
     addMarkers();
 
     var bounds = new LatLngBounds();
@@ -839,11 +914,11 @@ class _MapScreenState extends State<MapScreen> {
       bounds.extend(LatLng(item.latitude, item.longitude));
     }
     _mapController.fitBounds(
-        bounds,
-        options: FitBoundsOptions(
-          maxZoom: 9.6,
-          inside: false,
-        ),
+      bounds,
+      options: FitBoundsOptions(
+        maxZoom: 9.6,
+        inside: false,
+      ),
     );
   }
 
@@ -860,15 +935,19 @@ class _MapScreenState extends State<MapScreen> {
 
   void converterDistanceDriving() {
     if (distanceDriving.toInt().toString().length > 3) {
-      if((distanceDriving / 1000) % 10 == 1) {
-        distanceDrivingToString = '${(distanceDriving / 1000).round()} ' + 'kilometer'.tr();
-      } else if ((distanceDriving / 1000) % 10 > 1 && (distanceDriving / 1000) % 10 < 5) {
-        distanceDrivingToString = '${(distanceDriving / 1000).round()} ' + 'kilometers'.tr();
+      if ((distanceDriving / 1000) % 10 == 1) {
+        distanceDrivingToString =
+            '${(distanceDriving / 1000).round()} ' + 'kilometer'.tr();
+      } else if ((distanceDriving / 1000) % 10 > 1 &&
+          (distanceDriving / 1000) % 10 < 5) {
+        distanceDrivingToString =
+            '${(distanceDriving / 1000).round()} ' + 'kilometers'.tr();
       } else {
-        distanceDrivingToString = '${(distanceDriving / 1000).round()} ' + 'kilometrov'.tr();
+        distanceDrivingToString =
+            '${(distanceDriving / 1000).round()} ' + 'kilometrov'.tr();
       }
     } else {
-      if(distanceDriving % 10 == 1) {
+      if (distanceDriving % 10 == 1) {
         distanceDrivingToString = '${distanceDriving.toInt()} ' + 'metre'.tr();
       } else if (distanceDriving % 10 > 1 && distanceDriving % 10 < 5) {
         distanceDrivingToString = '${distanceDriving.toInt()} ' + 'meters'.tr();
@@ -883,15 +962,19 @@ class _MapScreenState extends State<MapScreen> {
 
   void converterDistanceWalking() {
     if (distanceWalking.toInt().toString().length > 3) {
-      if((distanceDriving / 1000) % 10 == 1) {
-        distanceWalkingToString = '${(distanceWalking / 1000).round()} ' + 'kilometer'.tr();
-      } else if ((distanceWalking / 1000) % 10 > 1 && (distanceWalking / 1000) % 10 < 5) {
-        distanceWalkingToString = '${(distanceWalking / 1000).round()} ' + 'kilometers'.tr();
+      if ((distanceDriving / 1000) % 10 == 1) {
+        distanceWalkingToString =
+            '${(distanceWalking / 1000).round()} ' + 'kilometer'.tr();
+      } else if ((distanceWalking / 1000) % 10 > 1 &&
+          (distanceWalking / 1000) % 10 < 5) {
+        distanceWalkingToString =
+            '${(distanceWalking / 1000).round()} ' + 'kilometers'.tr();
       } else {
-        distanceWalkingToString = '${(distanceWalking / 1000).round()} ' + 'kilometrov'.tr();
+        distanceWalkingToString =
+            '${(distanceWalking / 1000).round()} ' + 'kilometrov'.tr();
       }
     } else {
-      if(distanceWalking % 10 == 1) {
+      if (distanceWalking % 10 == 1) {
         distanceWalkingToString = '${distanceWalking.toInt()} ' + 'metre'.tr();
       } else if (distanceWalking % 10 > 1 && distanceWalking % 10 < 5) {
         distanceWalkingToString = '${distanceWalking.toInt()} ' + 'meters'.tr();
@@ -903,17 +986,16 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   String durationsDrivingToString = '';
-  String twoDigits(int n)=>n.toString().padLeft(2,'0');
+
+  String twoDigits(int n) => n.toString().padLeft(2, '0');
 
   void convertDurationsDriving() {
-
     Duration time = Duration(seconds: durationsDriving.toInt());
     final hours = twoDigits(time.inHours.remainder(60));
     final minutes = twoDigits(time.inMinutes.remainder(60));
 
     String stringHour = '';
     if (int.parse(hours) == 11) {
-
       stringHour = 'hours'.tr();
 
       String stringMinute = '';
@@ -921,7 +1003,7 @@ class _MapScreenState extends State<MapScreen> {
       if (int.parse(minutes) == 11) {
         stringMinute = 'minutes'.tr();
       } else {
-        switch(int.parse(minutes) % 10) {
+        switch (int.parse(minutes) % 10) {
           case 1:
             stringMinute = 'minute'.tr();
             break;
@@ -945,14 +1027,12 @@ class _MapScreenState extends State<MapScreen> {
       String strMinutes = minutes == '00' ? '' : minutes;
 
       durationsDrivingToString = '$hours $strHour $strMinutes $stringMinute';
-
     } else if (int.parse(hours) == 0) {
-
       String stringMinute = '';
       if (int.parse(minutes) == 11) {
         stringMinute = 'minutes'.tr();
       } else {
-        switch(int.parse(minutes) % 10) {
+        switch (int.parse(minutes) % 10) {
           case 1:
             stringMinute = 'minute'.tr();
             break;
@@ -973,7 +1053,7 @@ class _MapScreenState extends State<MapScreen> {
       }
       durationsDrivingToString = '$minutes $stringMinute';
     } else {
-      switch(int.parse(hours) % 10) {
+      switch (int.parse(hours) % 10) {
         case 1:
           stringHour = 'hour'.tr();
           break;
@@ -996,7 +1076,7 @@ class _MapScreenState extends State<MapScreen> {
     if (int.parse(minutes) == 11) {
       stringMinute = 'hours'.tr();
     } else {
-      switch(int.parse(minutes) % 10) {
+      switch (int.parse(minutes) % 10) {
         case 1:
           stringMinute = 'minute'.tr();
           break;
@@ -1026,14 +1106,12 @@ class _MapScreenState extends State<MapScreen> {
   String durationsWalkingToString = '';
 
   void convertDurationsWalking() {
-
     Duration time = Duration(seconds: durationsWalking.toInt());
     final hours = twoDigits(time.inHours.remainder(60));
     final minutes = twoDigits(time.inMinutes.remainder(60));
 
     String stringHour = '';
     if (int.parse(hours) == 11) {
-
       stringHour = 'hours'.tr();
 
       String stringMinute = '';
@@ -1041,7 +1119,7 @@ class _MapScreenState extends State<MapScreen> {
       if (int.parse(minutes) == 11) {
         stringMinute = 'minutes'.tr();
       } else {
-        switch(int.parse(minutes) % 10) {
+        switch (int.parse(minutes) % 10) {
           case 1:
             stringMinute = 'minute'.tr();
             break;
@@ -1061,14 +1139,12 @@ class _MapScreenState extends State<MapScreen> {
         }
       }
       durationsWalkingToString = '$hours $stringHour $minutes $stringMinute';
-
     } else if (int.parse(hours) == 0) {
-
       String stringMinute = '';
       if (int.parse(minutes) == 11) {
         stringMinute = 'minutes'.tr();
       } else {
-        switch(int.parse(minutes) % 10) {
+        switch (int.parse(minutes) % 10) {
           case 1:
             stringMinute = 'minute'.tr();
             break;
@@ -1089,7 +1165,7 @@ class _MapScreenState extends State<MapScreen> {
       }
       durationsWalkingToString = '$minutes $stringMinute';
     } else {
-      switch(int.parse(hours) % 10) {
+      switch (int.parse(hours) % 10) {
         case 1:
           stringHour = 'hour'.tr();
           break;
@@ -1112,7 +1188,7 @@ class _MapScreenState extends State<MapScreen> {
     if (int.parse(minutes) == 11) {
       stringMinute = 'hours'.tr();
     } else {
-      switch(int.parse(minutes) % 10) {
+      switch (int.parse(minutes) % 10) {
         case 1:
           stringMinute = 'minute'.tr();
           break;
@@ -1140,7 +1216,7 @@ class _MapScreenState extends State<MapScreen> {
 
   List<LatLng> selectedListLatLng = [];
 
-  List<LatLng> getSelectedToggleSwitch () {
+  List<LatLng> getSelectedToggleSwitch() {
     if (updatedSelectedToggleSwitch == false) {
       setState(() {
         selectedListLatLng = latLngWalking;
@@ -1156,6 +1232,7 @@ class _MapScreenState extends State<MapScreen> {
   bool updatedSelectedToggleSwitch = false;
 
   String assetImage = '';
+
   String imageDefinitionInFilter(int id) {
     switch (id) {
       case 1:
@@ -1192,6 +1269,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Color colorFilterElement = kColorGrey4;
+
   Color colorDefinitionInFilter(int id) {
     switch (id) {
       case 1:

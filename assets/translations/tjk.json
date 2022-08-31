@@ -6,7 +6,6 @@
   "have_account": "Аллакай соҳиби аккаунти?",
   "enter": "Даромадан",
   "check_your_network_connection": "Санҷед, пайвастшавии шабакавӣ",
-
   "entrance": "Журнал",
   "enter_your_authorization_number": "Лутфан, рақами аслӣ",
   "dont_have_account_yet": "Ҳанӯз ҳеҷ аккаунта?",
@@ -15,41 +14,33 @@
   "you_will_receive_SMS_to_number": "Шумо омад sms хабар ба рақами",
   "no_sms_coming": "Меояд SMS?",
   "сontinue": "Идома",
-
   "favourites": "Мунтахаб",
   "you_dont_have_favorites": "Агар шумо не интихоб кунед",
   "permission_to_use_geodata": "Барои мавлуди исо дуруст аст кор барномаҳо зарур аст, ки иҷозат барои истифодаи геоданных",
   "provide": "Таъмин",
   "reject": "Ба дурӯғ",
-
   "settings": "Танзимоти",
   "phone_number": "Рақами телефон",
   "language": "язык",
   "logout": "Берун",
-
   "route": "Самт",
-
   "your_position": "Мавқеи худ",
   "travel_time": "вақт дар роҳ",
-
   "metre": "метр",
   "meters": "метр",
   "metrov": "метр",
   "kilometer": "километрро",
   "kilometers": "километр",
   "kilometrov": "километр",
-
   "minute": "дақиқа",
   "minutes": "дақиқа",
   "minuti": "дақиқа",
   "hour": "як соат",
   "hour_s": "соат",
   "hours": "соат",
-
   "are_you_sure": "Шумо мутмаин ҳастед?",
   "do_you_want_exit_app": "Шумо мехоҳед, ки ба берун рафта,\nаз барномаҳо",
   "no": "Не",
   "yes": "Ҳа",
-
   "types_of_raw_materials": "Намудҳои ашеи хоми: "
 }

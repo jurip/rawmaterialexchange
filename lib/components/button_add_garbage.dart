@@ -1,13 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
+import 'package:flutter/material.dart';
 
 class ButtonAddGarbage extends StatelessWidget {
-  const ButtonAddGarbage({
-    Key? key,
-    required this.text,
-    required this.onTap
-  }) : super(key: key);
+  const ButtonAddGarbage({Key? key, required this.text, required this.onTap})
+      : super(key: key);
 
   final text;
   final GestureTapCallback onTap;
@@ -23,7 +19,9 @@ class ButtonAddGarbage extends StatelessWidget {
           border: Border.all(width: 1.0, color: Color(0xFFBEBEBE)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 14.0,),
+          padding: const EdgeInsets.symmetric(
+            vertical: 14.0,
+          ),
           child: Text(
             text,
             textAlign: TextAlign.center,

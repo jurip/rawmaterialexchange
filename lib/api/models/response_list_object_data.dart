@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-ListObjectData listObjectDataFromJson(String str) => ListObjectData.fromJson(json.decode(str));
+ListObjectData listObjectDataFromJson(String str) =>
+    ListObjectData.fromJson(json.decode(str));
 
 //String listObjectDataToJson(ListObjectData data) => json.encode(data.toJson());
 

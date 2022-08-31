@@ -1,5 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
 import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/models/response_user_data.dart';
 import 'package:app/api/requests/requests.dart';
@@ -7,10 +5,11 @@ import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/screens/registration.dart';
 import 'package:app/utils/progress_bar.dart';
-import 'package:app/utils/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+
 import '../../main.dart';
 import 'confirmation_button.dart';
-import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -24,8 +23,7 @@ class OrderDone extends StatefulWidget {
 }
 
 class _OrderDoneState extends State<OrderDone> {
-
-  List<PopupMenuEntry<PopupItem>> popUpMenuItem = [ ];
+  List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
 
   @override
   void initState() {
@@ -62,21 +60,20 @@ class _OrderDoneState extends State<OrderDone> {
 
   double definitionHeightBottomSheetSettings() {
     if (topPadding1 +
-        topPadding2 +
-        containerHeight1 +
-        (informationColumnHeight * 4) +
-        sizedBoxHeight1 +
-        sizedBoxHeight2 +
-        sizedBoxHeight3 +
-        sizedBoxHeight4 +
-        confirmationButtonHeight +
-        sizedBoxHeight5 +
-        textHeight1 +
-        textHeight2 +
-        textHeight3 +
-        containerHeight2
-        >= MediaQuery.of(context).size.height
-    ) {
+            topPadding2 +
+            containerHeight1 +
+            (informationColumnHeight * 4) +
+            sizedBoxHeight1 +
+            sizedBoxHeight2 +
+            sizedBoxHeight3 +
+            sizedBoxHeight4 +
+            confirmationButtonHeight +
+            sizedBoxHeight5 +
+            textHeight1 +
+            textHeight2 +
+            textHeight3 +
+            containerHeight2 >=
+        MediaQuery.of(context).size.height) {
       heightBottomSheetSettings = MediaQuery.of(context).size.height;
     } else {
       heightBottomSheetSettings = topPadding1 +
@@ -99,89 +96,98 @@ class _OrderDoneState extends State<OrderDone> {
 
   @override
   Widget build(BuildContext context) {
-    return userData == null || listLanguage.isEmpty ?
-    Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Colors.transparent,
-      body: Center(
-        child: CircularProgressIndicator(
-          backgroundColor: Colors.green,
-          color: Colors.white,
-        ),
-      ),
-    ) :
-    SafeArea(
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 1,
-              blurRadius: 7,
-              offset: Offset(0, 2), // changes position of shadow
+    return userData == null || listLanguage.isEmpty
+        ? Scaffold(
+            key: _scaffoldKey,
+            backgroundColor: Colors.transparent,
+            body: Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.green,
+                color: Colors.white,
+              ),
             ),
-          ],
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-              topRight: Radius.circular(30.0), topLeft: Radius.circular(30.0)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: topPadding1),
-                child: Center(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30.0),
-                      color: kColorGrey1,
-                    ),
-                    height: containerHeight1,
-                    width: 42.0,
+          )
+        : SafeArea(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    spreadRadius: 1,
+                    blurRadius: 7,
+                    offset: Offset(0, 2), // changes position of shadow
                   ),
-                ),
+                ],
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(30.0),
+                    topLeft: Radius.circular(30.0)),
               ),
-              Padding(
-                padding: EdgeInsets.only(top: topPadding2),
-                child: Center(child: Text('order_done'.tr(), style: kAlertTextStyle)),
-              ),
-              Container(
-                constraints: BoxConstraints(
-                  minHeight: 0,
-                  maxWidth: double.infinity,
-                  maxHeight: double.infinity//definitionHeightBottomSheetSettings(),
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      //66 * 4
-                      SizedBox(height: sizedBoxHeight1),
-                      Text("orded_done_text".tr()),
-                      SizedBox(height: sizedBoxHeight3),
-                      Container(width: double.infinity, height: containerHeight2, color: kColorGrey1,),
-                      SizedBox(height: sizedBoxHeight4),
-                      ConfirmationButton(//46
-                        text: 'to_main'.tr(),
-                        onTap: () async {
-                          Navigator.pop(context);
-                          },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: topPadding1),
+                      child: Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30.0),
+                            color: kColorGrey1,
+                          ),
+                          height: containerHeight1,
+                          width: 42.0,
+                        ),
                       ),
-                      SizedBox(height: sizedBoxHeight5),
-                      SizedBox(height: 300),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: topPadding2),
+                      child: Center(
+                          child:
+                              Text('order_done'.tr(), style: kAlertTextStyle)),
+                    ),
+                    Container(
+                      constraints: BoxConstraints(
+                          minHeight: 0,
+                          maxWidth: double.infinity,
+                          maxHeight: double
+                              .infinity //definitionHeightBottomSheetSettings(),
+                          ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            //66 * 4
+                            SizedBox(height: sizedBoxHeight1),
+                            Text("orded_done_text".tr()),
+                            SizedBox(height: sizedBoxHeight3),
+                            Container(
+                              width: double.infinity,
+                              height: containerHeight2,
+                              color: kColorGrey1,
+                            ),
+                            SizedBox(height: sizedBoxHeight4),
+                            ConfirmationButton(
+                              //46
+                              text: 'to_main'.tr(),
+                              onTap: () async {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            SizedBox(height: sizedBoxHeight5),
+                            SizedBox(height: 300),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
   }
 
   UserData? userData;
@@ -221,6 +227,7 @@ class _OrderDoneState extends State<OrderDone> {
 
   //получение списка языков
   List<ListLanguages> listLanguage = [];
+
   Future<void> getListOfLanguageAddDataToList() async {
     // _sendingMsgProgressBar?.show(context); // TODO Что-то не так с ним
     var dataLanguage = await getLanguages();
@@ -233,7 +240,7 @@ class _OrderDoneState extends State<OrderDone> {
           }
         }
         if (listLanguage.isNotEmpty) languageDefinition();
-          //dropdownValue = listLanguage.first;
+        //dropdownValue = listLanguage.first;
       });
     } else {
       setState(() {

@@ -6,7 +6,6 @@
   "have_account": "Есептік жазба бар ма?",
   "enter": "Кіру",
   "check_your_network_connection": "Желілік қосылымды тексеріңіз",
-
   "entrance": "Кіру",
   "enter_your_authorization_number": "Авторизациялау үшін нөміріңізді енгізіңіз",
   "dont_have_account_yet": "Әлі жоқ аккаунтты?",
@@ -16,45 +15,36 @@
   "no_sms_coming": "Қайта сұрау",
   "сontinue": "Жалғастыру",
   "send_again": "Тағы жіберу",
-
   "favourites": "Таңдаулылар",
   "you_dont_have_favorites": "Сізде таңдаулылар жоқ",
   "permission_to_use_geodata": "Қосымшаның дұрыс жұмыс істеуі үшін геодеректерді пайдалануға рұқсат қажет",
   "provide": "Берілсін",
   "reject": "Қабылдамау",
   "no_dots": "Нүктелер жоқ",
-
   "settings": "Баптаулар",
   "phone_number": "Телефон нөмірі",
   "language": "тілі",
   "logout": "Шығу",
-
   "route": "Жол",
-
   "your_position": "Сіздің ұстанымыңыз",
   "travel_time": "жол жүру уақыты",
-
   "metre": "м",
   "meters": "м",
   "metrov": "м",
   "kilometer": "км",
   "kilometers": "км",
   "kilometrov": "км",
-
   "minute": "мин",
   "minutes": "мин",
   "minuti": "мин",
   "hour": "сағат",
   "hour_s": "сағат",
   "hours": "сағат",
-
   "are_you_sure": "Сіз сенімдіміз?",
   "do_you_want_exit_app": "Сіз шыққыңыз келеді\nқосымшадан",
   "no": "Жоқ",
   "yes": "Иә",
-
   "types_of_raw_materials": "Шикізат түрлері: ",
-
   "pn": "дүйсенбі: ",
   "vt": "WT: ",
   "sr": "SR: ",

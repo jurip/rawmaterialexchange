@@ -11,6 +11,7 @@ class Settings {
     token = _token;
     return prefs.setString('token', token);
   }
+
   static Future<bool> setPhoneFromSharedPref(String phone) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString('phone', phone);
@@ -22,7 +23,8 @@ class Settings {
     token = prefs.getString('token') ?? '';
     return token;
   }
-  static Future<String> getPhoneFromSharedPref()  async {
+
+  static Future<String> getPhoneFromSharedPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     phone = prefs.getString('phone') ?? '';
     return phone;

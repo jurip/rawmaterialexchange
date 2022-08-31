@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app/screens/registration.dart';
+import 'package:flutter/material.dart';
 
 class LanguagePopupMenu extends StatefulWidget {
   LanguagePopupMenu({
@@ -28,7 +28,8 @@ class _LanguagePopupMenuState extends State<LanguagePopupMenu> {
         children: [
           Expanded(
             child: Container(
-              child: Image(image: widget.assetImage,
+              child: Image(
+                image: widget.assetImage,
                 height: 54,
                 width: 54,
               ),

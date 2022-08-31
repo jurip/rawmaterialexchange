@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:app/constants/style_constants.dart';
+import 'package:flutter/material.dart';
 
 class BlockWithMaterial extends StatelessWidget {
   const BlockWithMaterial({
@@ -27,11 +27,20 @@ class BlockWithMaterial extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.bottomRight,
-              child: Image(image: AssetImage(assetImage), fit: BoxFit.cover,),
+            child: Image(
+              image: AssetImage(assetImage),
+              fit: BoxFit.cover,
+            ),
           ),
           ListTile(
-            title: Text(text, style: kTextStyle7,),
-            subtitle: Text(price, style: kTextStyle11,),
+            title: Text(
+              text,
+              style: kTextStyle7,
+            ),
+            subtitle: Text(
+              price,
+              style: kTextStyle11,
+            ),
           ),
         ],
       ),
