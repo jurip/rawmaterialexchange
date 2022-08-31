@@ -1,8 +1,8 @@
 import 'package:app/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 
-class BlockWithAllMaterials extends StatelessWidget {
-  const BlockWithAllMaterials({
+class MaterialCardWidget extends StatelessWidget {
+  const MaterialCardWidget({
     Key? key,
     required this.text,
     required this.onTap,

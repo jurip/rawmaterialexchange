@@ -1,8 +1,8 @@
 import 'package:app/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 
-class ButtonAddGarbage extends StatelessWidget {
-  const ButtonAddGarbage({Key? key, required this.text, required this.onTap})
+class GarbageAddButton extends StatelessWidget {
+  const GarbageAddButton({Key? key, required this.text, required this.onTap})
       : super(key: key);
 
   final text;

@@ -2,8 +2,8 @@ import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 
-class IncomeConfirmationButton extends StatelessWidget {
-  const IncomeConfirmationButton(
+class GarbageOrderButton extends StatelessWidget {
+  const GarbageOrderButton(
       {Key? key, required this.text1, required this.text2, required this.onTap})
       : super(key: key);
 

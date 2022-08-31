@@ -2,7 +2,7 @@ import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/models/response_list_of_row_materials.dart';
 import 'package:app/api/models/response_user_data.dart';
 import 'package:app/api/requests/requests.dart';
-import 'package:app/components/order_done.dart';
+import 'package:app/components/garbage_order_result_widget.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/screens/registration.dart';
@@ -15,17 +15,18 @@ import 'package:latlong2/latlong.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../../main.dart';
-import '../utils/order_date_time_picker.dart';
+import '../utils/data_utils.dart';
+import '../utils/garbage_order_date_time_picker.dart';
 import '../utils/time_picker.dart';
 import 'confirmation_button.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-class Order extends StatefulWidget {
+class GarbageOrderWidget extends StatefulWidget {
   LatLng? position;
   String? address;
 
-  Order({
+  GarbageOrderWidget({
     Key? key,
     this.position,
     this.address,
@@ -34,10 +35,10 @@ class Order extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _OrderState createState() => _OrderState();
+  _GarbageOrderWidgetState createState() => _GarbageOrderWidgetState();
 }
 
-class _OrderState extends State<Order> {
+class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
   List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
 
   @override
@@ -54,60 +55,6 @@ class _OrderState extends State<Order> {
 
   ListLanguages? dropdownValue;
 
-  final double topPadding1 = 12.0;
-  final double topPadding2 = 16.0;
-  final double containerHeight1 = 4.0;
-  final double informationColumnHeight = 66.0;
-  final double sizedBoxHeight1 = 24.0;
-  final double sizedBoxHeight2 = 0.0;
-  final double sizedBoxHeight3 = 8.0;
-  final double sizedBoxHeight4 = 40.0;
-  final double confirmationButtonHeight = 46.0;
-  final double sizedBoxHeight5 = 40.0;
-
-  final double textHeight1 = 20.0;
-  final double textHeight2 = 12.0;
-  final double textHeight3 = 18.0;
-
-  final double containerHeight2 = 2.0;
-
-  double heightBottomSheetSettings = 0;
-
-  double definitionHeightBottomSheetSettings() {
-    if (topPadding1 +
-            topPadding2 +
-            containerHeight1 +
-            (informationColumnHeight * 4) +
-            sizedBoxHeight1 +
-            sizedBoxHeight2 +
-            sizedBoxHeight3 +
-            sizedBoxHeight4 +
-            confirmationButtonHeight +
-            sizedBoxHeight5 +
-            textHeight1 +
-            textHeight2 +
-            textHeight3 +
-            containerHeight2 >=
-        MediaQuery.of(context).size.height) {
-      heightBottomSheetSettings = MediaQuery.of(context).size.height;
-    } else {
-      heightBottomSheetSettings = topPadding1 +
-          topPadding2 +
-          containerHeight1 +
-          (informationColumnHeight * 4) +
-          sizedBoxHeight1 +
-          sizedBoxHeight2 +
-          sizedBoxHeight3 +
-          sizedBoxHeight4 +
-          confirmationButtonHeight +
-          sizedBoxHeight5 +
-          textHeight1 +
-          textHeight2 +
-          textHeight3 +
-          containerHeight2;
-    }
-    return heightBottomSheetSettings;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +94,7 @@ class _OrderState extends State<Order> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: topPadding1),
+                      padding: EdgeInsets.only(top: 1),
                       child: Center(
                         child: Container(
                           decoration: BoxDecoration(
@@ -187,7 +134,7 @@ class _OrderState extends State<Order> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: topPadding2),
+                      padding: EdgeInsets.only(top: 1),
                       child: Center(
                           child: Text('order'.tr(), style: kAlertTextStyle)),
                     ),
@@ -208,7 +155,7 @@ class _OrderState extends State<Order> {
                             ),
                             //66 * 4
 
-                            SizedBox(height: sizedBoxHeight5),
+                            SizedBox(height: 1),
                           ],
                         ),
                       ),
@@ -228,23 +175,12 @@ class _OrderState extends State<Order> {
         userData = data;
       });
     });
-    definitionLanguage();
+    language = definitionLanguage(userData!.languageId);
     definitionBirthDate();
   }
 
   String language = '';
 
-  void definitionLanguage() {
-    if (userData!.languageId == 1) {
-      language = 'Русский';
-    } else if (userData!.languageId == 2) {
-      language = 'Узбекский';
-    } else if (userData!.languageId == 3) {
-      language = 'Таджитский';
-    } else if (userData!.languageId == 4) {
-      language = 'Киргизский';
-    }
-  }
 
   String birthDateUser = '';
 
@@ -424,7 +360,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             ],
             onTap: () {
               FocusScope.of(context).requestFocus(new FocusNode());
-              OrderDateTimePicker.showSheetDate(context,
+              GarbageOrderDateTimePicker.showSheetDate(context,
                   dateTime: DateTime.now(), onClicked: (date) {
                 setState(() {
                   DateTime newDate = DateFormat('yyyy-MM-dd').parse(date);
@@ -504,7 +440,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
                       barrierColor: Colors.white.withOpacity(0),
                       context: context,
                       builder: (BuildContext context) {
-                        return OrderDone();
+                        return GarbageOrderResultWidget();
                       },
                     )
                     .whenComplete(() {});

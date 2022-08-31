@@ -1,7 +1,7 @@
 import 'package:app/api/models/response_get_favorites.dart';
 import 'package:app/api/requests/requests.dart';
-import 'package:app/components/garbage_amount_change_button.dart';
-import 'package:app/components/garbage_order.dart';
+import 'package:app/components/garbage_change_amount_button.dart';
+import 'package:app/components/garbage_order_widget.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
@@ -11,27 +11,27 @@ import 'package:latlong2/latlong.dart';
 
 import '../api/models/response_list_of_row_materials.dart';
 import '../constants/image_constants.dart';
-import 'button_add_garbage.dart';
+import 'garbage_add_button.dart';
 import 'garage_order_button.dart';
-import 'info.dart';
+import 'garbage_info_widget.dart';
 
-class GarbageBottomSheet extends StatefulWidget {
+class GarbageWidget extends StatefulWidget {
   final List<ListOfRawMaterials> materials;
   final LatLng? position;
   String address = "";
   double income = 0;
 
-  GarbageBottomSheet({
+  GarbageWidget({
     Key? key,
     required this.materials,
     required this.position,
   }) : super(key: key);
 
   @override
-  _GarbageBottomSheetState createState() => _GarbageBottomSheetState();
+  _GarbageWidgetState createState() => _GarbageWidgetState();
 }
 
-class _GarbageBottomSheetState extends State<GarbageBottomSheet> {
+class _GarbageWidgetState extends State<GarbageWidget> {
   Future<void> getAddressCoordinatesAddToVar() async {
     getAddressCoordinates(
       context,
@@ -148,7 +148,7 @@ class _GarbageBottomSheetState extends State<GarbageBottomSheet> {
                                       barrierColor: Colors.white.withOpacity(0),
                                       context: context,
                                       builder: (BuildContext context) {
-                                        return Info();
+                                        return GarbageInfoWidget();
                                       },
                                     )
                                     .whenComplete(() {});
@@ -243,7 +243,7 @@ class _GarbageBottomSheetState extends State<GarbageBottomSheet> {
                                     SizedBox(height: 10.0),
                                     Text("you_give".tr()),
                                     SizedBox(height: 10.0),
-                                    ChangeAmountButton(
+                                    GarbageChangeAmountButton(
                                       text: widget
                                               .materials[index].changedAmount
                                               .toString() +
@@ -289,7 +289,7 @@ class _GarbageBottomSheetState extends State<GarbageBottomSheet> {
                                     SizedBox(height: 5.0),
                                     if (widget.materials[index].amount ==
                                         0) ...[
-                                      ButtonAddGarbage(
+                                      GarbageAddButton(
                                         text: "Add".tr(),
                                         onTap: () {
                                           setState(() {
@@ -316,7 +316,7 @@ class _GarbageBottomSheetState extends State<GarbageBottomSheet> {
                                         },
                                       )
                                     ] else ...[
-                                      ButtonAddGarbage(
+                                      GarbageAddButton(
                                         text: "Delete".tr(),
                                         onTap: () {
                                           setState(() {
@@ -354,7 +354,7 @@ class _GarbageBottomSheetState extends State<GarbageBottomSheet> {
                 Padding(
                   padding:
                       const EdgeInsets.only(top: 23.0, left: 16.0, right: 16.0),
-                  child: IncomeConfirmationButton(
+                  child: GarbageOrderButton(
                     //46
                     text1: 'your_income'.tr(),
                     text2: widget.income.toString() + ' ' + "kg".tr(),
@@ -367,7 +367,7 @@ class _GarbageBottomSheetState extends State<GarbageBottomSheet> {
                             barrierColor: Colors.white.withOpacity(0),
                             context: context,
                             builder: (BuildContext context) {
-                              return Order(
+                              return GarbageOrderWidget(
                                   position: widget.position,
                                   income: widget.income,
                                   materials: widget.materials,

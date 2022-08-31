@@ -9,19 +9,20 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../main.dart';
+import 'confirmation_button.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-class Info extends StatefulWidget {
-  const Info({
+class GarbageOrderResultWidget extends StatefulWidget {
+  const GarbageOrderResultWidget({
     Key? key,
   }) : super(key: key);
 
   @override
-  _InfoState createState() => _InfoState();
+  _GarbageOrderResultWidgetState createState() => _GarbageOrderResultWidgetState();
 }
 
-class _InfoState extends State<Info> {
+class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
   List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
 
   @override
@@ -145,7 +146,9 @@ class _InfoState extends State<Info> {
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: topPadding2),
-                      child: Text('how_it_works'.tr(), style: kAlertTextStyle),
+                      child: Center(
+                          child:
+                              Text('order_done'.tr(), style: kAlertTextStyle)),
                     ),
                     Container(
                       constraints: BoxConstraints(
@@ -159,7 +162,23 @@ class _InfoState extends State<Info> {
                           children: [
                             //66 * 4
                             SizedBox(height: sizedBoxHeight1),
-                            Text('how_it_works_text'.tr())
+                            Text("orded_done_text".tr()),
+                            SizedBox(height: sizedBoxHeight3),
+                            Container(
+                              width: double.infinity,
+                              height: containerHeight2,
+                              color: kColorGrey1,
+                            ),
+                            SizedBox(height: sizedBoxHeight4),
+                            ConfirmationButton(
+                              //46
+                              text: 'to_main'.tr(),
+                              onTap: () async {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            SizedBox(height: sizedBoxHeight5),
+                            SizedBox(height: 300),
                           ],
                         ),
                       ),

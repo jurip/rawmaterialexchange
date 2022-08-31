@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 typedef StringToVoidFunc = void Function(String);
 
-class OrderDateTimePicker {
+class GarbageOrderDateTimePicker {
   static void showSheetDate(
     BuildContext context, {
     required DateTime dateTime,

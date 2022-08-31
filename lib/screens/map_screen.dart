@@ -6,10 +6,10 @@ import 'package:app/api/models/response_list_of_row_materials.dart';
 import 'package:app/api/models/response_list_of_services.dart';
 import 'package:app/api/models/response_objects_from_filter.dart';
 import 'package:app/api/requests/requests.dart';
-import 'package:app/components/block_with_all_materials.dart';
-import 'package:app/components/bottom_sheet_of_selected_marker.dart';
-import 'package:app/components/bottom_sheet_route.dart';
-import 'package:app/components/bottom_sheet_setting_components/bottom_sheet_setting.dart';
+import 'package:app/components/material_card_widget.dart';
+import 'package:app/components/location_widget.dart';
+import 'package:app/components/route_widget.dart';
+import 'package:app/components/bottom_sheet_setting_components/settings_widget.dart';
 import 'package:app/components/custom_app_bar.dart';
 import 'package:app/components/exit_alert.dart';
 import 'package:app/components/favourites_bottom_sheet.dart';
@@ -25,8 +25,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import '../components/block_with_all_services.dart';
-import '../components/garbage.dart';
+import '../components/service_card_widget.dart';
+import '../components/garbage_widget.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -116,7 +116,7 @@ class _MapScreenState extends State<MapScreen> {
                     barrierColor: Colors.white.withOpacity(0),
                     context: context,
                     builder: (BuildContext context) {
-                      return BottomSheetSetting();
+                      return SettingsWidget();
                     },
                   )
                       .whenComplete(() {
@@ -238,7 +238,7 @@ class _MapScreenState extends State<MapScreen> {
                                   itemCount: listOfServices.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    return BlockWithAllServices(
+                                    return ServiceCardWidget(
                                       colorShadow: listOfServices[index]
                                                   .selectedRawMaterials ==
                                               true
@@ -251,7 +251,7 @@ class _MapScreenState extends State<MapScreen> {
                                       onTap: () {
                                         scaffoldKey.currentState!
                                             .showBottomSheet(
-                                          (context) => GarbageBottomSheet(
+                                          (context) => GarbageWidget(
                                               materials: listOfRawMaterials,
                                               position: _position),
                                           backgroundColor: Colors.transparent,
@@ -292,7 +292,7 @@ class _MapScreenState extends State<MapScreen> {
                                   itemCount: listOfRawMaterials.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    return BlockWithAllMaterials(
+                                    return MaterialCardWidget(
                                       colorShadow: listOfRawMaterials[index]
                                                   .selectedRawMaterials ==
                                               true
@@ -745,7 +745,7 @@ class _MapScreenState extends State<MapScreen> {
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      BottomSheetOfSelectedMarker(
+                      LocationWidget(
                         listOfRawMaterialsOfSpecificObject:
                             listOfRawMaterialsOfSpecificObject,
                         selectedIndexMarker: selectedIndexMarker,
@@ -783,7 +783,7 @@ class _MapScreenState extends State<MapScreen> {
                           Navigator.pop(context);
                           controllerBottomSheetRout = scaffoldKey.currentState!
                               .showBottomSheet<Null>((BuildContext context) {
-                            return BottomSheetRoute(
+                            return RouteWidget(
                               address: address,
                               durationsWalkingToString:
                                   durationsWalkingToString,

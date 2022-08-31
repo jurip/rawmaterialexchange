@@ -5,26 +5,23 @@ import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/screens/registration.dart';
 import 'package:app/utils/progress_bar.dart';
-import 'package:app/utils/shared_preferences.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../main.dart';
-import '../confirmation_button.dart';
-import 'information_column.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-class BottomSheetSetting extends StatefulWidget {
-  const BottomSheetSetting({
+class GarbageInfoWidget extends StatefulWidget {
+  const GarbageInfoWidget({
     Key? key,
   }) : super(key: key);
 
   @override
-  _BottomSheetSettingState createState() => _BottomSheetSettingState();
+  _GarbageInfoWidgetState createState() => _GarbageInfoWidgetState();
 }
 
-class _BottomSheetSettingState extends State<BottomSheetSetting> {
+class _GarbageInfoWidgetState extends State<GarbageInfoWidget> {
   List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
 
   @override
@@ -148,110 +145,21 @@ class _BottomSheetSettingState extends State<BottomSheetSetting> {
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: topPadding2),
-                      child: Center(
-                          child: Text('settings'.tr(), style: kAlertTextStyle)),
+                      child: Text('how_it_works'.tr(), style: kAlertTextStyle),
                     ),
                     Container(
                       constraints: BoxConstraints(
-                        minHeight: 0,
-                        maxWidth: double.infinity,
-                        maxHeight: definitionHeightBottomSheetSettings(),
-                      ),
+                          minHeight: 0,
+                          maxWidth: double.infinity,
+                          maxHeight: double
+                              .infinity //definitionHeightBottomSheetSettings(),
+                          ),
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
                             //66 * 4
-                            InformationColumn(
-                              text1: 'name'.tr(),
-                              text2: userData!.name,
-                            ),
-                            InformationColumn(
-                              text1: 'surname'.tr(),
-                              text2: userData!.surname,
-                            ),
-                            InformationColumn(
-                              text1: 'phone_number'.tr(),
-                              text2: userData!.phone,
-                            ),
-                            InformationColumn(
-                              text1: 'date_birthday'.tr(),
-                              text2: birthDateUser,
-                            ),
                             SizedBox(height: sizedBoxHeight1),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text('language'.tr(),
-                                  style: kAlertTextStyle4),
-                            ),
-                            SizedBox(height: sizedBoxHeight2),
-                            Row(
-                              children: [
-                                DropdownButton<ListLanguages>(
-                                  value: dropdownValue,
-                                  icon: const Icon(Icons.keyboard_arrow_right),
-                                  //TODO!!!!!!!!!!!!!!!!
-                                  style: kTextStyle2,
-                                  underline: Container(
-                                    height: 0,
-                                    color: Colors.transparent,
-                                  ),
-                                  onChanged: (ListLanguages? newValue) {
-                                    setState(() {
-                                      dropdownValue = newValue!;
-                                      setState(() {
-                                        if (dropdownValue!.id == 1) {
-                                          selectedLanguageId = 1;
-                                          context.setLocale(Locale('ru'));
-                                        } else if (dropdownValue!.id == 2) {
-                                          selectedLanguageId = 2;
-                                          context.setLocale(Locale('uz'));
-                                        } else if (dropdownValue!.id == 3) {
-                                          selectedLanguageId = 3;
-                                          context.setLocale(Locale('kk'));
-                                        }
-                                        mainLocale = context.locale;
-                                        // } else if (value.image == 'images/Ellipse td.png') {
-                                        //   selectedLanguageId = 4;
-                                        //   //context.setLocale(Locale('tjk'));
-                                        //   //EasyLocalization.of(context)!.locale = Locale('ar', 'SA');
-                                        // }
-                                      });
-                                    });
-                                  },
-                                  items: listLanguage
-                                      .map<DropdownMenuItem<ListLanguages>>(
-                                          (ListLanguages value) {
-                                    return DropdownMenuItem<ListLanguages>(
-                                      value: value,
-                                      child: Text(value.name), //value.name
-                                    );
-                                  }).toList(),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: sizedBoxHeight3),
-                            Container(
-                              width: double.infinity,
-                              height: containerHeight2,
-                              color: kColorGrey1,
-                            ),
-                            SizedBox(height: sizedBoxHeight4),
-                            ConfirmationButton(
-                              //46
-                              text: 'logout'.tr(),
-                              onTap: () {
-                                _sendingMsgProgressBar?.show(context);
-                                Settings.setTokenFromSharedPref('');
-                                logout(context).then((value) {
-                                  _sendingMsgProgressBar?.hide();
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
-                                    content: Text(value!.message.toString()),
-                                  ));
-                                });
-                              },
-                            ),
-                            SizedBox(height: sizedBoxHeight5),
+                            Text('how_it_works_text'.tr())
                           ],
                         ),
                       ),

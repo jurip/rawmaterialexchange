@@ -1,8 +1,8 @@
 import 'package:app/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 
-class BlockWithMaterial extends StatelessWidget {
-  const BlockWithMaterial({
+class LocationMaterialWidget extends StatelessWidget {
+  const LocationMaterialWidget({
     Key? key,
     required this.text,
     required this.price,

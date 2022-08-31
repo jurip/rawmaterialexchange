@@ -1,8 +1,8 @@
 import 'package:app/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 
-class BlockWithAllServices extends StatelessWidget {
-  const BlockWithAllServices({
+class ServiceCardWidget extends StatelessWidget {
+  const ServiceCardWidget({
     Key? key,
     required this.text,
     required this.onTap,

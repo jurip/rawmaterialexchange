@@ -1,4 +1,3 @@
-//import 'package:geolocator/geolocator.dart';
 import 'package:app/api/models/response_list_object_working_hours.dart';
 import 'package:app/api/models/response_list_of_contact_phone.dart';
 import 'package:app/api/models/response_list_of_coordinates_driving.dart' as Driving;
@@ -15,10 +14,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'block_with_material.dart';
+import '../constants/image_constants.dart';
+import 'location_material_widget.dart';
 
-class BottomSheetOfSelectedMarker extends StatefulWidget {
-  BottomSheetOfSelectedMarker({
+class LocationWidget extends StatefulWidget {
+  LocationWidget({
     required this.listOfRawMaterialsOfSpecificObject,
     required this.selectedIndexMarker,
     required this.position,
@@ -54,12 +54,12 @@ class BottomSheetOfSelectedMarker extends StatefulWidget {
   final Function(double, double) latLngSelectedObject;
 
   @override
-  _BottomSheetOfSelectedMarkerState createState() =>
-      _BottomSheetOfSelectedMarkerState();
+  _LocationWidgetState createState() =>
+      _LocationWidgetState();
 }
 
-class _BottomSheetOfSelectedMarkerState
-    extends State<BottomSheetOfSelectedMarker> {
+class _LocationWidgetState
+    extends State<LocationWidget> {
   bool isFavorite = false;
 
   ProgressBar? _sendingMsgProgressBar;
@@ -334,7 +334,7 @@ class _BottomSheetOfSelectedMarkerState
                                       .length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    return BlockWithMaterial(
+                                    return LocationMaterialWidget(
                                       assetImage: imageDefinitionInFilter(widget
                                           .listOfRawMaterialsOfSpecificObject[
                                               index]
@@ -610,35 +610,5 @@ class _BottomSheetOfSelectedMarkerState
 
   String assetImage = '';
 
-  String imageDefinitionInFilter(int id) {
-    switch (id) {
-      case 1:
-        assetImage = 'images/paperboard1.png';
-        break;
-      case 2:
-        assetImage = 'images/tape1.png';
-        break;
-      case 3:
-        assetImage = 'images/plastic1.png';
-        break;
-      case 4:
-        assetImage = 'images/glass1.png';
-        break;
-      case 5:
-        assetImage = 'images/metall1.png';
-        break;
-      case 6:
-        assetImage = 'images/alyuminiy.png';
-        break;
-      case 7:
-        assetImage = 'images/lead.png';
-        break;
-      case 8:
-        assetImage = 'images/copper.png';
-        break;
-      default:
-        assetImage = 'images/Frame 54.png';
-    }
-    return assetImage;
-  }
+
 }

@@ -2,8 +2,8 @@ import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 
-class ChangeAmountButton extends StatelessWidget {
-  const ChangeAmountButton(
+class GarbageChangeAmountButton extends StatelessWidget {
+  const GarbageChangeAmountButton(
       {Key? key,
       required this.text,
       required this.onMinusTap,

@@ -4,8 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
-class BottomSheetRoute extends StatefulWidget {
-  BottomSheetRoute({
+class RouteWidget extends StatefulWidget {
+  RouteWidget({
     Key? key,
     required this.address,
     required this.durationsWalkingToString,
@@ -29,11 +29,11 @@ class BottomSheetRoute extends StatefulWidget {
   final Function() returnMarkers;
 
   @override
-  _BottomSheetRouteState createState() => _BottomSheetRouteState();
+  _RouteWidgetState createState() => _RouteWidgetState();
 }
 
-class _BottomSheetRouteState extends State<BottomSheetRoute> {
-  _BottomSheetRouteState();
+class _RouteWidgetState extends State<RouteWidget> {
+  _RouteWidgetState();
 
   int selectedIndex = 0;
 
