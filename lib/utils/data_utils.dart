@@ -1,11 +1,11 @@
-String definitionLanguage(int id) {
-  String language = 'Русский';
+String definitionLanguage(int? id) {
+  String language = 'ru';
   if (id == 2) {
-    language = 'Узбекский';
+    language = 'uz';
   } else if (id == 3) {
-    language = 'Таджитский';
+    language = 'tj';
   } else if (id == 4) {
-    language = 'Киргизский';
+    language = 'kg';
   }
   return language;
 }

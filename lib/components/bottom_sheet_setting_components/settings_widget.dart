@@ -5,7 +5,7 @@ import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/screens/registration.dart';
 import 'package:app/utils/progress_bar.dart';
-import 'package:app/utils/shared_preferences.dart';
+import 'package:app/utils/user_session.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -241,7 +241,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                               text: 'logout'.tr(),
                               onTap: () {
                                 _sendingMsgProgressBar?.show(context);
-                                Settings.setTokenFromSharedPref('');
+                                UserSession.setTokenFromSharedPref('');
                                 logout(context).then((value) {
                                   _sendingMsgProgressBar?.hide();
                                   ScaffoldMessenger.of(context)

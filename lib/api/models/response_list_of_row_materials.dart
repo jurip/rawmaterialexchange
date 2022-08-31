@@ -9,7 +9,7 @@ class ListOfRawMaterials {
   ListOfRawMaterials({
     required this.id,
     required this.name,
-    this.selectedRawMaterials = false,
+    this.selected = false,
     this.amount = 0,
     this.changedAmount = 300,
     this.price = 2,
@@ -19,7 +19,7 @@ class ListOfRawMaterials {
 
   int id;
   String name;
-  bool selectedRawMaterials;
+  bool selected;
   int amount;
   int changedAmount;
   int price;
@@ -30,8 +30,4 @@ class ListOfRawMaterials {
         id: json["id"],
         name: json["name"],
       );
-// Map<String, dynamic> toJson() => {
-//   "id": id,
-//   "name": name,
-// };
 }

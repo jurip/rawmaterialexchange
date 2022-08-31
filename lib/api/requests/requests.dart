@@ -18,7 +18,7 @@ import 'package:app/api/models/response_verification.dart';
 import 'package:app/api/models/server_response_when_requesting_registration.dart';
 import 'package:app/main.dart';
 import 'package:app/screens/authorisation.dart';
-import 'package:app/utils/shared_preferences.dart';
+import 'package:app/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -136,7 +136,7 @@ Future<UserData?> getUserData(BuildContext context) async {
   String url = 'https://recyclemap.tmweb.ru/api/v1/user';
 
   var headers = new Map<String, String>();
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
   } else {
@@ -171,7 +171,7 @@ Future<List<ListOfRawMaterials>?> getListOfRawMaterials() async {
 
   var headers = new Map<String, String>();
   // if (Settings.token != null)
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   // if (Settings.token != null)
   headers['accept'] = "application/json";
   //headers['Authorization'] = "Bearer " + Settings.token.toString();
@@ -204,7 +204,7 @@ Future<List<ListOfRawMaterialsOfSpecificObject>?>
   String url = 'https://recyclemap.tmweb.ru/api/v1/items/$id/raws';
 
   var headers = new Map<String, String>();
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   // if (Settings.token != null)
   headers['accept'] = "application/json";
   //headers['Authorization'] = "Bearer " + Settings.token.toString();
@@ -243,7 +243,7 @@ Future<List<ListOfObjects>?> getListOfObjects(BuildContext context) async {
   var headers = new Map<String, String>();
   // if (Settings.token != null)
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   //headers['Authorization'] = "Bearer " + Settings.token.toString();
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
@@ -278,7 +278,7 @@ Future<ListObjectData?> getObjectData(int id) async {
   var headers = new Map<String, String>();
   // if (Settings.token != null)
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   //headers['Authorization'] = "Bearer " + Settings.token.toString();
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
@@ -311,7 +311,7 @@ Future<List<ListOfContactPhone>?> getListOfContactPhone(int id) async {
   var headers = new Map<String, String>();
   // if (Settings.token != null)
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   //headers['Authorization'] = "Bearer " + Settings.token.toString();
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
@@ -343,7 +343,7 @@ Future<List<ListObjectWorkingHours>?> getListObjectWorkingHours(int id) async {
   var headers = new Map<String, String>();
   // if (Settings.token != null)
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   //headers['Authorization'] = "Bearer " + Settings.token.toString();
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
@@ -385,7 +385,7 @@ Future<List<ListOfObjectsFromFilter>?> getListOfObjectsInFilter(
   var headers = new Map<String, String>();
   // if (Settings.token != null)
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   //headers['Authorization'] = "Bearer " + Settings.token.toString();
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
@@ -430,7 +430,7 @@ Future<Driving.Route?> getCoordinatesDriving(
   var headers = new Map<String, String>();
   // if (Settings.token != null)
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   //headers['Authorization'] = "Bearer " + Settings.token.toString();
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
@@ -468,7 +468,7 @@ Future<String?> getAddressCoordinates(
   var headers = new Map<String, String>();
   // if (Settings.token != null)
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   //headers['Authorization'] = "Bearer " + Settings.token.toString();
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
@@ -512,7 +512,7 @@ Future<Walking.RouteWalking?> getCoordinatesWalking(
   var headers = new Map<String, String>();
   // if (Settings.token != null)
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   // headers['Authorization'] = "Bearer " + Settings.token.toString();
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
@@ -547,7 +547,7 @@ Future<List<GetFavorites>?> getFavorites(BuildContext context) async {
 
   var headers = new Map<String, String>();
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
   } else {
@@ -580,7 +580,7 @@ Future<bool> addFavorite(BuildContext context, int itemId) async {
 
   var headers = new Map<String, String>();
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
   } else {
@@ -615,7 +615,7 @@ Future<bool> deleteFavorite(BuildContext context, int itemId) async {
 
   var headers = new Map<String, String>();
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
   } else {
@@ -650,7 +650,7 @@ Future<Logout?> logout(BuildContext context) async {
 
   var headers = new Map<String, String>();
   headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + Settings.token;
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
   } else {

@@ -294,7 +294,7 @@ class _MapScreenState extends State<MapScreen> {
                                       (BuildContext context, int index) {
                                     return MaterialCardWidget(
                                       colorShadow: listOfRawMaterials[index]
-                                                  .selectedRawMaterials ==
+                                                  .selected ==
                                               true
                                           ? kColorShadowInFilter
                                           : Colors.transparent,
@@ -305,11 +305,11 @@ class _MapScreenState extends State<MapScreen> {
                                       onTap: () {
                                         setState(() {
                                           listOfRawMaterials[index]
-                                                  .selectedRawMaterials =
+                                                  .selected =
                                               !listOfRawMaterials[index]
-                                                  .selectedRawMaterials;
+                                                  .selected;
                                           if (listOfRawMaterials[index]
-                                                  .selectedRawMaterials ==
+                                                  .selected ==
                                               false) {
                                             removeFilter(
                                                 listOfRawMaterials[index].id);

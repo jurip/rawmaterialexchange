@@ -1,6 +1,7 @@
+import 'package:app/utils/data_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Settings {
+class UserSession {
   static String token = "";
 
   static String phone = "";
@@ -16,6 +17,10 @@ class Settings {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString('phone', phone);
   }
+  static Future<bool> setLanguageFromSharedPref(int? lang) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setString('language', definitionLanguage(lang));
+  }
 
 //считывание токена
   static Future<String> getTokenFromSharedPref() async {
@@ -24,9 +29,15 @@ class Settings {
     return token;
   }
 
-  static Future<String> getPhoneFromSharedPref() async {
+  static Future<String> getUserPhone() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     phone = prefs.getString('phone') ?? '';
+    return phone;
+  }
+  static Future<String> getUserLanguage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    phone = prefs.getString('language') ?? '';
+
     return phone;
   }
 }

@@ -18,8 +18,6 @@ import 'garbage_info_widget.dart';
 class GarbageWidget extends StatefulWidget {
   final List<ListOfRawMaterials> materials;
   final LatLng? position;
-  String address = "";
-  double income = 0;
 
   GarbageWidget({
     Key? key,
@@ -32,20 +30,22 @@ class GarbageWidget extends StatefulWidget {
 }
 
 class _GarbageWidgetState extends State<GarbageWidget> {
-  Future<void> getAddressCoordinatesAddToVar() async {
+  String address = "";
+  double income = 0;
+  Future<void> setAddress() async {
     getAddressCoordinates(
       context,
       widget.position!.longitude,
       widget.position!.latitude,
     ).then((value) {
-      if (value != null) widget.address = value;
+      if (value != null) address = value;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    getAddressCoordinatesAddToVar();
+    setAddress();
   }
 
   @override
@@ -171,14 +171,14 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
-                              widget.materials[index].selectedRawMaterials =
-                                  !widget.materials[index].selectedRawMaterials;
+                              widget.materials[index].selected =
+                                  !widget.materials[index].selected;
                               if (widget
-                                      .materials[index].selectedRawMaterials ==
+                                      .materials[index].selected ==
                                   false) {
                                 removeFilter(widget.materials[index].id);
                               } else {
-                                getSelectedMaterialsIdAddToList(
+                                selectedMaterials.add(
                                     widget.materials[index].id);
                               }
                             });
@@ -226,7 +226,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                   ),
                                   SizedBox(height: 5.0),
                                   if (widget.materials[index]
-                                      .selectedRawMaterials) ...[
+                                      .selected) ...[
                                     Image(
                                         image: AssetImage(
                                             imageDefinitionInFilter(
@@ -265,7 +265,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                             widget.materials[index].amount =
                                                 widget.materials[index]
                                                     .changedAmount;
-                                            widget.income = getIncome();
+                                            income = getIncome();
                                           }
                                         })
                                       },
@@ -281,7 +281,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                             widget.materials[index].amount =
                                                 widget.materials[index]
                                                     .changedAmount;
-                                            widget.income = getIncome();
+                                            income = getIncome();
                                           }
                                         })
                                       },
@@ -294,16 +294,16 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                         onTap: () {
                                           setState(() {
                                             widget.materials[index]
-                                                    .selectedRawMaterials =
+                                                    .selected =
                                                 !widget.materials[index]
-                                                    .selectedRawMaterials;
+                                                    .selected;
                                             if (widget.materials[index]
-                                                    .selectedRawMaterials ==
+                                                    .selected ==
                                                 false) {
                                               removeFilter(
                                                   widget.materials[index].id);
                                             } else {
-                                              getSelectedMaterialsIdAddToList(
+                                              selectedMaterials.add(
                                                   widget.materials[index].id);
                                             }
 
@@ -311,7 +311,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                                 widget.materials[index]
                                                     .changedAmount;
 
-                                            widget.income = getIncome();
+                                            income = getIncome();
                                           });
                                         },
                                       )
@@ -321,22 +321,22 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                         onTap: () {
                                           setState(() {
                                             widget.materials[index]
-                                                    .selectedRawMaterials =
+                                                    .selected =
                                                 !widget.materials[index]
-                                                    .selectedRawMaterials;
+                                                    .selected;
                                             if (widget.materials[index]
-                                                    .selectedRawMaterials ==
+                                                    .selected ==
                                                 false) {
                                               removeFilter(
                                                   widget.materials[index].id);
                                             } else {
-                                              getSelectedMaterialsIdAddToList(
+                                              selectedMaterials.add(
                                                   widget.materials[index].id);
                                             }
 
                                             widget.materials[index].amount = 0;
 
-                                            widget.income = getIncome();
+                                            income = getIncome();
                                           });
                                         },
                                       )
@@ -357,7 +357,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                   child: GarbageOrderButton(
                     //46
                     text1: 'your_income'.tr(),
-                    text2: widget.income.toString() + ' ' + "kg".tr(),
+                    text2: income.toString() + ' ' + "kg".tr(),
                     onTap: () async {
                       Navigator.pop(context);
                       cbs
@@ -368,10 +368,10 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                             context: context,
                             builder: (BuildContext context) {
                               return GarbageOrderWidget(
-                                  position: widget.position,
-                                  income: widget.income,
+                                  income: income,
                                   materials: widget.materials,
-                                  address: widget.address);
+                                  address: address,
+                                  );
                             },
                           )
                           .whenComplete(() {});
@@ -391,28 +391,10 @@ class _GarbageWidgetState extends State<GarbageWidget> {
     return sum;
   }
 
-  String getMaterials(List<Raw> raws) {
-    String result = "";
-    if (raws.isNotEmpty) {
-      for (var item in raws) {
-        if (item.id != raws.last.id) {
-          result += item.name + ", ";
-        } else {
-          result += item.name;
-        }
-      }
-    }
-    return result;
-  }
-
-  List<int> selectedMaterialsId = [];
+  List<int> selectedMaterials = [];
 
   //удаление фильтра
   void removeFilter(int id) {
-    selectedMaterialsId.remove(id);
-  }
-
-  void getSelectedMaterialsIdAddToList(int id) {
-    selectedMaterialsId.add(id);
+    selectedMaterials.remove(id);
   }
 }

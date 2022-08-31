@@ -1,6 +1,6 @@
 import 'package:app/screens/map_screen.dart';
 import 'package:app/screens/registration.dart';
-import 'package:app/utils/shared_preferences.dart';
+import 'package:app/utils/user_session.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -62,7 +62,7 @@ class _MyAppState extends State<MyApp> {
   static String token = '';
 
   void getToken() {
-    Settings.getTokenFromSharedPref().then((value) {
+    UserSession.getTokenFromSharedPref().then((value) {
       setState(() {
         token = value;
       });

@@ -18,20 +18,21 @@ import '../../main.dart';
 import '../utils/data_utils.dart';
 import '../utils/garbage_order_date_time_picker.dart';
 import '../utils/time_picker.dart';
+import '../utils/user_session.dart';
 import 'confirmation_button.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class GarbageOrderWidget extends StatefulWidget {
-  LatLng? position;
-  String? address;
+  final String address;
+  final List<ListOfRawMaterials> materials;
+  final double income;
 
   GarbageOrderWidget({
     Key? key,
-    this.position,
-    this.address,
-    required double income,
-    required List<ListOfRawMaterials> materials,
+    required this.income,
+    required this.materials,
+    required this.address,
   }) : super(key: key);
 
   @override
@@ -40,25 +41,34 @@ class GarbageOrderWidget extends StatefulWidget {
 
 class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
   List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
+  ProgressBar? _sendingMsgProgressBar;
+  ListLanguages? dropdownValue;
+  String? phone;
+  String language = '';
+
+  void getUserData() {
+    UserSession.getUserPhone().then((value) {
+      setState(() {
+        phone = value;
+      });
+    });
+    UserSession.getUserLanguage().then((value) {
+      setState(() {
+        language = value;
+      });
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    getToken();
+    getUserData();
     _sendingMsgProgressBar = ProgressBar();
-    getListOfLanguageAddDataToList();
   }
-
-  int selectedLanguageId = 1;
-
-  ProgressBar? _sendingMsgProgressBar;
-
-  ListLanguages? dropdownValue;
-
 
   @override
   Widget build(BuildContext context) {
-    return userData == null || listLanguage.isEmpty
+    return phone == null || listLanguage.isEmpty
         ? Scaffold(
             key: _scaffoldKey,
             backgroundColor: Colors.transparent,
@@ -149,8 +159,7 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
                         child: Column(
                           children: [
                             GarbageOrderForm(
-                              userData: userData,
-                              position: widget.position,
+                              phone: phone,
                               address: widget.address,
                             ),
                             //66 * 4
@@ -167,76 +176,21 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
           );
   }
 
-  UserData? userData;
-
-  void getToken() async {
-    await getUserData(context).then((data) {
-      setState(() {
-        userData = data;
-      });
-    });
-    language = definitionLanguage(userData!.languageId);
-    definitionBirthDate();
-  }
-
-  String language = '';
-
-
-  String birthDateUser = '';
-
-  void definitionBirthDate() {
-    String birthDate = userData!.birthDate.toString();
-    birthDateUser = birthDate.substring(0, birthDate.indexOf(' '));
-  }
-
   String error = '';
 
   //получение списка языков
   List<ListLanguages> listLanguage = [];
 
-  Future<void> getListOfLanguageAddDataToList() async {
-    // _sendingMsgProgressBar?.show(context); // TODO Что-то не так с ним
-    var dataLanguage = await getLanguages();
-    if (dataLanguage != null) {
-      setState(() {
-        listLanguage = dataLanguage;
-        for (int index = 0; index < listLanguage.length; index++) {
-          if (listLanguage[index].id == 4) {
-            listLanguage.removeAt(index);
-          }
-        }
-        if (listLanguage.isNotEmpty) languageDefinition();
-        //dropdownValue = listLanguage.first;
-      });
-    } else {
-      setState(() {
-        error = 'Error';
-      });
-    }
-    _sendingMsgProgressBar?.hide();
-  }
-
-  void languageDefinition() {
-    if (mainLocale!.languageCode == 'ru') {
-      dropdownValue = listLanguage[0];
-    } else if (mainLocale!.languageCode == 'kk') {
-      dropdownValue = listLanguage[2];
-    } else if (mainLocale!.languageCode == 'uz') {
-      dropdownValue = listLanguage[1];
-    }
-  }
 }
 
 // Define a custom Form widget.
 class GarbageOrderForm extends StatefulWidget {
-  UserData? userData;
-  LatLng? position;
-  String? address;
+  final String? phone;
+  final String? address;
 
   GarbageOrderForm({
     Key? key,
-    required this.userData,
-    required this.position,
+    required this.phone,
     required this.address,
   }) : super(key: key);
 
@@ -264,17 +218,17 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
   final _formKey = GlobalKey<FormState>();
   var maskFormatter = new MaskTextInputFormatter(mask: '### ### ## ##');
   final _dateController = TextEditingController();
-  String imageBirthday = '';
+  String valid = '';
 
   var dropdownValue;
 
   String getValidateBirthday() {
     if (_dateController.text.isNotEmpty) {
-      imageBirthday = 'images/icon.svg';
+      valid = 'images/icon.svg';
     } else {
-      imageBirthday = 'images/icon1.svg';
+      valid = 'images/icon1.svg';
     }
-    return imageBirthday;
+    return valid;
   }
 
   @override
@@ -290,7 +244,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
           ),
           TextFormField(
               decoration: InputDecoration(
-                suffixIcon: imageBirthday == ''
+                suffixIcon: valid == ''
                     ? null
                     : SvgPicture.asset(getValidateBirthday()),
                 suffixIconConstraints:
@@ -313,7 +267,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
                 }
                 return null;
               },
-              initialValue: widget.userData!.phone),
+              initialValue: widget.phone),
           SizedBox(height: 10.0),
           Align(
             alignment: Alignment.centerLeft,
@@ -321,7 +275,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
           ),
           TextFormField(
             decoration: InputDecoration(
-              suffixIcon: imageBirthday == ''
+              suffixIcon: valid == ''
                   ? null
                   : SvgPicture.asset(getValidateBirthday()),
               suffixIconConstraints:
@@ -372,7 +326,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             controller: _dateController,
             style: kTextStyle2,
             decoration: InputDecoration(
-              suffixIcon: imageBirthday == ''
+              suffixIcon: valid == ''
                   ? null
                   : SvgPicture.asset(getValidateBirthday()),
               suffixIconConstraints:
@@ -402,7 +356,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
           TextFormField(
             // The validator receives the text that the user has entered.
             decoration: InputDecoration(
-              suffixIcon: imageBirthday == ''
+              suffixIcon: valid == ''
                   ? null
                   : SvgPicture.asset(getValidateBirthday()),
               suffixIconConstraints:
