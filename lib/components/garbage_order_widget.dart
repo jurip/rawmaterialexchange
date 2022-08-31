@@ -378,7 +378,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
               suffixIconConstraints:
                   BoxConstraints(minHeight: 22, minWidth: 22),
               counterText: "",
-              hintText: 'dd.mm.yyyy'.tr(),
+              hintText: 'dd.mm.yyyy',
               hintStyle: kHintStyle,
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(width: 2.0, color: kColorGrey1),
