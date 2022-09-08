@@ -8,12 +8,12 @@ class Service {
   Service({
     required this.id,
     required this.name,
-    this.selectedRawMaterials = false,
+    this.selected = false,
   });
 
   int id;
   String name;
-  bool selectedRawMaterials;
+  bool selected;
 
   factory Service.fromJson(Map<String, dynamic> json) => Service(
         id: json["id"],

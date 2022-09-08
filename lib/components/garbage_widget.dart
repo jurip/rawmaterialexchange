@@ -1,4 +1,3 @@
-import 'package:app/api/models/response_get_favorites.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/garbage_change_amount_button.dart';
 import 'package:app/components/garbage_order_widget.dart';
@@ -8,15 +7,14 @@ import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
-
-import '../api/models/response_list_of_row_materials.dart';
+import '../api/models/material_list_item.dart';
 import '../constants/image_constants.dart';
-import 'garbage_add_button.dart';
 import 'garage_order_button.dart';
+import 'garbage_add_button.dart';
 import 'garbage_info_widget.dart';
 
 class GarbageWidget extends StatefulWidget {
-  final List<ListOfRawMaterials> materials;
+  final List<MaterialListItem> materials;
   final LatLng? position;
 
   GarbageWidget({
@@ -32,6 +30,7 @@ class GarbageWidget extends StatefulWidget {
 class _GarbageWidgetState extends State<GarbageWidget> {
   String address = "";
   double income = 0;
+
   Future<void> setAddress() async {
     getAddressCoordinates(
       context,
@@ -173,13 +172,11 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                             setState(() {
                               widget.materials[index].selected =
                                   !widget.materials[index].selected;
-                              if (widget
-                                      .materials[index].selected ==
-                                  false) {
+                              if (widget.materials[index].selected == false) {
                                 removeFilter(widget.materials[index].id);
                               } else {
-                                selectedMaterials.add(
-                                    widget.materials[index].id);
+                                selectedMaterials
+                                    .add(widget.materials[index].id);
                               }
                             });
                           },
@@ -225,8 +222,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                     ],
                                   ),
                                   SizedBox(height: 5.0),
-                                  if (widget.materials[index]
-                                      .selected) ...[
+                                  if (widget.materials[index].selected) ...[
                                     Image(
                                         image: AssetImage(
                                             imageDefinitionInFilter(
@@ -293,10 +289,9 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                         text: "Add".tr(),
                                         onTap: () {
                                           setState(() {
-                                            widget.materials[index]
-                                                    .selected =
-                                                !widget.materials[index]
-                                                    .selected;
+                                            widget.materials[index].selected =
+                                                !widget
+                                                    .materials[index].selected;
                                             if (widget.materials[index]
                                                     .selected ==
                                                 false) {
@@ -320,10 +315,9 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                         text: "Delete".tr(),
                                         onTap: () {
                                           setState(() {
-                                            widget.materials[index]
-                                                    .selected =
-                                                !widget.materials[index]
-                                                    .selected;
+                                            widget.materials[index].selected =
+                                                !widget
+                                                    .materials[index].selected;
                                             if (widget.materials[index]
                                                     .selected ==
                                                 false) {
@@ -368,10 +362,11 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                             context: context,
                             builder: (BuildContext context) {
                               return GarbageOrderWidget(
-                                  income: income,
-                                  materials: widget.materials,
-                                  address: address,
-                                  );
+                                income: income,
+                                materials: widget.materials,
+                                address: address,
+                                position: widget.position,
+                              );
                             },
                           )
                           .whenComplete(() {});

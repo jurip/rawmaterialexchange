@@ -681,45 +681,6 @@ Future<T?> showModalBottomSheet<T>({
   ));
 }
 
-/// Shows a material design bottom sheet in the nearest [Scaffold] ancestor. If
-/// you wish to show a persistent bottom sheet, use [Scaffold.bottomSheet].
-///
-/// Returns a controller that can be used to close and otherwise manipulate the
-/// bottom sheet.
-///
-/// The optional [backgroundColor], [elevation], [shape], [clipBehavior] and [transitionAnimationController]
-/// parameters can be passed in to customize the appearance and behavior of
-/// persistent bottom sheets.
-///
-/// To rebuild the bottom sheet (e.g. if it is stateful), call
-/// [PersistentBottomSheetController.setState] on the controller returned by
-/// this method.
-///
-/// The new bottom sheet becomes a [LocalHistoryEntry] for the enclosing
-/// [ModalRoute] and a back button is added to the app bar of the [Scaffold]
-/// that closes the bottom sheet.
-///
-/// To create a persistent bottom sheet that is not a [LocalHistoryEntry] and
-/// does not add a back button to the enclosing Scaffold's app bar, use the
-/// [Scaffold.bottomSheet] constructor parameter.
-///
-/// A closely related widget is a modal bottom sheet, which is an alternative
-/// to a menu or a dialog and prevents the user from interacting with the rest
-/// of the app. Modal bottom sheets can be created and displayed with the
-/// [showModalBottomSheet] function.
-///
-/// The `context` argument is used to look up the [Scaffold] for the bottom
-/// sheet. It is only used when the method is called. Its corresponding widget
-/// can be safely removed from the tree before the bottom sheet is closed.
-///
-/// See also:
-///
-///  * [BottomSheet], which becomes the parent of the widget returned by the
-///    `builder`.
-///  * [showModalBottomSheet], which can be used to display a modal bottom
-///    sheet.
-///  * [Scaffold.of], for information about how to obtain the [BuildContext].
-///  * <https://material.io/design/components/sheets-bottom.html#standard-bottom-sheet>
 PersistentBottomSheetController<T> showBottomSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,

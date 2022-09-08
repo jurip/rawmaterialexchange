@@ -6,11 +6,12 @@ import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/models/response_list_object_data.dart';
 import 'package:app/api/models/response_list_object_working_hours.dart';
 import 'package:app/api/models/response_list_of_contact_phone.dart';
-import 'package:app/api/models/response_list_of_coordinates_driving.dart' as Driving;
-import 'package:app/api/models/response_list_of_coordinates_walking.dart' as Walking;
+import 'package:app/api/models/response_list_of_coordinates_driving.dart'
+    as Driving;
+import 'package:app/api/models/response_list_of_coordinates_walking.dart'
+    as Walking;
 import 'package:app/api/models/response_list_of_object.dart';
 import 'package:app/api/models/response_list_of_raw_materials_of_specific_object.dart';
-import 'package:app/api/models/response_list_of_row_materials.dart';
 import 'package:app/api/models/response_logout.dart';
 import 'package:app/api/models/response_objects_from_filter.dart';
 import 'package:app/api/models/response_user_data.dart';
@@ -22,6 +23,9 @@ import 'package:app/utils/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+
+import '../models/Order.dart';
+import '../models/material_list_item.dart';
 
 final String mapbox_token =
     'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA';
@@ -166,11 +170,11 @@ Future<UserData?> getUserData(BuildContext context) async {
 }
 
 //запрос на получение списка сырья
-Future<List<ListOfRawMaterials>?> getListOfRawMaterials() async {
+Future<List<MaterialListItem>?> getListOfRawMaterials() async {
   String url = 'https://recyclemap.tmweb.ru/api/v1/raws';
 
   var headers = new Map<String, String>();
-  // if (Settings.token != null)
+  // if (Set tings.token != null)
   headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
   // if (Settings.token != null)
   headers['accept'] = "application/json";
@@ -191,7 +195,7 @@ Future<List<ListOfRawMaterials>?> getListOfRawMaterials() async {
     return null;
   }
   if (200 <= response.statusCode && response.statusCode < 300) {
-    List<ListOfRawMaterials> listOfRawMaterials =
+    List<MaterialListItem> listOfRawMaterials =
         listOfRawMaterialsFromJson(response.body);
     return listOfRawMaterials;
   }
@@ -227,6 +231,10 @@ Future<List<ListOfRawMaterialsOfSpecificObject>?>
     List<ListOfRawMaterialsOfSpecificObject>
         listOfRawMaterialsOfSpecificObject =
         listOfRawMaterialsOfSpecificObjectFromJson(response.body);
+    listOfRawMaterialsOfSpecificObject.addAll(listOfRawMaterialsOfSpecificObjectFromJson(response.body));
+    listOfRawMaterialsOfSpecificObject.addAll(listOfRawMaterialsOfSpecificObjectFromJson(response.body));
+    listOfRawMaterialsOfSpecificObject.addAll(listOfRawMaterialsOfSpecificObjectFromJson(response.body));
+    listOfRawMaterialsOfSpecificObject.addAll(listOfRawMaterialsOfSpecificObjectFromJson(response.body));
     return listOfRawMaterialsOfSpecificObject;
   } else if (response.statusCode == 401) {
     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
@@ -608,6 +616,46 @@ Future<bool> addFavorite(BuildContext context, int itemId) async {
   }
   return false;
 }
+
+Future<bool> addOrder(BuildContext context, Order item) async {
+  String url = 'https://recyclemap.tmweb.ru/api/v1/orders';
+
+  var headers = new Map<String, String>();
+  headers['accept'] = "application/json";
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
+  if (mainLocale != null) {
+    headers['Accept-Language'] = mainLocale!.languageCode;
+  } else {
+    headers['Accept-Language'] = "ru";
+  }
+
+  var body = new Map<String, dynamic>();
+  item.datetimePickup = item.datetimePickup + " " + item.time.toString().substring(0,2)+":00:00";
+  body =  item.toJson();
+
+  Response response;
+
+  http.get((Uri.parse("https://api.telegram.org/"+
+      "bot5670549742:AAFYW_I0D9h4F0eCRbJ3YoDUBWu4AZG0lnI/"+
+          "sendMessage?chat_id=@rawmaterialstest&text="+item.toJson().toString())));
+  try {
+    response = await http.post(Uri.parse(url), headers: headers, body: body);
+  } on Exception {
+    return false;
+  } catch (e) {
+    return false;
+  }
+  if (200 <= response.statusCode && response.statusCode < 300) {
+    return true;
+  } else if (response.statusCode == 401) {
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
+      return Authorisation();
+    }), (Route<dynamic> route) => false);
+  }
+  return false;
+}
+
+
 
 // Удалить избранное
 Future<bool> deleteFavorite(BuildContext context, int itemId) async {

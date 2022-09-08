@@ -1,6 +1,4 @@
 import 'package:app/api/models/response_list_languages.dart';
-import 'package:app/api/models/response_list_of_row_materials.dart';
-import 'package:app/api/models/response_user_data.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/garbage_order_result_widget.dart';
 import 'package:app/constants/color_constants.dart';
@@ -11,11 +9,11 @@ import 'package:app/utils/progress_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:latlong2/latlong.dart';
 
-import '../../main.dart';
-import '../utils/data_utils.dart';
+import '../api/models/Order.dart';
+import '../api/models/material_list_item.dart';
 import '../utils/garbage_order_date_time_picker.dart';
 import '../utils/time_picker.dart';
 import '../utils/user_session.dart';
@@ -25,14 +23,17 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class GarbageOrderWidget extends StatefulWidget {
   final String address;
-  final List<ListOfRawMaterials> materials;
+  final List<MaterialListItem> materials;
   final double income;
+  final LatLng? position;
+
 
   GarbageOrderWidget({
     Key? key,
     required this.income,
     required this.materials,
     required this.address,
+    required this.position,
   }) : super(key: key);
 
   @override
@@ -42,9 +43,9 @@ class GarbageOrderWidget extends StatefulWidget {
 class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
   List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
   ProgressBar? _sendingMsgProgressBar;
-  ListLanguages? dropdownValue;
   String? phone;
   String language = '';
+  final Order order = Order();
 
   void getUserData() {
     UserSession.getUserPhone().then((value) {
@@ -68,7 +69,7 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return phone == null || listLanguage.isEmpty
+    return phone == null
         ? Scaffold(
             key: _scaffoldKey,
             backgroundColor: Colors.transparent,
@@ -161,6 +162,8 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
                             GarbageOrderForm(
                               phone: phone,
                               address: widget.address,
+                              items: widget.materials,
+                              position: widget.position,
                             ),
                             //66 * 4
 
@@ -179,19 +182,21 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
   String error = '';
 
   //получение списка языков
-  List<ListLanguages> listLanguage = [];
-
 }
 
 // Define a custom Form widget.
 class GarbageOrderForm extends StatefulWidget {
   final String? phone;
   final String? address;
+  final List<MaterialListItem> items;
+  final LatLng? position;
 
   GarbageOrderForm({
     Key? key,
     required this.phone,
     required this.address,
+    required this.items,
+    required this.position,
   }) : super(key: key);
 
   @override
@@ -218,9 +223,10 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
   final _formKey = GlobalKey<FormState>();
   var maskFormatter = new MaskTextInputFormatter(mask: '### ### ## ##');
   final _dateController = TextEditingController();
+  final _timeController = TextEditingController();
   String valid = '';
-
   var dropdownValue;
+  var order = Order();
 
   String getValidateBirthday() {
     if (_dateController.text.isNotEmpty) {
@@ -243,6 +249,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             child: Text('phone_number'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
+              onSaved: (String? value){order.phone=value;},
               decoration: InputDecoration(
                 suffixIcon: valid == ''
                     ? null
@@ -265,6 +272,9 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
                 if (value == null || value.isEmpty) {
                   return 'required_field'.tr();
                 }
+                if (value.length!=11) {
+                  return 'wrong_format'.tr();
+                }
                 return null;
               },
               initialValue: widget.phone),
@@ -274,10 +284,10 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             child: Text('where_from'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
+            onSaved: (String? value){order.address=value;},
             decoration: InputDecoration(
-              suffixIcon: valid == ''
-                  ? null
-                  : SvgPicture.asset(getValidateBirthday()),
+              suffixIcon:
+                  valid == '' ? null : SvgPicture.asset(getValidateBirthday()),
               suffixIconConstraints:
                   BoxConstraints(minHeight: 22, minWidth: 22),
               counterText: "",
@@ -307,6 +317,10 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             child: Text('when_take'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
+            onSaved: (String? value){
+              if(value!=null)
+                order.datetimePickup=value;
+              },
             autofocus: false,
             maxLength: 10,
             inputFormatters: [
@@ -315,7 +329,8 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             onTap: () {
               FocusScope.of(context).requestFocus(new FocusNode());
               GarbageOrderDateTimePicker.showSheetDate(context,
-                  dateTime: DateTime.now(), onClicked: (date) {
+                  dateTime: DateTime.now(),
+                  onClicked: (date) {
                 setState(() {
                   DateTime newDate = DateFormat('yyyy-MM-dd').parse(date);
                   _dateController.text =
@@ -326,9 +341,8 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             controller: _dateController,
             style: kTextStyle2,
             decoration: InputDecoration(
-              suffixIcon: valid == ''
-                  ? null
-                  : SvgPicture.asset(getValidateBirthday()),
+              suffixIcon:
+                  valid == '' ? null : SvgPicture.asset(getValidateBirthday()),
               suffixIconConstraints:
                   BoxConstraints(minHeight: 22, minWidth: 22),
               counterText: "",
@@ -347,18 +361,19 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             alignment: Alignment.centerLeft,
             child: Text('take_time'.tr(), style: kAlertTextStyle4),
           ),
-          TimePeriodPicker(),
+          TimePeriodPicker(onOptionSelected: (item) => {
+            order.time = timePeriods[item]},),
           SizedBox(height: 10.0),
           Align(
             alignment: Alignment.centerLeft,
             child: Text('comment'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
+            onSaved: (String? value){order.comment=value;},
             // The validator receives the text that the user has entered.
             decoration: InputDecoration(
-              suffixIcon: valid == ''
-                  ? null
-                  : SvgPicture.asset(getValidateBirthday()),
+              suffixIcon:
+                  valid == '' ? null : SvgPicture.asset(getValidateBirthday()),
               suffixIconConstraints:
                   BoxConstraints(minHeight: 22, minWidth: 22),
               counterText: "",
@@ -382,6 +397,15 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
               if (_formKey.currentState!.validate()) {
                 // If the form is valid, display a snackbar. In the real world,
                 // you'd often call a server or save the information in a database.
+                _formKey.currentState!.save();
+
+                order.items = widget.items;
+
+                order.latitude = widget.position!.latitude;
+                order.longitude = widget.position!.longitude;
+                if(order.time==null)
+                  order.time =  timePeriods[(DateTime.now().hour / 2).toInt()];
+                addOrder(context, order);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Processing Data')),
                 );

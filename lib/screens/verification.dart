@@ -269,8 +269,10 @@ class _VerificationState extends State<Verification> {
                                   data.accessToken != null) {
                                 UserSession.setTokenFromSharedPref(
                                     data.accessToken!);
-                                UserSession.setPhoneFromSharedPref(widget.phone);
-                                UserSession.setLanguageFromSharedPref(widget.selectedLanguageId);
+                                UserSession.setPhoneFromSharedPref(
+                                    widget.phone);
+                                UserSession.setLanguageFromSharedPref(
+                                    widget.selectedLanguageId);
 
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {

@@ -19,7 +19,8 @@ class GarbageOrderResultWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GarbageOrderResultWidgetState createState() => _GarbageOrderResultWidgetState();
+  _GarbageOrderResultWidgetState createState() =>
+      _GarbageOrderResultWidgetState();
 }
 
 class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {

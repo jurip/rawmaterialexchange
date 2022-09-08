@@ -8,6 +8,40 @@ const kTextStyle1 = TextStyle(
   fontFamily: 'GothamProNarrow-Medium',
 );
 
+Color colorDefinitionInFilter(int id) {
+  var colorFilterElement;
+  switch (id) {
+    case 1:
+      colorFilterElement = kColorGrey1InFilter;
+      break;
+    case 101:
+      colorFilterElement = Color(0xFFF2F2F2);
+      break;
+    case 2:
+      colorFilterElement = kColorGrey2InFilter;
+      break;
+    case 3:
+      colorFilterElement = kColorBlueInFilter;
+      break;
+    case 4:
+      colorFilterElement = kColorYellowInFilter;
+      break;
+    case 5:
+      colorFilterElement = kColorGrey3InFilter;
+      break;
+    case 6:
+      colorFilterElement = kColorYellow2InFilter;
+      break;
+    case 7:
+      colorFilterElement = kColorGreyInFilter;
+      break;
+    case 8:
+      colorFilterElement = kColorOrangeInFilter;
+      break;
+  }
+  return colorFilterElement;
+}
+
 const kTextStyle2 = TextStyle(
     color: Colors.black,
     fontSize: 18.0,
@@ -103,6 +137,12 @@ const kAlertTextStyle4 = TextStyle(
   fontWeight: FontWeight.w700,
   color: kColorGrey3,
   fontSize: 12.0,
+);
+const bigWhite = TextStyle(
+  fontFamily: 'GothamProNarrow-Medium',
+  fontWeight: FontWeight.w700,
+  color: kColorGrey3,
+  fontSize: 26.0,
 );
 
 const kTextStyle11 = TextStyle(

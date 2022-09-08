@@ -1,7 +1,9 @@
 import 'package:app/api/models/response_list_object_working_hours.dart';
 import 'package:app/api/models/response_list_of_contact_phone.dart';
-import 'package:app/api/models/response_list_of_coordinates_driving.dart' as Driving;
-import 'package:app/api/models/response_list_of_coordinates_walking.dart' as Walking;
+import 'package:app/api/models/response_list_of_coordinates_driving.dart'
+    as Driving;
+import 'package:app/api/models/response_list_of_coordinates_walking.dart'
+    as Walking;
 import 'package:app/api/models/response_list_of_raw_materials_of_specific_object.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/confirmation_button.dart';
@@ -14,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../constants/image_constants.dart';
 import 'location_material_widget.dart';
 
@@ -54,12 +57,10 @@ class LocationWidget extends StatefulWidget {
   final Function(double, double) latLngSelectedObject;
 
   @override
-  _LocationWidgetState createState() =>
-      _LocationWidgetState();
+  _LocationWidgetState createState() => _LocationWidgetState();
 }
 
-class _LocationWidgetState
-    extends State<LocationWidget> {
+class _LocationWidgetState extends State<LocationWidget> {
   bool isFavorite = false;
 
   ProgressBar? _sendingMsgProgressBar;
@@ -609,6 +610,4 @@ class _LocationWidgetState
   }
 
   String assetImage = '';
-
-
 }

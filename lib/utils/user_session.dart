@@ -17,6 +17,7 @@ class UserSession {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString('phone', phone);
   }
+
   static Future<bool> setLanguageFromSharedPref(int? lang) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString('language', definitionLanguage(lang));
@@ -34,6 +35,7 @@ class UserSession {
     phone = prefs.getString('phone') ?? '';
     return phone;
   }
+
   static Future<String> getUserLanguage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     phone = prefs.getString('language') ?? '';

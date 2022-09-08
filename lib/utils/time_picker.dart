@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import '../constants/style_constants.dart';
 
 const double _kItemExtent = 32.0;
-const List<String> _timePeriods = <String>[
+const List<String> timePeriods = <String>[
   '00.00-02.00',
   '02.00-04.00',
   '04.00-06.00',
@@ -19,7 +19,8 @@ const List<String> _timePeriods = <String>[
 ];
 
 class TimePeriodPicker extends StatefulWidget {
-  const TimePeriodPicker({Key? key}) : super(key: key);
+  final Function(int item) onOptionSelected;
+  TimePeriodPicker({Key? key, required this.onOptionSelected}) : super(key: key);
 
   @override
   State<TimePeriodPicker> createState() => _TimePeriodPickerState();
@@ -74,13 +75,15 @@ class _TimePeriodPickerState extends State<TimePeriodPicker> {
                     onSelectedItemChanged: (int selectedItem) {
                       setState(() {
                         _selectedPeriod = selectedItem;
+                        widget.onOptionSelected(_selectedPeriod);
+
                       });
                     },
                     children:
-                        List<Widget>.generate(_timePeriods.length, (int index) {
+                        List<Widget>.generate(timePeriods.length, (int index) {
                       return Center(
                         child: Text(
-                          _timePeriods[index],
+                          timePeriods[index],
                         ),
                       );
                     }),
@@ -88,7 +91,7 @@ class _TimePeriodPickerState extends State<TimePeriodPicker> {
                 ),
                 // This displays the selected fruit name.
                 child: Text(
-                  _timePeriods[_selectedPeriod],
+                  timePeriods[_selectedPeriod],
                   style: kTextStyle2,
                 ),
               ),

@@ -1,5 +1,3 @@
-
-
 String imageDefinitionInFilter(int id) {
   var assetImage;
   switch (id) {

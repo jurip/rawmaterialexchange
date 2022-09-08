@@ -23,8 +23,8 @@ class ServiceCardWidget extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.only(bottom: 10.0, left: 4, right: 4),
-        width: 160.0,
-        height: 64.0,
+        width: 10.0,
+        //height: 70.0,
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(16.0),
@@ -44,6 +44,7 @@ class ServiceCardWidget extends StatelessWidget {
                 alignment: Alignment.topRight,
                 child: Image(
                   image: AssetImage(assetImage),
+                  width: 50,
                   fit: BoxFit.cover,
                 ),
               ),

@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:app/api/models/response_list_of_object.dart';
 import 'package:app/api/models/response_list_of_raw_materials_of_specific_object.dart';
-import 'package:app/api/models/response_list_of_row_materials.dart';
 import 'package:app/api/models/response_list_of_services.dart';
 import 'package:app/api/models/response_objects_from_filter.dart';
 import 'package:app/api/requests/requests.dart';
-import 'package:app/components/material_card_widget.dart';
-import 'package:app/components/location_widget.dart';
-import 'package:app/components/route_widget.dart';
 import 'package:app/components/bottom_sheet_setting_components/settings_widget.dart';
 import 'package:app/components/custom_app_bar.dart';
 import 'package:app/components/exit_alert.dart';
 import 'package:app/components/favourites_bottom_sheet.dart';
+import 'package:app/components/location_info_widget.dart';
+import 'package:app/components/location_widget.dart';
+import 'package:app/components/material_card_widget.dart';
+import 'package:app/components/route_widget.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
@@ -25,8 +25,10 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import '../components/service_card_widget.dart';
+import '../api/models/material_list_item.dart';
+import '../api/models/response_list_object_working_hours.dart';
 import '../components/garbage_widget.dart';
+import '../constants/image_constants.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -48,8 +50,6 @@ class _MapScreenState extends State<MapScreen> {
 
   LatLng? _position;
 
-  //Position? _position;
-
   String error = '';
 
   bool load = false;
@@ -60,12 +60,13 @@ class _MapScreenState extends State<MapScreen> {
 
   Timer? timer;
 
+  var locationOpened = false;
+
   @override
   void initState() {
     super.initState();
     _sendingMsgProgressBar = ProgressBar();
     getLocation();
-    //timer = Timer.periodic(Duration(seconds: 1), (Timer t) => _determinePosition());
     getListOfObjectAddDataToList();
   }
 
@@ -89,6 +90,49 @@ class _MapScreenState extends State<MapScreen> {
   PanelController _pc = new PanelController();
   PersistentBottomSheetController? controllerBottomSheetRout;
 
+  Widget header(text) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 12.0),
+      child: Align(
+          child: Text(
+            text,
+            style: kAlertTextStyle,
+          ),
+          alignment: Alignment.topLeft),
+    );
+  }
+
+  Widget horizontalScrollList(BuildContext context, list, onTap) {
+    return Container(
+      alignment: Alignment.topLeft,
+      margin: EdgeInsets.only(left: 12),
+      color: Colors.white,
+      constraints: BoxConstraints(
+        maxWidth: double.infinity,
+        maxHeight: 140,
+      ),
+      child: StaggeredGridView.countBuilder(
+        scrollDirection: Axis.horizontal,
+        crossAxisCount: 5,
+        itemCount: list.length,
+        itemBuilder: (BuildContext context, int index) {
+          return MaterialCardWidget(
+            colorShadow: list[index].selected == true
+                ? Color(0xFF009900)
+                : Colors.transparent,
+            assetImage: imageDefinitionInFilter(list[index].id),
+            color: colorDefinitionInFilter(list[index].id),
+            onTap: () {
+              onTap(index);
+            },
+            text: list[index].name,
+          );
+        },
+        staggeredTileBuilder: (int index) => StaggeredTile.count(4, 3),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return listOfRawMaterials.isEmpty ||
@@ -108,50 +152,49 @@ class _MapScreenState extends State<MapScreen> {
             child: Scaffold(
               extendBodyBehindAppBar: true,
               appBar: CustomAppBar(
-                showUserSettingsInfo: () async {
-                  cbs
-                      .showModalBottomSheet(
-                    backgroundColor: Colors.transparent,
-                    isScrollControlled: true,
-                    barrierColor: Colors.white.withOpacity(0),
-                    context: context,
-                    builder: (BuildContext context) {
-                      return SettingsWidget();
-                    },
-                  )
-                      .whenComplete(() {
-                    getListOfRawMaterialsAddDataToList();
-                    if (userInfoClicked)
-                      getListOfRawMaterialsOfSpecificObjectAddDataToList(
-                          selectedIndexMarker, false);
-                  });
-                },
-                returnListOfSelectedMarkerBottomSheet: () {},
-                removeRoute: () {
-                  latLngDriving.clear();
-                  latLngWalking.clear();
-                  _pc.close();
-                  _closeRoutBottomSheet();
-                  setState(() {});
-                },
-                returnMarkers: () {
-                  setState(() {
-                    getListOfObjectAddDataToList();
-                  });
-                },
-                updatingLanguageInTheFilter: () {},
-              ),
+                      showUserSettingsInfo: () async {
+                        cbs
+                            .showModalBottomSheet(
+                          backgroundColor: Colors.transparent,
+                          isScrollControlled: true,
+                          barrierColor: Colors.white.withOpacity(0),
+                          context: context,
+                          builder: (BuildContext context) {
+                            return SettingsWidget();
+                          },
+                        )
+                            .whenComplete(() {
+                          getListOfRawMaterialsAddDataToList();
+                          if (userInfoClicked)
+                            getListOfRawMaterialsOfSpecificObjectAddDataToList(
+                                selectedIndexMarker, false);
+                        });
+                      },
+                      returnListOfSelectedMarkerBottomSheet: () {},
+                      removeRoute: () {
+                        latLngDriving.clear();
+                        latLngWalking.clear();
+                        _pc.close();
+                        _closeRoutBottomSheet();
+                        setState(() {});
+                      },
+                      returnMarkers: () {
+                        setState(() {
+                          getListOfObjectAddDataToList();
+                        });
+                      },
+                      updatingLanguageInTheFilter: () {},
+                    )
+                  ,
               key: scaffoldKey,
               body: SlidingUpPanel(
                 margin: EdgeInsets.only(top: 110.0),
                 controller: _pc,
-                minHeight: 64 * 4,
-                maxHeight: listOfRawMaterials.length * 64,
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(30.0),
                     topLeft: Radius.circular(30.0)),
                 panel: Padding(
-                  padding: EdgeInsets.only(top: 12.0),
+                  padding: EdgeInsets.only(top: 10.0),
                   child: Column(
                     children: [
                       Container(
@@ -165,169 +208,23 @@ class _MapScreenState extends State<MapScreen> {
                       SizedBox(height: 20.0),
                       Expanded(
                         child: SingleChildScrollView(
+                          padding: EdgeInsets.only(top: 30),
                           physics: AlwaysScrollableScrollPhysics(),
                           child: Column(
                             children: [
-                              SizedBox(
-                                height: 4.0,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  scaffoldKey.currentState!.showBottomSheet(
-                                    (context) => FavouritesBottomSheet(),
-                                    backgroundColor: Colors.transparent,
-                                  );
-                                },
-                                child: Container(
-                                  margin:
-                                      EdgeInsets.symmetric(horizontal: 16.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.star_border,
-                                            color: Colors.yellow),
-                                        SizedBox(width: 4.0),
-                                        Text(
-                                          'favourites'.tr(),
-                                          style: kTextStyle2,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.3),
-                                        spreadRadius: 1,
-                                        blurRadius: 7,
-                                        offset: Offset(0, 2),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 24.0),
                               //Services
-                              Container(
-                                margin: EdgeInsets.symmetric(horizontal: 12.0),
-                                child: Align(
-                                    child: Text(
-                                      "services".tr(),
-                                      style: kAlertTextStyle,
-                                    ),
-                                    alignment: Alignment.topLeft),
-                              ),
+                              header("services".tr()),
                               SizedBox(height: 10.0),
-                              Container(
-                                margin: EdgeInsets.symmetric(horizontal: 12.0),
-                                color: Colors.white,
-                                constraints: BoxConstraints(
-                                  maxHeight:
-                                      MediaQuery.of(context).size.height - 36,
-                                ),
-                                child: StaggeredGridView.countBuilder(
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.only(top: 0),
-                                  crossAxisCount: 4,
-                                  itemCount: listOfServices.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return ServiceCardWidget(
-                                      colorShadow: listOfServices[index]
-                                                  .selectedRawMaterials ==
-                                              true
-                                          ? kColorShadowInFilter
-                                          : Colors.transparent,
-                                      assetImage: imageDefinitionInFilter(
-                                          listOfServices[index].id),
-                                      color: colorDefinitionInFilter(
-                                          listOfServices[index].id),
-                                      onTap: () {
-                                        scaffoldKey.currentState!
-                                            .showBottomSheet(
-                                          (context) => GarbageWidget(
-                                              materials: listOfRawMaterials,
-                                              position: _position),
-                                          backgroundColor: Colors.transparent,
-                                        );
-                                      },
-                                      text: listOfServices[index].name,
-                                    );
-                                  },
-                                  staggeredTileBuilder: (int index) =>
-                                      StaggeredTile.count(2, 1),
-                                  mainAxisSpacing: 4.0,
-                                  crossAxisSpacing: 4.0,
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.symmetric(horizontal: 12.0),
-                                child: Align(
-                                    child: Text(
-                                      "filters".tr(),
-                                      style: kAlertTextStyle,
-                                    ),
-                                    alignment: Alignment.topLeft),
-                              ),
+                              horizontalScrollList(
+                                  context, listOfServices, onServiceTap),
+                              header("filters".tr()),
                               SizedBox(height: 10.0),
-                              Container(
-                                margin: EdgeInsets.symmetric(horizontal: 12.0),
-                                color: Colors.white,
-                                constraints: BoxConstraints(
-                                  minHeight: 64.0,
-                                  maxWidth: double.infinity,
-                                  maxHeight:
-                                      MediaQuery.of(context).size.height - 36,
-                                ),
-                                child: StaggeredGridView.countBuilder(
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.only(top: 0),
-                                  crossAxisCount: 4,
-                                  itemCount: listOfRawMaterials.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return MaterialCardWidget(
-                                      colorShadow: listOfRawMaterials[index]
-                                                  .selected ==
-                                              true
-                                          ? kColorShadowInFilter
-                                          : Colors.transparent,
-                                      assetImage: imageDefinitionInFilter(
-                                          listOfRawMaterials[index].id),
-                                      color: colorDefinitionInFilter(
-                                          listOfRawMaterials[index].id),
-                                      onTap: () {
-                                        setState(() {
-                                          listOfRawMaterials[index]
-                                                  .selected =
-                                              !listOfRawMaterials[index]
-                                                  .selected;
-                                          if (listOfRawMaterials[index]
-                                                  .selected ==
-                                              false) {
-                                            removeFilter(
-                                                listOfRawMaterials[index].id);
-                                          } else {
-                                            getSelectedMaterialsIdAddToList(
-                                                listOfRawMaterials[index].id);
-                                          }
-                                        });
-                                      },
-                                      text: listOfRawMaterials[index].name,
-                                    );
-                                  },
-                                  staggeredTileBuilder: (int index) =>
-                                      StaggeredTile.count(2, 1),
-                                  mainAxisSpacing: 4.0,
-                                  crossAxisSpacing: 4.0,
-                                ),
-                              ),
+                              horizontalScrollList(
+                                  context, listOfRawMaterials, onFilterTap),
+                              header("other".tr()),
+                              SizedBox(height: 10.0),
+                              horizontalScrollList(
+                                  context, listOfServices, onFavouritesTap),
                             ],
                           ),
                         ),
@@ -336,107 +233,82 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
                 body: Stack(
-                  children: [
-                    FlutterMap(
-                      mapController: _mapController,
-                      options: MapOptions(
-                        boundsOptions:
-                            FitBoundsOptions(padding: EdgeInsets.all(800.0)),
-                        center: _position,
-                        minZoom: 3.0,
-                        maxZoom: 18.4,
-                      ),
-                      layers: [
-                        TileLayerOptions(
-                            urlTemplate:
-                                'https://api.mapbox.com/styles/v1/logiman/ckweydbul0r7015mv54fy9u17/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
-                            additionalOptions: {
-                              'accessToken':
-                                  'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
-                              'id': 'mapbox.mapbox-streets-v8'
-                            }),
-                        PolylineLayerOptions(
-                          polylines: [
-                            Polyline(
-                              points: getSelectedToggleSwitch(),
-                              strokeWidth: 4.0,
-                              color: Colors.green,
-                              isDotted: true,
+                        children: [
+                          FlutterMap(
+                            mapController: _mapController,
+                            options: MapOptions(
+                              boundsOptions: FitBoundsOptions(
+                                  padding: EdgeInsets.all(800.0)),
+                              center: _position,
+                              minZoom: 3.0,
+                              maxZoom: 18.4,
                             ),
-                          ],
-                        ),
-                        MarkerLayerOptions(
-                          rotate: true,
-                          markers: getMarkersAndUserLocation(),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.width * 0.8,
-                        left: MediaQuery.of(context).size.width * 0.85,
-                      ),
-                      child: Container(
-                        height: 48.0,
-                        width: 48.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 3,
-                              blurRadius: 5,
-                              offset: Offset(0, 0),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          color: Colors.white,
-                          onPressed: () {
-                            if (_position != null) {
-                              _mapController.move(_position!, 18);
-                            }
-                          },
-                          icon: Icon(
-                            Icons.location_on,
-                            color: kColorGrey2,
-                            size: 30.0,
+                            layers: [
+                              TileLayerOptions(
+                                  urlTemplate:
+                                      'https://api.mapbox.com/styles/v1/logiman/ckweydbul0r7015mv54fy9u17/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
+                                  additionalOptions: {
+                                    'accessToken':
+                                        'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
+                                    'id': 'mapbox.mapbox-streets-v8'
+                                  }),
+                              PolylineLayerOptions(
+                                polylines: [
+                                  Polyline(
+                                    points: getSelectedToggleSwitch(),
+                                    strokeWidth: 4.0,
+                                    color: Colors.green,
+                                    isDotted: true,
+                                  ),
+                                ],
+                              ),
+                              MarkerLayerOptions(
+                                rotate: true,
+                                markers: getMarkersAndUserLocation(),
+                              ),
+                            ],
                           ),
-                        ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.width * 0.8,
+                              left: MediaQuery.of(context).size.width * 0.85,
+                            ),
+                            child: Container(
+                              height: 48.0,
+                              width: 48.0,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 3,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 0),
+                                  ),
+                                ],
+                              ),
+                              child: IconButton(
+                                color: Colors.white,
+                                onPressed: () {
+                                  if (_position != null) {
+                                    _mapController.move(_position!, 18);
+                                  }
+                                },
+                                icon: Icon(
+                                  Icons.location_on,
+                                  color: kColorGrey2,
+                                  size: 30.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
               ),
             ),
           );
   }
-
-  //запрос на использование геоданных
-  // void _determinePosition() async {
-  //   bool serviceEnabled;
-  //   LocationPermission permission;
-  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!serviceEnabled) {
-  //     print('Location services are disabled.');
-  //   }
-  //   permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission == LocationPermission.denied) {
-  //       print('Location permissions are denied');
-  //       _sendingMsgProgressBar!.hide();
-  //       geolocatorAlert();
-  //     }else{
-  //       getLocation();
-  //     }
-  //   }
-  //   if (permission == LocationPermission.deniedForever) {
-  //     print('Location permissions are permanently denied, we cannot request permissions.');
-  //   }
-  //   getLocation();
-  // }
 
   //запись в лист всех маркеров точек и отдельно маркер местоположения
   List<Marker> getMarkersAndUserLocation() {
@@ -471,83 +343,6 @@ class _MapScreenState extends State<MapScreen> {
     return newList;
   }
 
-  // void geolocatorAlert () {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         backgroundColor: Colors.transparent,
-  //         content: Container(
-  //           height: 160.0,
-  //           decoration: BoxDecoration(
-  //             color: Colors.white,
-  //             borderRadius: BorderRadius.circular(10.0),
-  //             border: Border.all(width: 2.0, color: kColorGreen2),
-  //           ),
-  //           child: Column(
-  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //             children: [
-  //               SizedBox(height: 10.0),
-  //               Text(
-  //                 'permission_to_use_geodata'.tr(),
-  //                 textAlign: TextAlign.center,
-  //                 style: kAlertTextStyle2,
-  //               ),
-  //               Padding(
-  //                 padding: const EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-  //                 child: Container(
-  //                   decoration: BoxDecoration(
-  //                     borderRadius: BorderRadius.circular(10.0),
-  //                     color: kColorGreen1,
-  //                   ),
-  //                   child: Row(
-  //                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //                     children: [
-  //                       TextButton(
-  //                         onPressed: () {
-  //                           _determinePosition();
-  //                           Navigator.of(context).pop(false);
-  //                         },
-  //                         child: Text(
-  //                           'provide'.tr(),
-  //                           style: kAlertTextStyle3,
-  //                         ),
-  //                       ),
-  //                       Container(
-  //                         height: 30.0,
-  //                         width: 1.0,
-  //                         color: Colors.white,
-  //                       ),
-  //                       TextButton(
-  //                         onPressed: () {
-  //                           SystemNavigator.pop();
-  //                         },
-  //                         child: new Text(
-  //                           'reject'.tr(),
-  //                           style: kAlertTextStyle3,
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
-  //определение геопозиции
-  // Future<void> getLocation() async {
-  //   Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  //   setState(() {
-  //     _position = position;
-  //     // getListOfObjectAddDataToList();
-  //   });
-  // }
-
   //получение всех маркеров
   List<ListOfObjects> listOfObject = [];
 
@@ -566,7 +361,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   //получение списка сырья
-  List<ListOfRawMaterials> listOfRawMaterials = [];
+  List<MaterialListItem> listOfRawMaterials = [];
 
   Future<void> getListOfRawMaterialsAddDataToList() async {
     var dataListOfRawMaterials = await getListOfRawMaterials();
@@ -734,17 +529,25 @@ class _MapScreenState extends State<MapScreen> {
       setState(() {
         listOfRawMaterialsOfSpecificObject =
             dataListOfRawMaterialsOfSpecificObject!;
+        locationOpened = true;
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context)
+        {
+          return LocationInfoWidget(materials:listOfRawMaterialsOfSpecificObject, position:_position);
+        }
+        )
+        );
 
-        cbs
+        /*cbs
             .showModalBottomSheet(
-                backgroundColor: Colors.transparent,
-                isScrollControlled: true,
-                barrierColor: Colors.white.withOpacity(0),
-                context: context,
-                builder: (BuildContext context) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
+            backgroundColor: Colors.transparent,
+            isScrollControlled: true,
+            barrierColor: Colors.white.withOpacity(0),
+            context: context,
+            builder: (BuildContext context) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                       LocationWidget(
                         listOfRawMaterialsOfSpecificObject:
                             listOfRawMaterialsOfSpecificObject,
@@ -870,6 +673,8 @@ class _MapScreenState extends State<MapScreen> {
             .whenComplete(() {
           userInfoClicked = false;
         });
+
+            */
       });
     } else {
       setState(() {
@@ -1233,73 +1038,80 @@ class _MapScreenState extends State<MapScreen> {
 
   String assetImage = '';
 
-  String imageDefinitionInFilter(int id) {
-    switch (id) {
-      case 1:
-        assetImage = 'images/paperboard.png';
-        break;
-      case 2:
-        assetImage = 'images/tape.png';
-        break;
-      case 3:
-        assetImage = 'images/plastic.png';
-        break;
-      case 4:
-        assetImage = 'images/glass.png';
-        break;
-      case 5:
-        assetImage = 'images/metal.png';
-        break;
-      case 6:
-        assetImage = 'images/alyuminiy.png';
-        break;
-      case 7:
-        assetImage = 'images/lead.png';
-        break;
-      case 8:
-        assetImage = 'images/copper.png';
-        break;
-      case 101:
-        assetImage = 'images/garbage.png';
-        break;
-      default:
-        assetImage = 'images/Frame 54.png';
-    }
-    return assetImage;
-  }
-
   Color colorFilterElement = kColorGrey4;
 
-  Color colorDefinitionInFilter(int id) {
-    switch (id) {
-      case 1:
-        colorFilterElement = kColorGrey1InFilter;
-        break;
-      case 101:
-        colorFilterElement = Color(0xFFF2F2F2);
-        break;
-      case 2:
-        colorFilterElement = kColorGrey2InFilter;
-        break;
-      case 3:
-        colorFilterElement = kColorBlueInFilter;
-        break;
-      case 4:
-        colorFilterElement = kColorYellowInFilter;
-        break;
-      case 5:
-        colorFilterElement = kColorGrey3InFilter;
-        break;
-      case 6:
-        colorFilterElement = kColorYellow2InFilter;
-        break;
-      case 7:
-        colorFilterElement = kColorGreyInFilter;
-        break;
-      case 8:
-        colorFilterElement = kColorOrangeInFilter;
-        break;
-    }
-    return colorFilterElement;
+  onServiceTap(index) {
+    scaffoldKey.currentState!.showBottomSheet(
+      (context) =>
+          GarbageWidget(materials: listOfRawMaterials, position: _position),
+      backgroundColor: Colors.transparent,
+    );
   }
+
+  onFilterTap(index) {
+    setState(() {
+      listOfRawMaterials[index].selected = !listOfRawMaterials[index].selected;
+      if (listOfRawMaterials[index].selected == false) {
+        removeFilter(listOfRawMaterials[index].id);
+      } else {
+        getSelectedMaterialsIdAddToList(listOfRawMaterials[index].id);
+      }
+    });
+  }
+
+  onFavouritesTap(index) {
+    scaffoldKey.currentState!.showBottomSheet(
+      (context) => FavouritesBottomSheet(),
+      backgroundColor: Colors.transparent,
+    );
+  }
+  List<ListObjectWorkingHours> listWorkingHours = [];
+  String selectedDayOfTheWeek = '';
+  String getDayString(int dayNumber) {
+    if (dayNumber == 0) {
+      selectedDayOfTheWeek = 'pn'.tr();
+    } else if (dayNumber == 1) {
+      selectedDayOfTheWeek = 'vt'.tr();
+    } else if (dayNumber == 2) {
+      selectedDayOfTheWeek = 'sr'.tr();
+    } else if (dayNumber == 3) {
+      selectedDayOfTheWeek = 'cht'.tr();
+    } else if (dayNumber == 4) {
+      selectedDayOfTheWeek = 'pt'.tr();
+    } else if (dayNumber == 5) {
+      selectedDayOfTheWeek = 'sb'.tr();
+    } else if (dayNumber == 6) {
+      selectedDayOfTheWeek = 'vs'.tr();
+    }
+    return selectedDayOfTheWeek;
+  }
+  String getCurrentDate() {
+    if (listWorkingHours.length == 0) return "";
+    int weekDay = DateTime.now().weekday - 1;
+    int index =
+    listWorkingHours.indexWhere((element) => element.day == weekDay);
+    if (index == -1) {
+      return getDayString(listWorkingHours[0].day) +
+          ': ' +
+          getStartEnd(listWorkingHours[0].start, listWorkingHours[0].end);
+    }
+    return getDayString(listWorkingHours[index].day) +
+        ': ' +
+        getStartEnd(listWorkingHours[index].start, listWorkingHours[index].end);
+  }
+
+  String getStartEnd(String start, String end) {
+    String startFormatted = formatHours(start);
+    String endFormatted = formatHours(end);
+    return startFormatted + '-' + endFormatted;
+  }
+
+  String formatHours(String date) {
+    DateTime parseDate = DateFormat('HH:mm:ss').parse(date);
+    var inputDate = DateTime.parse(parseDate.toString());
+    var outputFormat = DateFormat('HH:mm');
+    var outputDate = outputFormat.format(inputDate);
+    return outputDate;
+  }
+
 }
