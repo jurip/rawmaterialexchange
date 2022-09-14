@@ -1,9 +1,8 @@
-import 'dart:math';
 import 'dart:convert';
+
 import 'package:app/api/models/material_list_item.dart';
 
-
-class Order{
+class Order {
   var phone;
   var address;
   var latitude;
@@ -12,13 +11,15 @@ class Order{
   var datetimePickup;
   late List<MaterialListItem> items;
   var time;
-  Map<int, dynamic> getItems(){
+
+  Map<int, dynamic> getItems() {
     var result = new Map<int, dynamic>();
     items.forEach((MaterialListItem element) {
       result.putIfAbsent(element.id, () => element.toJson());
     });
     return result;
   }
+
   Map<String, dynamic> toJson() {
     return {
       'phone': phone,
@@ -30,5 +31,4 @@ class Order{
       'items': json.encode(items),
     };
   }
-
 }

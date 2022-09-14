@@ -14,9 +14,6 @@ Color colorDefinitionInFilter(int id) {
     case 1:
       colorFilterElement = kColorGrey1InFilter;
       break;
-    case 101:
-      colorFilterElement = Color(0xFFF2F2F2);
-      break;
     case 2:
       colorFilterElement = kColorGrey2InFilter;
       break;
@@ -37,6 +34,9 @@ Color colorDefinitionInFilter(int id) {
       break;
     case 8:
       colorFilterElement = kColorOrangeInFilter;
+      break;
+    case 9:
+      colorFilterElement = Color(0xFFF2F2F2);
       break;
   }
   return colorFilterElement;

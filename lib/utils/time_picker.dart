@@ -20,7 +20,9 @@ const List<String> timePeriods = <String>[
 
 class TimePeriodPicker extends StatefulWidget {
   final Function(int item) onOptionSelected;
-  TimePeriodPicker({Key? key, required this.onOptionSelected}) : super(key: key);
+
+  TimePeriodPicker({Key? key, required this.onOptionSelected})
+      : super(key: key);
 
   @override
   State<TimePeriodPicker> createState() => _TimePeriodPickerState();
@@ -76,7 +78,6 @@ class _TimePeriodPickerState extends State<TimePeriodPicker> {
                       setState(() {
                         _selectedPeriod = selectedItem;
                         widget.onOptionSelected(_selectedPeriod);
-
                       });
                     },
                     children:

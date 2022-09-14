@@ -7,6 +7,7 @@ import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+
 import '../api/models/material_list_item.dart';
 import '../constants/image_constants.dart';
 import 'garage_order_button.dart';
@@ -223,13 +224,16 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                   ),
                                   SizedBox(height: 5.0),
                                   if (widget.materials[index].selected) ...[
-                                    Image(
-                                        image: AssetImage(
-                                            imageDefinitionInFilter(
-                                                widget.materials[index].id))),
+                                    ClipRRect(
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Image(
+                                            image: AssetImage("images/" +
+                                                imageName(widget
+                                                    .materials[index].id) +
+                                                "2.png"))),
                                     SizedBox(height: 10.0),
-                                    Text(widget.materials[index].text),
-                                    SizedBox(height: 10.0),
+                                    //Text(widget.materials[index].text),
+                                    //SizedBox(height: 10.0),
                                     Row(children: [
                                       Text("price:".tr()),
                                       Text(widget.materials[index].price

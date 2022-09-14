@@ -1,4 +1,3 @@
-import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/garbage_order_result_widget.dart';
 import 'package:app/constants/color_constants.dart';
@@ -9,8 +8,8 @@ import 'package:app/utils/progress_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../api/models/Order.dart';
 import '../api/models/material_list_item.dart';
@@ -26,7 +25,6 @@ class GarbageOrderWidget extends StatefulWidget {
   final List<MaterialListItem> materials;
   final double income;
   final LatLng? position;
-
 
   GarbageOrderWidget({
     Key? key,
@@ -181,7 +179,7 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
 
   String error = '';
 
-  //получение списка языков
+//получение списка языков
 }
 
 // Define a custom Form widget.
@@ -249,7 +247,9 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             child: Text('phone_number'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
-              onSaved: (String? value){order.phone=value;},
+              onSaved: (String? value) {
+                order.phone = value;
+              },
               decoration: InputDecoration(
                 suffixIcon: valid == ''
                     ? null
@@ -272,7 +272,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
                 if (value == null || value.isEmpty) {
                   return 'required_field'.tr();
                 }
-                if (value.length!=11) {
+                if (value.length != 11) {
                   return 'wrong_format'.tr();
                 }
                 return null;
@@ -284,7 +284,9 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             child: Text('where_from'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
-            onSaved: (String? value){order.address=value;},
+            onSaved: (String? value) {
+              order.address = value;
+            },
             decoration: InputDecoration(
               suffixIcon:
                   valid == '' ? null : SvgPicture.asset(getValidateBirthday()),
@@ -317,10 +319,9 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             child: Text('when_take'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
-            onSaved: (String? value){
-              if(value!=null)
-                order.datetimePickup=value;
-              },
+            onSaved: (String? value) {
+              if (value != null) order.datetimePickup = value;
+            },
             autofocus: false,
             maxLength: 10,
             inputFormatters: [
@@ -329,8 +330,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             onTap: () {
               FocusScope.of(context).requestFocus(new FocusNode());
               GarbageOrderDateTimePicker.showSheetDate(context,
-                  dateTime: DateTime.now(),
-                  onClicked: (date) {
+                  dateTime: DateTime.now(), onClicked: (date) {
                 setState(() {
                   DateTime newDate = DateFormat('yyyy-MM-dd').parse(date);
                   _dateController.text =
@@ -361,15 +361,18 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             alignment: Alignment.centerLeft,
             child: Text('take_time'.tr(), style: kAlertTextStyle4),
           ),
-          TimePeriodPicker(onOptionSelected: (item) => {
-            order.time = timePeriods[item]},),
+          TimePeriodPicker(
+            onOptionSelected: (item) => {order.time = timePeriods[item]},
+          ),
           SizedBox(height: 10.0),
           Align(
             alignment: Alignment.centerLeft,
             child: Text('comment'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
-            onSaved: (String? value){order.comment=value;},
+            onSaved: (String? value) {
+              order.comment = value;
+            },
             // The validator receives the text that the user has entered.
             decoration: InputDecoration(
               suffixIcon:
@@ -403,8 +406,8 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
 
                 order.latitude = widget.position!.latitude;
                 order.longitude = widget.position!.longitude;
-                if(order.time==null)
-                  order.time =  timePeriods[(DateTime.now().hour / 2).toInt()];
+                if (order.time == null)
+                  order.time = timePeriods[(DateTime.now().hour / 2).toInt()];
                 addOrder(context, order);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Processing Data')),

@@ -152,40 +152,39 @@ class _MapScreenState extends State<MapScreen> {
             child: Scaffold(
               extendBodyBehindAppBar: true,
               appBar: CustomAppBar(
-                      showUserSettingsInfo: () async {
-                        cbs
-                            .showModalBottomSheet(
-                          backgroundColor: Colors.transparent,
-                          isScrollControlled: true,
-                          barrierColor: Colors.white.withOpacity(0),
-                          context: context,
-                          builder: (BuildContext context) {
-                            return SettingsWidget();
-                          },
-                        )
-                            .whenComplete(() {
-                          getListOfRawMaterialsAddDataToList();
-                          if (userInfoClicked)
-                            getListOfRawMaterialsOfSpecificObjectAddDataToList(
-                                selectedIndexMarker, false);
-                        });
-                      },
-                      returnListOfSelectedMarkerBottomSheet: () {},
-                      removeRoute: () {
-                        latLngDriving.clear();
-                        latLngWalking.clear();
-                        _pc.close();
-                        _closeRoutBottomSheet();
-                        setState(() {});
-                      },
-                      returnMarkers: () {
-                        setState(() {
-                          getListOfObjectAddDataToList();
-                        });
-                      },
-                      updatingLanguageInTheFilter: () {},
-                    )
-                  ,
+                showUserSettingsInfo: () async {
+                  cbs
+                      .showModalBottomSheet(
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    barrierColor: Colors.white.withOpacity(0),
+                    context: context,
+                    builder: (BuildContext context) {
+                      return SettingsWidget();
+                    },
+                  )
+                      .whenComplete(() {
+                    getListOfRawMaterialsAddDataToList();
+                    if (userInfoClicked)
+                      getListOfRawMaterialsOfSpecificObjectAddDataToList(
+                          selectedIndexMarker, false);
+                  });
+                },
+                returnListOfSelectedMarkerBottomSheet: () {},
+                removeRoute: () {
+                  latLngDriving.clear();
+                  latLngWalking.clear();
+                  _pc.close();
+                  _closeRoutBottomSheet();
+                  setState(() {});
+                },
+                returnMarkers: () {
+                  setState(() {
+                    getListOfObjectAddDataToList();
+                  });
+                },
+                updatingLanguageInTheFilter: () {},
+              ),
               key: scaffoldKey,
               body: SlidingUpPanel(
                 margin: EdgeInsets.only(top: 110.0),
@@ -233,78 +232,78 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
                 body: Stack(
-                        children: [
-                          FlutterMap(
-                            mapController: _mapController,
-                            options: MapOptions(
-                              boundsOptions: FitBoundsOptions(
-                                  padding: EdgeInsets.all(800.0)),
-                              center: _position,
-                              minZoom: 3.0,
-                              maxZoom: 18.4,
-                            ),
-                            layers: [
-                              TileLayerOptions(
-                                  urlTemplate:
-                                      'https://api.mapbox.com/styles/v1/logiman/ckweydbul0r7015mv54fy9u17/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
-                                  additionalOptions: {
-                                    'accessToken':
-                                        'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
-                                    'id': 'mapbox.mapbox-streets-v8'
-                                  }),
-                              PolylineLayerOptions(
-                                polylines: [
-                                  Polyline(
-                                    points: getSelectedToggleSwitch(),
-                                    strokeWidth: 4.0,
-                                    color: Colors.green,
-                                    isDotted: true,
-                                  ),
-                                ],
-                              ),
-                              MarkerLayerOptions(
-                                rotate: true,
-                                markers: getMarkersAndUserLocation(),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).size.width * 0.8,
-                              left: MediaQuery.of(context).size.width * 0.85,
-                            ),
-                            child: Container(
-                              height: 48.0,
-                              width: 48.0,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 3,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 0),
-                                  ),
-                                ],
-                              ),
-                              child: IconButton(
-                                color: Colors.white,
-                                onPressed: () {
-                                  if (_position != null) {
-                                    _mapController.move(_position!, 18);
-                                  }
-                                },
-                                icon: Icon(
-                                  Icons.location_on,
-                                  color: kColorGrey2,
-                                  size: 30.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                  children: [
+                    FlutterMap(
+                      mapController: _mapController,
+                      options: MapOptions(
+                        boundsOptions:
+                            FitBoundsOptions(padding: EdgeInsets.all(800.0)),
+                        center: _position,
+                        minZoom: 3.0,
+                        maxZoom: 18.4,
                       ),
+                      layers: [
+                        TileLayerOptions(
+                            urlTemplate:
+                                'https://api.mapbox.com/styles/v1/logiman/ckweydbul0r7015mv54fy9u17/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
+                            additionalOptions: {
+                              'accessToken':
+                                  'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
+                              'id': 'mapbox.mapbox-streets-v8'
+                            }),
+                        PolylineLayerOptions(
+                          polylines: [
+                            Polyline(
+                              points: getSelectedToggleSwitch(),
+                              strokeWidth: 4.0,
+                              color: Colors.green,
+                              isDotted: true,
+                            ),
+                          ],
+                        ),
+                        MarkerLayerOptions(
+                          rotate: true,
+                          markers: getMarkersAndUserLocation(),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).size.width * 0.8,
+                        left: MediaQuery.of(context).size.width * 0.85,
+                      ),
+                      child: Container(
+                        height: 48.0,
+                        width: 48.0,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 3,
+                              blurRadius: 5,
+                              offset: Offset(0, 0),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          color: Colors.white,
+                          onPressed: () {
+                            if (_position != null) {
+                              _mapController.move(_position!, 18);
+                            }
+                          },
+                          icon: Icon(
+                            Icons.location_on,
+                            color: kColorGrey2,
+                            size: 30.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -377,7 +376,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   List<Service> listOfServices = [
-    Service(id: 101, name: "garbage_collection".tr()),
+    Service(id: 9, name: "favourites".tr()),
   ];
 
   //запись маркеров в лист для их отображения
@@ -530,24 +529,22 @@ class _MapScreenState extends State<MapScreen> {
         listOfRawMaterialsOfSpecificObject =
             dataListOfRawMaterialsOfSpecificObject!;
         locationOpened = true;
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context)
-        {
-          return LocationInfoWidget(materials:listOfRawMaterialsOfSpecificObject, position:_position);
-        }
-        )
-        );
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return LocationInfoWidget(
+              materials: listOfRawMaterialsOfSpecificObject,
+              position: _position);
+        }));
 
-        /*cbs
+        cbs
             .showModalBottomSheet(
-            backgroundColor: Colors.transparent,
-            isScrollControlled: true,
-            barrierColor: Colors.white.withOpacity(0),
-            context: context,
-            builder: (BuildContext context) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+                barrierColor: Colors.white.withOpacity(0),
+                context: context,
+                builder: (BuildContext context) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       LocationWidget(
                         listOfRawMaterialsOfSpecificObject:
                             listOfRawMaterialsOfSpecificObject,
@@ -673,8 +670,6 @@ class _MapScreenState extends State<MapScreen> {
             .whenComplete(() {
           userInfoClicked = false;
         });
-
-            */
       });
     } else {
       setState(() {
@@ -1065,8 +1060,10 @@ class _MapScreenState extends State<MapScreen> {
       backgroundColor: Colors.transparent,
     );
   }
+
   List<ListObjectWorkingHours> listWorkingHours = [];
   String selectedDayOfTheWeek = '';
+
   String getDayString(int dayNumber) {
     if (dayNumber == 0) {
       selectedDayOfTheWeek = 'pn'.tr();
@@ -1085,11 +1082,12 @@ class _MapScreenState extends State<MapScreen> {
     }
     return selectedDayOfTheWeek;
   }
+
   String getCurrentDate() {
     if (listWorkingHours.length == 0) return "";
     int weekDay = DateTime.now().weekday - 1;
     int index =
-    listWorkingHours.indexWhere((element) => element.day == weekDay);
+        listWorkingHours.indexWhere((element) => element.day == weekDay);
     if (index == -1) {
       return getDayString(listWorkingHours[0].day) +
           ': ' +
@@ -1113,5 +1111,4 @@ class _MapScreenState extends State<MapScreen> {
     var outputDate = outputFormat.format(inputDate);
     return outputDate;
   }
-
 }

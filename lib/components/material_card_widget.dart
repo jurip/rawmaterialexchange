@@ -1,8 +1,6 @@
 import 'package:app/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 
-import '../constants/color_constants.dart';
-
 class MaterialCardWidget extends StatelessWidget {
   const MaterialCardWidget({
     Key? key,
@@ -34,13 +32,13 @@ class MaterialCardWidget extends StatelessWidget {
               color: color,
               border: Border.all(color: colorShadow, width: 3),
               borderRadius: BorderRadius.circular(16.0),
-            //  boxShadow: [
+              //  boxShadow: [
               //  BoxShadow(
-               //   color: colorShadow,
+              //   color: colorShadow,
               //    spreadRadius: 3,
-                //  blurRadius: 6,
+              //  blurRadius: 6,
               //  ),
-             //  ],
+              //  ],
             ),
             child:
                 //Padding(

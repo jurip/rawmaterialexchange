@@ -155,73 +155,70 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                         BorderRadius.vertical(top: Radius.circular(30))),
                 child: Expanded(
                   flex: 50,
-                  child: Column(
+                  child: Column(children: [
+                    Container(
+                      height: 350,
+                      child: SingleChildScrollView(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          child: StaggeredGridView.countBuilder(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.all(15),
+                            crossAxisCount: 4,
+                            itemCount: widget.materials.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                  //width: 200,
 
-                      children: [
-                      Container(
-                      height:350,
-                      child:
-                      SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        child: StaggeredGridView.countBuilder(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.all(15),
-                          crossAxisCount: 4,
-                          itemCount: widget.materials.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                                //width: 200,
-
-                                decoration: BoxDecoration(
-                                  color: kColorGrey1,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15)),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Image(
-                                      image:
-                                          AssetImage("images/paperboard_2.png"),
-                                      height: 80,
-                                    ),
-                                    Text(
-                                      "110 p/ kg",
-                                      style: kTextStyle11,
-                                    ),
-                                    Text(
-                                      "Karton",
-                                      style: kTextStyle11,
-                                    )
-                                  ],
-                                ));
-                          },
-                          staggeredTileBuilder: (int index) =>
-                              StaggeredTile.count(2, 2),
-                          //listOfRawMaterialsOfSpecificObject.length % 2 == 0 || index == listOfRawMaterialsOfSpecificObject.length ? StaggeredTile.count(4, 1) : StaggeredTile.count(2, 1),
-                          mainAxisSpacing: 10.0,
-                          crossAxisSpacing: 10.0,
-                        )
+                                  decoration: BoxDecoration(
+                                    color: kColorGrey1,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Image(
+                                        image: AssetImage(
+                                            "images/paperboard_2.png"),
+                                        height: 80,
+                                      ),
+                                      Text(
+                                        "110 p/ kg",
+                                        style: kTextStyle11,
+                                      ),
+                                      Text(
+                                        "Karton",
+                                        style: kTextStyle11,
+                                      )
+                                    ],
+                                  ));
+                            },
+                            staggeredTileBuilder: (int index) =>
+                                StaggeredTile.count(2, 2),
+                            //listOfRawMaterialsOfSpecificObject.length % 2 == 0 || index == listOfRawMaterialsOfSpecificObject.length ? StaggeredTile.count(4, 1) : StaggeredTile.count(2, 1),
+                            mainAxisSpacing: 10.0,
+                            crossAxisSpacing: 10.0,
+                          )),
                     ),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30.0),
+                        color: kColorGreen1,
                       ),
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30.0),
-                            color: kColorGreen1,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 14.0,
-                            ),
-                            child: Text(
-                              "route".tr(),
-                              textAlign: TextAlign.center,
-                              style: kTextStyle3,
-                            ),
-                          ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14.0,
                         ),
+                        child: Text(
+                          "route".tr(),
+                          textAlign: TextAlign.center,
+                          style: kTextStyle3,
+                        ),
+                      ),
+                    ),
                   ]),
                 ),
               ),

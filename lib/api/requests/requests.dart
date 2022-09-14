@@ -27,19 +27,14 @@ import 'package:http/http.dart';
 import '../models/Order.dart';
 import '../models/material_list_item.dart';
 
+final String api = 'https://recyclemap.tmweb.ru/api/v1/';
 final String mapbox_token =
     'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA';
 //запрос на получение списка языков
 Future<List<ListLanguages>?> getLanguages() async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/languages';
+  String url = api + 'languages';
 
-  var headers = new Map<String, String>();
-  //headers['authorization'] = 'Bearer' + ' ' + Settings.token;
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  Map<String, String> headers = initHeaders();
 
   Response response;
   try {
@@ -56,18 +51,26 @@ Future<List<ListLanguages>?> getLanguages() async {
   return null;
 }
 
-//регистрация
-Future<ServerResponseWhenRequestingRegistration?> getRegistration(String name,
-    String surname, String phone, String birthDate, int languageId) async {
-  String url =
-      'https://recyclemap.tmweb.ru/api/v1/register?name=$name&surname=$surname&phone=$phone&language_id=$languageId&birth_date=$birthDate';
-
+Map<String, String> initHeaders() {
   var headers = new Map<String, String>();
+  //headers['authorization'] = 'Bearer' + ' ' + Settings.token;
   if (mainLocale != null) {
     headers['Accept-Language'] = mainLocale!.languageCode;
   } else {
     headers['Accept-Language'] = "ru";
   }
+  headers['accept'] = "application/json";
+  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
+  return headers;
+}
+
+//регистрация
+Future<ServerResponseWhenRequestingRegistration?> getRegistration(String name,
+    String surname, String phone, String birthDate, int languageId) async {
+  String url = api +
+      'register?name=$name&surname=$surname&phone=$phone&language_id=$languageId&birth_date=$birthDate';
+
+  Map<String, String> headers = initHeaders();
 
   Response response;
   try {
@@ -87,14 +90,9 @@ Future<ServerResponseWhenRequestingRegistration?> getRegistration(String name,
 
 //верификация (смс - код)
 Future<ResponseVerification?> getSMSCode(int code) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/verification?sms_code=$code';
+  String url = api + 'verification?sms_code=$code';
 
-  var headers = new Map<String, String>();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  Map<String, String> headers = initHeaders();
 
   Response response;
   try {
@@ -112,14 +110,9 @@ Future<ResponseVerification?> getSMSCode(int code) async {
 
 //авторизация
 Future<ResponseAuthorization?> getAuthorization(String phone) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/login?phone=$phone';
+  String url = api + 'login?phone=$phone';
 
-  var headers = new Map<String, String>();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  Map<String, String> headers = initHeaders();
 
   Response response;
   try {
@@ -137,18 +130,9 @@ Future<ResponseAuthorization?> getAuthorization(String phone) async {
 
 //получение данных пользователя
 Future<UserData?> getUserData(BuildContext context) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/user';
+  String url = api + 'user';
 
-  var headers = new Map<String, String>();
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
-  //headers['X-CSRF-TOKEN'] = '';
-  //headers['Authorization'] = "Bearer " + Settings.token.toString();
-
+  var headers = initHeaders();
   Response response;
 
   try {
@@ -171,20 +155,9 @@ Future<UserData?> getUserData(BuildContext context) async {
 
 //запрос на получение списка сырья
 Future<List<MaterialListItem>?> getListOfRawMaterials() async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/raws';
+  String url = api + 'raws';
 
-  var headers = new Map<String, String>();
-  // if (Set tings.token != null)
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  // if (Settings.token != null)
-  headers['accept'] = "application/json";
-  //headers['Authorization'] = "Bearer " + Settings.token.toString();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
-
+  var headers = initHeaders();
   Response response;
 
   try {
@@ -205,18 +178,9 @@ Future<List<MaterialListItem>?> getListOfRawMaterials() async {
 //запрос на получение списка сырья конкретного магазина
 Future<List<ListOfRawMaterialsOfSpecificObject>?>
     getListOfRawMaterialsOfSpecificObject(int id, BuildContext context) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/items/$id/raws';
+  String url = api + 'items/$id/raws';
 
-  var headers = new Map<String, String>();
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  // if (Settings.token != null)
-  headers['accept'] = "application/json";
-  //headers['Authorization'] = "Bearer " + Settings.token.toString();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  var headers = initHeaders();
 
   Response response;
 
@@ -231,10 +195,6 @@ Future<List<ListOfRawMaterialsOfSpecificObject>?>
     List<ListOfRawMaterialsOfSpecificObject>
         listOfRawMaterialsOfSpecificObject =
         listOfRawMaterialsOfSpecificObjectFromJson(response.body);
-    listOfRawMaterialsOfSpecificObject.addAll(listOfRawMaterialsOfSpecificObjectFromJson(response.body));
-    listOfRawMaterialsOfSpecificObject.addAll(listOfRawMaterialsOfSpecificObjectFromJson(response.body));
-    listOfRawMaterialsOfSpecificObject.addAll(listOfRawMaterialsOfSpecificObjectFromJson(response.body));
-    listOfRawMaterialsOfSpecificObject.addAll(listOfRawMaterialsOfSpecificObjectFromJson(response.body));
     return listOfRawMaterialsOfSpecificObject;
   } else if (response.statusCode == 401) {
     Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
@@ -246,18 +206,9 @@ Future<List<ListOfRawMaterialsOfSpecificObject>?>
 
 //запрос на получение списка координат всех маркеров
 Future<List<ListOfObjects>?> getListOfObjects(BuildContext context) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/items';
+  String url = api + 'items';
 
-  var headers = new Map<String, String>();
-  // if (Settings.token != null)
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  //headers['Authorization'] = "Bearer " + Settings.token.toString();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  var headers = initHeaders();
 
   Response response;
 
@@ -281,19 +232,9 @@ Future<List<ListOfObjects>?> getListOfObjects(BuildContext context) async {
 
 //запрос на получение данных обьекта
 Future<ListObjectData?> getObjectData(int id) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/items/$id';
+  String url = api + 'items/$id';
 
-  var headers = new Map<String, String>();
-  // if (Settings.token != null)
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  //headers['Authorization'] = "Bearer " + Settings.token.toString();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
-
+  var headers = initHeaders();
   Response response;
 
   try {
@@ -314,18 +255,9 @@ Future<ListObjectData?> getObjectData(int id) async {
 
 //запрос на получение списка контактов
 Future<List<ListOfContactPhone>?> getListOfContactPhone(int id) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/items/$id/contacts';
+  String url = api + 'items/$id/contacts';
 
-  var headers = new Map<String, String>();
-  // if (Settings.token != null)
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  //headers['Authorization'] = "Bearer " + Settings.token.toString();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  var headers = initHeaders();
 
   Response response;
 
@@ -346,18 +278,9 @@ Future<List<ListOfContactPhone>?> getListOfContactPhone(int id) async {
 
 //запрос на получение списка времени работы конкретного обьекта
 Future<List<ListObjectWorkingHours>?> getListObjectWorkingHours(int id) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/items/$id/working-hours';
+  String url = api + 'items/$id/working-hours';
 
-  var headers = new Map<String, String>();
-  // if (Settings.token != null)
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  //headers['Authorization'] = "Bearer " + Settings.token.toString();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  var headers = initHeaders();
 
   Response response;
 
@@ -388,18 +311,9 @@ Future<List<ListOfObjectsFromFilter>?> getListOfObjectsInFilter(
     }
   }
 
-  String url = 'https://recyclemap.tmweb.ru/api/v1/items?$s';
+  String url = api + 'items?$s';
 
-  var headers = new Map<String, String>();
-  // if (Settings.token != null)
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  //headers['Authorization'] = "Bearer " + Settings.token.toString();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  var headers = initHeaders();
 
   Response response;
 
@@ -435,17 +349,7 @@ Future<Driving.Route?> getCoordinatesDriving(
   String url =
       'https://api.mapbox.com/directions/v5/mapbox/driving/$lngMyLocation,$latMyLocation;$objectLng,$objectLat?access_token=$token&steps=true&language=ru';
 
-  var headers = new Map<String, String>();
-  // if (Settings.token != null)
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  //headers['Authorization'] = "Bearer " + Settings.token.toString();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
-
+  var headers = initHeaders();
   try {
     Response response = await http.get(Uri.parse(url), headers: headers);
     if (200 <= response.statusCode && response.statusCode < 300) {
@@ -473,16 +377,7 @@ Future<String?> getAddressCoordinates(
 
   String url =
       'https://api.mapbox.com/geocoding/v5/mapbox.places/$lngMyLocation,$latMyLocation.json?access_token=$mapbox_token';
-  var headers = new Map<String, String>();
-  // if (Settings.token != null)
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  //headers['Authorization'] = "Bearer " + Settings.token.toString();
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  var headers = initHeaders();
 
   try {
     Response response = await http.get(Uri.parse(url), headers: headers);
@@ -551,16 +446,9 @@ Future<Walking.RouteWalking?> getCoordinatesWalking(
 
 // Получение списка избранных
 Future<List<GetFavorites>?> getFavorites(BuildContext context) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/useritems';
+  String url = api + 'useritems';
 
-  var headers = new Map<String, String>();
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  var headers = initHeaders();
 
   Response response;
 
@@ -584,16 +472,9 @@ Future<List<GetFavorites>?> getFavorites(BuildContext context) async {
 
 // Добавить избранное
 Future<bool> addFavorite(BuildContext context, int itemId) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/useritems';
+  String url = api + 'useritems';
 
-  var headers = new Map<String, String>();
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  var headers = initHeaders();
 
   var body = new Map<String, String>();
   body['item_id'] = itemId.toString();
@@ -618,26 +499,23 @@ Future<bool> addFavorite(BuildContext context, int itemId) async {
 }
 
 Future<bool> addOrder(BuildContext context, Order item) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/orders';
+  String url = api + 'orders';
 
-  var headers = new Map<String, String>();
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  var headers = initHeaders();
 
   var body = new Map<String, dynamic>();
-  item.datetimePickup = item.datetimePickup + " " + item.time.toString().substring(0,2)+":00:00";
-  body =  item.toJson();
+  item.datetimePickup = item.datetimePickup +
+      " " +
+      item.time.toString().substring(0, 2) +
+      ":00:00";
+  body = item.toJson();
 
   Response response;
 
-  http.get((Uri.parse("https://api.telegram.org/"+
-      "bot5670549742:AAFYW_I0D9h4F0eCRbJ3YoDUBWu4AZG0lnI/"+
-          "sendMessage?chat_id=@rawmaterialstest&text="+item.toJson().toString())));
+  http.get((Uri.parse("https://api.telegram.org/" +
+      "bot5670549742:AAFYW_I0D9h4F0eCRbJ3YoDUBWu4AZG0lnI/" +
+      "sendMessage?chat_id=@rawmaterialstest&text=" +
+      item.toJson().toString())));
   try {
     response = await http.post(Uri.parse(url), headers: headers, body: body);
   } on Exception {
@@ -655,20 +533,11 @@ Future<bool> addOrder(BuildContext context, Order item) async {
   return false;
 }
 
-
-
 // Удалить избранное
 Future<bool> deleteFavorite(BuildContext context, int itemId) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/useritem/$itemId';
+  String url = api + 'useritem/$itemId';
 
-  var headers = new Map<String, String>();
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
+  var headers = initHeaders();
 
   var body = new Map<String, dynamic>();
   body['item_id'] = itemId;
@@ -694,17 +563,9 @@ Future<bool> deleteFavorite(BuildContext context, int itemId) async {
 
 //выход из аккаунта
 Future<Logout?> logout(BuildContext context) async {
-  String url = 'https://recyclemap.tmweb.ru/api/v1/logout';
+  String url = api + 'logout';
 
-  var headers = new Map<String, String>();
-  headers['accept'] = "application/json";
-  headers['authorization'] = 'Bearer' + ' ' + UserSession.token;
-  if (mainLocale != null) {
-    headers['Accept-Language'] = mainLocale!.languageCode;
-  } else {
-    headers['Accept-Language'] = "ru";
-  }
-
+  var headers = initHeaders();
   Response response;
 
   try {

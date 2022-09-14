@@ -36,6 +36,6 @@ class MaterialListItem {
       MaterialListItem(
         id: json["id"],
         name: json["name"],
-        //price: json["price"]
+        price: json["price"],
       );
 }
