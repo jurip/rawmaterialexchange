@@ -12,7 +12,8 @@ var list = <String>[
   "alyuminiy",
   "lead",
   "copper",
-  "garbage"
+  "garbage",
+  "favorites"
 ];
 
 String imageDefinitionInFilter(int id) {

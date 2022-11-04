@@ -62,6 +62,7 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
   void initState() {
     super.initState();
     getUserData();
+
     _sendingMsgProgressBar = ProgressBar();
   }
 
@@ -78,29 +79,36 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
               ),
             ),
           )
-        : SafeArea(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 1,
-                    blurRadius: 7,
-                    offset: Offset(0, 2), // changes position of shadow
-                  ),
-                ],
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(30.0),
-                    topLeft: Radius.circular(30.0)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+        : SingleChildScrollView(
+        child: Container(
+      padding: EdgeInsets.only(
+        top: 10,
+        right: 10,
+        left: 10,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 200,
+      ),
+      //height: 900,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 1,
+                  blurRadius: 7,
+                  offset: Offset(0, 2), // changes position of shadow
+                ),
+              ],
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(30.0),
+                  topLeft: Radius.circular(30.0)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                  //mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  //crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
                       padding: EdgeInsets.only(top: 1),
@@ -117,7 +125,7 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
-                          top: 23.0, left: 16.0, right: 16.0),
+                          top: 16.0, left: 16.0, right: 16.0),
                       child: Stack(
                         children: [
                           InkWell(
@@ -147,33 +155,18 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
                       child: Center(
                           child: Text('order'.tr(), style: kAlertTextStyle)),
                     ),
-                    Container(
-                      constraints: BoxConstraints(
-                          minHeight: 0,
-                          maxWidth: double.infinity,
-                          maxHeight: double
-                              .infinity //definitionHeightBottomSheetSettings(),
-                          ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            GarbageOrderForm(
-                              phone: phone,
-                              address: widget.address,
-                              items: widget.materials,
-                              position: widget.position,
-                            ),
-                            //66 * 4
 
-                            SizedBox(height: 1),
-                          ],
-                        ),
-                      ),
+                    GarbageOrderForm(
+                      phone: phone,
+                      address: widget.address,
+                      items: widget.materials,
+                      position: widget.position,
                     ),
+                    //66 * 4
                   ],
                 ),
               ),
-            ),
+    ),
           );
   }
 
@@ -211,6 +204,8 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
   void initState() {
     super.initState();
     //getAddressCoordinates  (context, widget.position!.latitude, widget.position!.longitude);
+    DateTime newDate = DateTime.now().add(const Duration(days: 3));
+    _dateController.text = DateFormat("yyyy-MM-dd").format(newDate);
   }
 
   // Create a global key that uniquely identifies the Form widget
@@ -220,7 +215,8 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
   var maskFormatter = new MaskTextInputFormatter(mask: '### ### ## ##');
-  final _dateController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+
   final _timeController = TextEditingController();
   String valid = '';
   var dropdownValue;
@@ -241,9 +237,10 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
     return Form(
       key: _formKey,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topLeft,
             child: Text('phone_number'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
@@ -280,7 +277,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
               initialValue: widget.phone),
           SizedBox(height: 10.0),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topLeft,
             child: Text('where_from'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
@@ -315,7 +312,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
           ),
           SizedBox(height: 10.0),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topLeft,
             child: Text('when_take'.tr(), style: kAlertTextStyle4),
           ),
           TextFormField(
@@ -330,7 +327,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             onTap: () {
               FocusScope.of(context).requestFocus(new FocusNode());
               GarbageOrderDateTimePicker.showSheetDate(context,
-                  dateTime: DateTime.now(), onClicked: (date) {
+                  dateTime: DateTime.now().add(const Duration(days: 3)), minimumDate: DateTime.now().add(const Duration(days: 2)), onClicked: (date) {
                 setState(() {
                   DateTime newDate = DateFormat('yyyy-MM-dd').parse(date);
                   _dateController.text =
@@ -358,7 +355,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
           ),
           SizedBox(height: 10.0),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topLeft,
             child: Text('take_time'.tr(), style: kAlertTextStyle4),
           ),
           TimePeriodPicker(
@@ -366,33 +363,39 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
           ),
           SizedBox(height: 10.0),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topLeft,
             child: Text('comment'.tr(), style: kAlertTextStyle4),
           ),
-          TextFormField(
-            onSaved: (String? value) {
-              order.comment = value;
-            },
-            // The validator receives the text that the user has entered.
-            decoration: InputDecoration(
-              suffixIcon:
-                  valid == '' ? null : SvgPicture.asset(getValidateBirthday()),
-              suffixIconConstraints:
-                  BoxConstraints(minHeight: 22, minWidth: 22),
-              counterText: "",
-              hintText: 'comment'.tr(),
-              hintStyle: kHintStyle,
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(width: 2.0, color: kColorGrey1),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(width: 2.0, color: kColorGreen1),
+          Align(
+
+            alignment: Alignment.topLeft,
+            child: TextFormField(
+              scrollPadding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom +100),
+
+              onSaved: (String? value) {
+                order.comment = value;
+              },
+              // The validator receives the text that the user has entered.
+              decoration: InputDecoration(
+                suffixIcon: valid == ''
+                    ? null
+                    : SvgPicture.asset(getValidateBirthday()),
+                suffixIconConstraints:
+                    BoxConstraints(minHeight: 22, minWidth: 22),
+                counterText: "",
+                hintText: 'comment'.tr(),
+                hintStyle: kHintStyle,
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(width: 2.0, color: kColorGrey1),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(width: 2.0, color: kColorGreen1),
+                ),
               ),
             ),
           ),
           SizedBox(height: 10.0),
-          Text("order_text".tr()),
-          SizedBox(height: 40.0),
           ConfirmationButton(
             //46
             text: 'make_order'.tr(),
@@ -413,6 +416,9 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
                   const SnackBar(content: Text('Processing Data')),
                 );
                 Navigator.pop(context);
+                widget.items.forEach((element) {
+                  element.amount = 0;
+                });
 
                 cbs
                     .showModalBottomSheet(

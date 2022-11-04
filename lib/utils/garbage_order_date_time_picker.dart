@@ -11,6 +11,8 @@ class GarbageOrderDateTimePicker {
     BuildContext context, {
     required DateTime dateTime,
     required StringToVoidFunc onClicked,
+        minimumDate
+
     //required DateTime dateNow
   }) =>
       showCupertinoModalPopup(
@@ -21,6 +23,7 @@ class GarbageOrderDateTimePicker {
                     SizedBox(
                       height: 180.0,
                       child: CupertinoDatePicker(
+                          minimumDate: minimumDate,
                           backgroundColor: Colors.white,
                           initialDateTime: dateTime,
                           mode: CupertinoDatePickerMode.date,

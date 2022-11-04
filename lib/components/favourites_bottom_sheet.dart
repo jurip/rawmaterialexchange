@@ -5,6 +5,8 @@ import 'package:app/constants/style_constants.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import 'location_info_widget.dart';
+
 class FavouritesBottomSheet extends StatefulWidget {
   const FavouritesBottomSheet({
     Key? key,
@@ -107,7 +109,21 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
                           shrinkWrap: true,
                           itemCount: favorites.length,
                           itemBuilder: (BuildContext context, int index) {
-                            return Padding(
+                            return InkWell(
+                                onTap: () async {
+                                  var selectedIndexMarker = favorites[index].itemId;
+                                  var listOfRawMaterialsOfSpecificObject =
+                                      await getListOfRawMaterialsOfSpecificObject(
+                                      selectedIndexMarker, context);
+
+                              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                return LocationInfoWidget(
+                                  materials: listOfRawMaterialsOfSpecificObject!,
+                                  selectedIndexMarker: selectedIndexMarker,
+                                );
+                              }));
+                            },
+                            child: Padding(
                               padding: const EdgeInsets.symmetric(
                                   vertical: 12.0, horizontal: 16.0),
                               child: Container(
@@ -180,6 +196,7 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
                                   ),
                                 ),
                               ),
+                            ),
                             );
                           },
                         ),

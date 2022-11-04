@@ -20,7 +20,7 @@ class GarbageChangeAmountButton extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15.0),
-        color: kColorGrey1,
+        //color: kColorGrey1,
         border: Border.all(width: 1.0, color: Color(0xFFBEBEBE)),
       ),
       child: Padding(

@@ -46,6 +46,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
   void initState() {
     super.initState();
     setAddress();
+    income = getIncome();
   }
 
   @override
@@ -95,7 +96,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                 ),
                 Padding(
                   padding:
-                      const EdgeInsets.only(top: 23.0, left: 16.0, right: 16.0),
+                      const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
                   child: Stack(
                     children: [
                       InkWell(
@@ -118,15 +119,16 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                           ],
                         ),
                       ),
+
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 25.0),
-                          Text('garbage_collection'.tr(),
-                              style: kAlertTextStyle),
+                          SizedBox(height: 40.0),
+                          Text('garbage_collection_header'.tr(),
+                              style: header),
                           SizedBox(height: 5.0),
                           Text('garbage_collection_text'.tr()),
-                          SizedBox(height: 5.0),
+                          SizedBox(height: 15.0),
                           InkWell(
                             child: Text(
                               'how_it_works_link'.tr(),
@@ -144,8 +146,6 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                 cbs
                                     .showModalBottomSheet(
                                       backgroundColor: Colors.transparent,
-                                      isScrollControlled: true,
-                                      barrierColor: Colors.white.withOpacity(0),
                                       context: context,
                                       builder: (BuildContext context) {
                                         return GarbageInfoWidget();
@@ -235,13 +235,14 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                     //Text(widget.materials[index].text),
                                     //SizedBox(height: 10.0),
                                     Row(children: [
-                                      Text("price:".tr()),
-                                      Text(widget.materials[index].price
+                                      Text("price:".tr(), style: grey,
+                                      ),
+                                      Text(" "+widget.materials[index].price
                                           .toString()),
-                                      Text("rub_per_100_kilo".tr())
+                                      Text("rub_per_100_kilo".tr(),)
                                     ]),
                                     SizedBox(height: 10.0),
-                                    Text("you_give".tr()),
+                                    Text("you_give".tr(), style: grey,),
                                     SizedBox(height: 10.0),
                                     GarbageChangeAmountButton(
                                       text: widget
@@ -349,17 +350,17 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                     },
                   ),
                 ),
-                Padding(
+                income!=0?Padding(
                   padding:
                       const EdgeInsets.only(top: 23.0, left: 16.0, right: 16.0),
                   child: GarbageOrderButton(
                     //46
                     text1: 'your_income'.tr(),
-                    text2: income.toString() + ' ' + "kg".tr(),
+                    text2: income.toString() + ' ' + "rub".tr(),
                     onTap: () async {
                       Navigator.pop(context);
-                      cbs
-                          .showModalBottomSheet(
+
+                          showModalBottomSheet(
                             backgroundColor: Colors.transparent,
                             isScrollControlled: true,
                             barrierColor: Colors.white.withOpacity(0),
@@ -376,7 +377,8 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                           .whenComplete(() {});
                     },
                   ),
-                ),
+                ):Text(""),
+                SizedBox(height: 10.0),
               ],
             ),
           );
@@ -385,7 +387,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
   double getIncome() {
     double sum = 0;
     widget.materials.forEach((element) {
-      sum = sum + element.amount * element.price;
+      sum = sum + element.amount * element.price/100;
     });
     return sum;
   }

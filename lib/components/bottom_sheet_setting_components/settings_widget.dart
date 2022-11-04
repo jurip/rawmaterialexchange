@@ -8,7 +8,8 @@ import 'package:app/utils/progress_bar.dart';
 import 'package:app/utils/user_session.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
+import 'dart:async';
+import 'package:flutter/services.dart';
 import '../../main.dart';
 import '../confirmation_button.dart';
 import 'information_column.dart';
@@ -25,7 +26,18 @@ class SettingsWidget extends StatefulWidget {
 }
 
 class _SettingsWidgetState extends State<SettingsWidget> {
-  List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
+
+  static const platform = MethodChannel('rawmaterials/openTelegram');
+
+  Future<void> _openTelegram() async {
+    try {
+      await platform.invokeMethod('openTelegram');
+    } on PlatformException catch (e) {
+
+    }
+  }
+
+
 
   @override
   void initState() {
@@ -60,42 +72,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
 
   double heightBottomSheetSettings = 0;
 
-  double definitionHeightBottomSheetSettings() {
-    if (topPadding1 +
-            topPadding2 +
-            containerHeight1 +
-            (informationColumnHeight * 4) +
-            sizedBoxHeight1 +
-            sizedBoxHeight2 +
-            sizedBoxHeight3 +
-            sizedBoxHeight4 +
-            confirmationButtonHeight +
-            sizedBoxHeight5 +
-            textHeight1 +
-            textHeight2 +
-            textHeight3 +
-            containerHeight2 >=
-        MediaQuery.of(context).size.height) {
-      heightBottomSheetSettings = MediaQuery.of(context).size.height;
-    } else {
-      heightBottomSheetSettings = topPadding1 +
-          topPadding2 +
-          containerHeight1 +
-          (informationColumnHeight * 4) +
-          sizedBoxHeight1 +
-          sizedBoxHeight2 +
-          sizedBoxHeight3 +
-          sizedBoxHeight4 +
-          confirmationButtonHeight +
-          sizedBoxHeight5 +
-          textHeight1 +
-          textHeight2 +
-          textHeight3 +
-          containerHeight2;
-    }
-    return heightBottomSheetSettings;
-  }
-
   @override
   Widget build(BuildContext context) {
     return userData == null || listLanguage.isEmpty
@@ -110,7 +86,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
             ),
           )
         : SafeArea(
-            child: Container(
+            child: SingleChildScrollView(
+              child:Container(
               width: double.infinity,
               decoration: BoxDecoration(
                 boxShadow: [
@@ -155,7 +132,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                       constraints: BoxConstraints(
                         minHeight: 0,
                         maxWidth: double.infinity,
-                        maxHeight: definitionHeightBottomSheetSettings(),
                       ),
                       child: SingleChildScrollView(
                         child: Column(
@@ -236,6 +212,13 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                               color: kColorGrey1,
                             ),
                             SizedBox(height: sizedBoxHeight4),
+                            Text("connect".tr(),style: kTextStyle2,),
+                      InkWell(
+                        onTap: () {
+                            _openTelegram();
+                        },
+                        child:Image(image: AssetImage("images/telegram.png"), height: 25,)),
+                            SizedBox(height: sizedBoxHeight4),
                             ConfirmationButton(
                               //46
                               text: 'logout'.tr(),
@@ -259,6 +242,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                   ],
                 ),
               ),
+            ),
             ),
           );
   }
@@ -302,7 +286,6 @@ class _SettingsWidgetState extends State<SettingsWidget> {
   List<ListLanguages> listLanguage = [];
 
   Future<void> getListOfLanguageAddDataToList() async {
-    // _sendingMsgProgressBar?.show(context); // TODO Что-то не так с ним
     var dataLanguage = await getLanguages();
     if (dataLanguage != null) {
       setState(() {

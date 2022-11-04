@@ -383,7 +383,7 @@ Future<String?> getAddressCoordinates(
     Response response = await http.get(Uri.parse(url), headers: headers);
     if (200 <= response.statusCode && response.statusCode < 300) {
       var responseJson = json.decode(response.body);
-      String address = responseJson["features"][0]["place_name"].toString();
+      String address = responseJson["features"][0]["text"].toString()+" "+responseJson["features"][0]["address"];
 
       return address;
     } else if (response.statusCode == 401) {
@@ -508,6 +508,7 @@ Future<bool> addOrder(BuildContext context, Order item) async {
       " " +
       item.time.toString().substring(0, 2) +
       ":00:00";
+  item.items = item.items.where((element) => element.amount!=0).toList();
   body = item.toJson();
 
   Response response;

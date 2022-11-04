@@ -32,12 +32,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      getToken();
-    });
+    getToken();
+
   }
 
   @override
@@ -50,8 +51,10 @@ class _MyAppState extends State<MyApp> {
       locale: context.locale,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+          fontFamily: 'GothamProNarrow-Medium',
           textSelectionTheme: TextSelectionThemeData(
         cursorColor: kColorGreen1,
+
         selectionColor: kColorGreen2,
         selectionHandleColor: kColorGreen1,
       )),

@@ -1,8 +1,8 @@
 import 'package:app/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 
-class MaterialCardWidget extends StatelessWidget {
-  const MaterialCardWidget({
+class OtherMaterialCardWidget extends StatelessWidget {
+  const OtherMaterialCardWidget({
     Key? key,
     required this.text,
     required this.onTap,
@@ -45,7 +45,7 @@ class MaterialCardWidget extends StatelessWidget {
               child: Text(
                 text,
                 style: kTextStyle7,
-                //softWrap: true,
+                softWrap: false,
               ),
             ),
           ],

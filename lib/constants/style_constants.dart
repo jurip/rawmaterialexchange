@@ -38,6 +38,9 @@ Color colorDefinitionInFilter(int id) {
     case 9:
       colorFilterElement = Color(0xFFF2F2F2);
       break;
+    case 10:
+      colorFilterElement = Color(0xFFF2F2F2);
+      break;
   }
   return colorFilterElement;
 }
@@ -51,6 +54,12 @@ const kTextStyle2 = TextStyle(
 const kHintStyle = TextStyle(
   color: kColorGrey2,
   fontSize: 18.0,
+  fontWeight: FontWeight.w600,
+  fontFamily: 'GothamProNarrow-Medium',
+);
+const grey = TextStyle(
+  color: kColorGrey2,
+  fontSize: 16.0,
   fontWeight: FontWeight.w600,
   fontFamily: 'GothamProNarrow-Medium',
 );
@@ -86,7 +95,7 @@ const kTextStyle6 = TextStyle(
 const kTextStyle7 = TextStyle(
   fontWeight: FontWeight.w600,
   fontFamily: 'GothamProNarrow-Medium',
-  fontSize: 16.0,
+  fontSize: 14.0,
 );
 
 const kTextStyle8 = TextStyle(
@@ -112,6 +121,11 @@ const kAlertTextStyle = TextStyle(
   fontFamily: 'GothamProNarrow-Medium',
   fontWeight: FontWeight.w700,
   fontSize: 20.0,
+);
+const header = TextStyle(
+  fontFamily: 'GothamProNarrow-Medium',
+  fontWeight: FontWeight.w700,
+  fontSize: 22.0,
 );
 const linkStyle = TextStyle(
   fontFamily: 'GothamProNarrow-Medium',
@@ -141,7 +155,7 @@ const kAlertTextStyle4 = TextStyle(
 const bigWhite = TextStyle(
   fontFamily: 'GothamProNarrow-Medium',
   fontWeight: FontWeight.w700,
-  color: kColorGrey3,
+  color: kColorGrey4,
   fontSize: 26.0,
 );
 
@@ -149,6 +163,11 @@ const kTextStyle11 = TextStyle(
   fontFamily: 'GothamProNarrow-Medium',
   fontWeight: FontWeight.w600,
   color: kColorGrey3,
+  fontSize: 14.0,
+);
+const kTextStyle12 = TextStyle(
+  fontFamily: 'GothamProNarrow-Medium',
+  fontWeight: FontWeight.w600,
   fontSize: 14.0,
 );
 

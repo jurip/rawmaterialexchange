@@ -10,9 +10,7 @@ import 'package:app/components/custom_app_bar.dart';
 import 'package:app/components/exit_alert.dart';
 import 'package:app/components/favourites_bottom_sheet.dart';
 import 'package:app/components/location_info_widget.dart';
-import 'package:app/components/location_widget.dart';
 import 'package:app/components/material_card_widget.dart';
-import 'package:app/components/route_widget.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
@@ -21,17 +19,21 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../api/models/material_list_item.dart';
 import '../api/models/response_list_object_working_hours.dart';
 import '../components/garbage_widget.dart';
+import '../components/other_material_card_widget.dart';
 import '../constants/image_constants.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  MapScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _MapScreenState createState() => _MapScreenState();
@@ -39,52 +41,105 @@ class MapScreen extends StatefulWidget {
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-class _MapScreenState extends State<MapScreen> {
+class _MapScreenState extends State<MapScreen>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   MapController _mapController = MapController();
-
+  late Animation rotationAnimation;
+  late AnimationController controller;
   ProgressBar? _sendingMsgProgressBar;
-
   int selectedIndexMarker = -1;
-
-  Location location = new Location();
-
-  LatLng? _position;
-
+  LatLng? _position = LatLng(55.76350864466721, 37.61888069876945);
   String error = '';
-
   bool load = false;
-
   int selectedMaterials = -1;
-
   bool userInfoClicked = false;
-
   Timer? timer;
+  bool firstTime = true;
 
   var locationOpened = false;
+  double x = 4;
+  var perm;
+  var serviceStatusStream = Geolocator.getServiceStatusStream();
 
+  late Stream<Position> stream;
+
+  bool positionStreamIsListening = false;
+
+  LatLng latLngfromPosition(currentLocation) {
+    return LatLng(currentLocation.latitude, currentLocation.longitude);
+
+  }
+
+  Future<bool> getPermission() async {
+    var enabled = await Geolocator.checkPermission();
+    if (enabled == LocationPermission.denied) {
+      enabled = await Geolocator.requestPermission();
+    }
+    return enabled != LocationPermission.denied &&
+        enabled != LocationPermission.deniedForever;
+  }
+
+  void initPositioning() async{
+    var p = await SharedPreferences.getInstance();
+    _position = await getPositionFromStored();
+    var permission = await getPermission();
+    stream = Geolocator.getPositionStream();
+    if (permission) {
+      serviceStatusStream.listen((event) {
+        print("set in service status: " + event.toString());
+      });
+      stream.listen((event) {
+        if(firstTime) {
+          setState(() =>
+          {
+            _position = latLngfromPosition(event),
+
+
+          });
+          firstTime = false;
+          p.setDouble("lat", _position!.latitude);
+          p.setDouble("lng", _position!.longitude);
+          //_mapController.move(_position!, 15);
+        }
+      });
+    }
+  }
   @override
   void initState() {
     super.initState();
+    initPositioning();
+
     _sendingMsgProgressBar = ProgressBar();
-    getLocation();
     getListOfObjectAddDataToList();
+    WidgetsBinding.instance.addObserver(this);
+    initAnimation();
   }
 
-  void getLocation() {
-    location.onLocationChanged.listen((LocationData currentLocation) {
-      if (currentLocation.latitude != null &&
-          currentLocation.longitude != null) {
-        setState(() {
-          _position =
-              LatLng(currentLocation.latitude!, currentLocation.longitude!);
-        });
-      }
-    });
+  Future<LatLng> getPositionFromStored() async {
+    LatLng position;
+    var prefs = await SharedPreferences.getInstance();
+    var lat = prefs.getDouble("lat");
+    var lng = prefs.getDouble("lng");
+    if (lat != null && lng != null) {
+      position = LatLng(lat, lng);
+    } else {
+      position = LatLng(55.76350864466721, 37.61888069876945);
+    }
+    return position;
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    controller.dispose();
     super.dispose();
+  }
+
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      print("AppLifecycleState: " + state.name.toString());
+      //getLocation();
+    }
   }
 
   PanelController _pc = new PanelController();
@@ -117,6 +172,37 @@ class _MapScreenState extends State<MapScreen> {
         itemCount: list.length,
         itemBuilder: (BuildContext context, int index) {
           return MaterialCardWidget(
+            colorShadow: list[index].selected == true
+                ? Color(0xFF009900)
+                : Colors.transparent,
+            assetImage: imageDefinitionInFilter(list[index].id),
+            color: colorDefinitionInFilter(list[index].id),
+            onTap: () {
+              onTap(index);
+            },
+            text: list[index].name,
+          );
+        },
+        staggeredTileBuilder: (int index) => StaggeredTile.count(4, 3),
+      ),
+    );
+  }
+
+  Widget otherHorizontalScrollList(BuildContext context, list, onTap) {
+    return Container(
+      alignment: Alignment.topLeft,
+      margin: EdgeInsets.only(left: 12),
+      color: Colors.white,
+      constraints: BoxConstraints(
+        maxWidth: double.infinity,
+        maxHeight: 140,
+      ),
+      child: StaggeredGridView.countBuilder(
+        scrollDirection: Axis.horizontal,
+        crossAxisCount: 5,
+        itemCount: list.length,
+        itemBuilder: (BuildContext context, int index) {
+          return OtherMaterialCardWidget(
             colorShadow: list[index].selected == true
                 ? Color(0xFF009900)
                 : Colors.transparent,
@@ -187,7 +273,8 @@ class _MapScreenState extends State<MapScreen> {
               ),
               key: scaffoldKey,
               body: SlidingUpPanel(
-                margin: EdgeInsets.only(top: 110.0),
+                minHeight: 140,
+                maxHeight: 590,
                 controller: _pc,
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(30.0),
@@ -204,29 +291,26 @@ class _MapScreenState extends State<MapScreen> {
                         height: 4.0,
                         width: 42.0,
                       ),
-                      SizedBox(height: 20.0),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: EdgeInsets.only(top: 30),
-                          physics: AlwaysScrollableScrollPhysics(),
-                          child: Column(
-                            children: [
-                              //Services
-                              header("services".tr()),
-                              SizedBox(height: 10.0),
-                              horizontalScrollList(
-                                  context, listOfServices, onServiceTap),
-                              header("filters".tr()),
-                              SizedBox(height: 10.0),
-                              horizontalScrollList(
-                                  context, listOfRawMaterials, onFilterTap),
-                              header("other".tr()),
-                              SizedBox(height: 10.0),
-                              horizontalScrollList(
-                                  context, listOfServices, onFavouritesTap),
-                            ],
-                          ),
-                        ),
+                      //SizedBox(height: 5.0),
+                      Column(
+                        //mainAxisSize: MainAxisSize.max,
+                        //mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          //Services
+                          SizedBox(height: 20.0),
+                          header("services".tr()),
+                          SizedBox(height: 10.0),
+                          horizontalScrollList(
+                              context, listOfServices, onServiceTap),
+                          header("filters".tr()),
+                          SizedBox(height: 10.0),
+                          horizontalScrollList(
+                              context, listOfFilters, onFilterTap),
+                          header("other".tr()),
+                          SizedBox(height: 10.0),
+                          otherHorizontalScrollList(
+                              context, listOfOthers, onFavouritesTap),
+                        ],
                       ),
                     ],
                   ),
@@ -236,8 +320,8 @@ class _MapScreenState extends State<MapScreen> {
                     FlutterMap(
                       mapController: _mapController,
                       options: MapOptions(
-                        boundsOptions:
-                            FitBoundsOptions(padding: EdgeInsets.all(800.0)),
+                        //boundsOptions:
+                        //    FitBoundsOptions(padding: EdgeInsets.all(300.0)),
                         center: _position,
                         minZoom: 3.0,
                         maxZoom: 18.4,
@@ -291,7 +375,7 @@ class _MapScreenState extends State<MapScreen> {
                           color: Colors.white,
                           onPressed: () {
                             if (_position != null) {
-                              _mapController.move(_position!, 18);
+                              _mapController.move(_position!, 15);
                             }
                           },
                           icon: Icon(
@@ -324,7 +408,7 @@ class _MapScreenState extends State<MapScreen> {
             decoration: BoxDecoration(
               color: Colors.blue,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 4.0),
+              border: Border.all(color: Colors.white, width: x),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.3),
@@ -350,6 +434,7 @@ class _MapScreenState extends State<MapScreen> {
     if (dataObjects != null) {
       listOfObject = dataObjects;
       getListOfRawMaterialsAddDataToList();
+      getListOfFilters();
       addMarkers();
       load = true;
     } else {
@@ -375,8 +460,26 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  List<MaterialListItem> listOfFilters = [];
+
+  Future<void> getListOfFilters() async {
+    var dataListOfRawMaterials = await getListOfRawMaterials();
+    if (dataListOfRawMaterials != null) {
+      setState(() {
+        listOfFilters = dataListOfRawMaterials;
+      });
+    } else {
+      setState(() {
+        error = 'Error';
+      });
+    }
+  }
+
   List<Service> listOfServices = [
-    Service(id: 9, name: "favourites".tr()),
+    Service(id: 9, name: "garbage_collection".tr()),
+  ];
+  List<Service> listOfOthers = [
+    Service(id: 10, name: "other".tr()),
   ];
 
   //запись маркеров в лист для их отображения
@@ -531,145 +634,10 @@ class _MapScreenState extends State<MapScreen> {
         locationOpened = true;
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return LocationInfoWidget(
-              materials: listOfRawMaterialsOfSpecificObject,
-              position: _position);
+            materials: listOfRawMaterialsOfSpecificObject,
+            selectedIndexMarker: selectedIndexMarker,
+          );
         }));
-
-        cbs
-            .showModalBottomSheet(
-                backgroundColor: Colors.transparent,
-                isScrollControlled: true,
-                barrierColor: Colors.white.withOpacity(0),
-                context: context,
-                builder: (BuildContext context) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      LocationWidget(
-                        listOfRawMaterialsOfSpecificObject:
-                            listOfRawMaterialsOfSpecificObject,
-                        selectedIndexMarker: selectedIndexMarker,
-                        position: _position,
-                        onAddressChange: (val) {
-                          setState(() {
-                            address = val;
-                          });
-                        },
-                        onDistanceDrivingChange: (val) {
-                          setState(() {
-                            distanceDriving = val;
-                          });
-                        },
-                        onDurationDrivingChange: (val) {
-                          setState(() {
-                            durationsDriving = val;
-                          });
-                        },
-                        onDistanceWalkingChange: (val) {
-                          setState(() {
-                            distanceWalking = val;
-                          });
-                        },
-                        onDurationWalkingChange: (val) {
-                          setState(() {
-                            durationsWalking = val;
-                          });
-                        },
-                        onRouteWalkingChange: (val) {
-                          setState(() {
-                            latLngWalking = val;
-                            converterDistanceDriving();
-                          });
-                          Navigator.pop(context);
-                          controllerBottomSheetRout = scaffoldKey.currentState!
-                              .showBottomSheet<Null>((BuildContext context) {
-                            return RouteWidget(
-                              address: address,
-                              durationsWalkingToString:
-                                  durationsWalkingToString,
-                              durationsDrivingToString:
-                                  durationsDrivingToString,
-                              selectedToggleSwitch: selectedToggleSwitch,
-                              onSelectedToggleSwitchChange: (bool) {
-                                updatedSelectedToggleSwitch = bool;
-                                getSelectedToggleSwitch();
-                              },
-                              distanceDrivingToString: distanceDrivingToString,
-                              distanceWalkingToString: distanceWalkingToString,
-                              removeRoute: () {
-                                latLngDriving.clear();
-                                latLngWalking.clear();
-                                setState(() {});
-                              },
-                              returnMarkers: () {
-                                setState(() {
-                                  getListOfObjectAddDataToList();
-                                });
-                              },
-                            );
-                          });
-                          controllerBottomSheetRout!.closed.then((value) {
-                            setState(() {
-                              latLngDriving.clear();
-                              latLngWalking.clear();
-                              getListOfObjectAddDataToList();
-                              if (!userInfoClicked)
-                                getListOfRawMaterialsOfSpecificObjectAddDataToList(
-                                    selectedIndexMarker, false);
-                            });
-                          });
-                        },
-                        onRouteDrivingChange: (val) {
-                          setState(() {
-                            latLngDriving = val;
-                          });
-                        },
-                        removeMarkers: () {
-                          setState(() {
-                            markers.clear();
-                          });
-                        },
-                        latLngSelectedObject:
-                            (latSelectedObject, lngSelectedObject) {
-                          setState(() {
-                            latSelectedObject = latSelectedObject;
-                            lngSelectedObject = lngSelectedObject;
-                            markers.add(
-                              Marker(
-                                height: 30.0,
-                                width: 30.0,
-                                point: LatLng(
-                                    latSelectedObject, lngSelectedObject),
-                                builder: (context) => InkWell(
-                                  onTap: () {},
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: kColorGreen1,
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      border: Border.all(
-                                          color: Colors.white, width: 4.0),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.3),
-                                          spreadRadius: 1,
-                                          blurRadius: 7,
-                                          offset: Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          });
-                        },
-                      ),
-                    ],
-                  );
-                })
-            .whenComplete(() {
-          userInfoClicked = false;
-        });
       });
     } else {
       setState(() {
@@ -709,17 +677,17 @@ class _MapScreenState extends State<MapScreen> {
     }
     addMarkers();
 
-    var bounds = new LatLngBounds();
-    for (var item in listOfObjectFromFilter) {
-      bounds.extend(LatLng(item.latitude, item.longitude));
-    }
-    _mapController.fitBounds(
-      bounds,
-      options: FitBoundsOptions(
-        maxZoom: 9.6,
-        inside: false,
-      ),
-    );
+    //var bounds = new LatLngBounds();
+    //for (var item in listOfObjectFromFilter) {
+    //  bounds.extend(LatLng(item.latitude, item.longitude));
+    //}
+    //_mapController.fitBounds(
+    //  bounds,
+    //  options: FitBoundsOptions(
+    //    maxZoom: 9.6,
+    //    inside: false,
+    //  ),
+    //);
   }
 
   //удаление фильтра
@@ -731,284 +699,7 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  String distanceDrivingToString = '';
-
-  void converterDistanceDriving() {
-    if (distanceDriving.toInt().toString().length > 3) {
-      if ((distanceDriving / 1000) % 10 == 1) {
-        distanceDrivingToString =
-            '${(distanceDriving / 1000).round()} ' + 'kilometer'.tr();
-      } else if ((distanceDriving / 1000) % 10 > 1 &&
-          (distanceDriving / 1000) % 10 < 5) {
-        distanceDrivingToString =
-            '${(distanceDriving / 1000).round()} ' + 'kilometers'.tr();
-      } else {
-        distanceDrivingToString =
-            '${(distanceDriving / 1000).round()} ' + 'kilometrov'.tr();
-      }
-    } else {
-      if (distanceDriving % 10 == 1) {
-        distanceDrivingToString = '${distanceDriving.toInt()} ' + 'metre'.tr();
-      } else if (distanceDriving % 10 > 1 && distanceDriving % 10 < 5) {
-        distanceDrivingToString = '${distanceDriving.toInt()} ' + 'meters'.tr();
-      } else {
-        distanceDrivingToString = '${distanceDriving.toInt()} ' + 'metrov'.tr();
-      }
-    }
-    converterDistanceWalking();
-  }
-
-  String distanceWalkingToString = '';
-
-  void converterDistanceWalking() {
-    if (distanceWalking.toInt().toString().length > 3) {
-      if ((distanceDriving / 1000) % 10 == 1) {
-        distanceWalkingToString =
-            '${(distanceWalking / 1000).round()} ' + 'kilometer'.tr();
-      } else if ((distanceWalking / 1000) % 10 > 1 &&
-          (distanceWalking / 1000) % 10 < 5) {
-        distanceWalkingToString =
-            '${(distanceWalking / 1000).round()} ' + 'kilometers'.tr();
-      } else {
-        distanceWalkingToString =
-            '${(distanceWalking / 1000).round()} ' + 'kilometrov'.tr();
-      }
-    } else {
-      if (distanceWalking % 10 == 1) {
-        distanceWalkingToString = '${distanceWalking.toInt()} ' + 'metre'.tr();
-      } else if (distanceWalking % 10 > 1 && distanceWalking % 10 < 5) {
-        distanceWalkingToString = '${distanceWalking.toInt()} ' + 'meters'.tr();
-      } else {
-        distanceWalkingToString = '${distanceWalking.toInt()} ' + 'metrov'.tr();
-      }
-    }
-    convertDurationsDriving();
-  }
-
-  String durationsDrivingToString = '';
-
   String twoDigits(int n) => n.toString().padLeft(2, '0');
-
-  void convertDurationsDriving() {
-    Duration time = Duration(seconds: durationsDriving.toInt());
-    final hours = twoDigits(time.inHours.remainder(60));
-    final minutes = twoDigits(time.inMinutes.remainder(60));
-
-    String stringHour = '';
-    if (int.parse(hours) == 11) {
-      stringHour = 'hours'.tr();
-
-      String stringMinute = '';
-
-      if (int.parse(minutes) == 11) {
-        stringMinute = 'minutes'.tr();
-      } else {
-        switch (int.parse(minutes) % 10) {
-          case 1:
-            stringMinute = 'minute'.tr();
-            break;
-          case 2:
-          case 3:
-          case 4:
-            stringMinute = 'minuti'.tr();
-            break;
-          case 5:
-          case 6:
-          case 7:
-          case 8:
-          case 9:
-          case 0:
-            stringMinute = 'minutes'.tr();
-            break;
-        }
-      }
-
-      String strHour = hours == '00' ? '' : hours;
-      String strMinutes = minutes == '00' ? '' : minutes;
-
-      durationsDrivingToString = '$hours $strHour $strMinutes $stringMinute';
-    } else if (int.parse(hours) == 0) {
-      String stringMinute = '';
-      if (int.parse(minutes) == 11) {
-        stringMinute = 'minutes'.tr();
-      } else {
-        switch (int.parse(minutes) % 10) {
-          case 1:
-            stringMinute = 'minute'.tr();
-            break;
-          case 2:
-          case 3:
-          case 4:
-            stringMinute = 'minuti'.tr();
-            break;
-          case 5:
-          case 6:
-          case 7:
-          case 8:
-          case 9:
-          case 0:
-            stringMinute = 'minutes'.tr();
-            break;
-        }
-      }
-      durationsDrivingToString = '$minutes $stringMinute';
-    } else {
-      switch (int.parse(hours) % 10) {
-        case 1:
-          stringHour = 'hour'.tr();
-          break;
-        case 2:
-        case 3:
-        case 4:
-          stringHour = 'hour_s'.tr();
-          break;
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 0:
-          stringHour = 'hours'.tr();
-          break;
-      }
-    }
-    String stringMinute = '';
-    if (int.parse(minutes) == 11) {
-      stringMinute = 'hours'.tr();
-    } else {
-      switch (int.parse(minutes) % 10) {
-        case 1:
-          stringMinute = 'minute'.tr();
-          break;
-        case 2:
-        case 3:
-        case 4:
-          stringMinute = 'minuti'.tr();
-          break;
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 0:
-          stringMinute = 'minutes'.tr();
-          break;
-      }
-    }
-
-    String strHour = hours == '00' ? '' : hours;
-    String strMinutes = minutes == '00' ? '' : minutes;
-
-    durationsDrivingToString = '$strHour $stringHour $strMinutes $stringMinute';
-    convertDurationsWalking();
-  }
-
-  String durationsWalkingToString = '';
-
-  void convertDurationsWalking() {
-    Duration time = Duration(seconds: durationsWalking.toInt());
-    final hours = twoDigits(time.inHours.remainder(60));
-    final minutes = twoDigits(time.inMinutes.remainder(60));
-
-    String stringHour = '';
-    if (int.parse(hours) == 11) {
-      stringHour = 'hours'.tr();
-
-      String stringMinute = '';
-
-      if (int.parse(minutes) == 11) {
-        stringMinute = 'minutes'.tr();
-      } else {
-        switch (int.parse(minutes) % 10) {
-          case 1:
-            stringMinute = 'minute'.tr();
-            break;
-          case 2:
-          case 3:
-          case 4:
-            stringMinute = 'minuti'.tr();
-            break;
-          case 5:
-          case 6:
-          case 7:
-          case 8:
-          case 9:
-          case 0:
-            stringMinute = 'minutes'.tr();
-            break;
-        }
-      }
-      durationsWalkingToString = '$hours $stringHour $minutes $stringMinute';
-    } else if (int.parse(hours) == 0) {
-      String stringMinute = '';
-      if (int.parse(minutes) == 11) {
-        stringMinute = 'minutes'.tr();
-      } else {
-        switch (int.parse(minutes) % 10) {
-          case 1:
-            stringMinute = 'minute'.tr();
-            break;
-          case 2:
-          case 3:
-          case 4:
-            stringMinute = 'minuti'.tr();
-            break;
-          case 5:
-          case 6:
-          case 7:
-          case 8:
-          case 9:
-          case 0:
-            stringMinute = 'minutes'.tr();
-            break;
-        }
-      }
-      durationsWalkingToString = '$minutes $stringMinute';
-    } else {
-      switch (int.parse(hours) % 10) {
-        case 1:
-          stringHour = 'hour'.tr();
-          break;
-        case 2:
-        case 3:
-        case 4:
-          stringHour = 'hour_s'.tr();
-          break;
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 0:
-          stringHour = 'hours'.tr();
-          break;
-      }
-    }
-    String stringMinute = '';
-    if (int.parse(minutes) == 11) {
-      stringMinute = 'hours'.tr();
-    } else {
-      switch (int.parse(minutes) % 10) {
-        case 1:
-          stringMinute = 'minute'.tr();
-          break;
-        case 2:
-        case 3:
-        case 4:
-          stringMinute = 'minuti'.tr();
-          break;
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 0:
-          stringMinute = 'minutes'.tr();
-          break;
-      }
-    }
-    durationsWalkingToString = '$hours $stringHour $minutes $stringMinute';
-  }
 
   String address = '';
 
@@ -1045,11 +736,11 @@ class _MapScreenState extends State<MapScreen> {
 
   onFilterTap(index) {
     setState(() {
-      listOfRawMaterials[index].selected = !listOfRawMaterials[index].selected;
-      if (listOfRawMaterials[index].selected == false) {
-        removeFilter(listOfRawMaterials[index].id);
+      listOfFilters[index].selected = !listOfFilters[index].selected;
+      if (listOfFilters[index].selected == false) {
+        removeFilter(listOfFilters[index].id);
       } else {
-        getSelectedMaterialsIdAddToList(listOfRawMaterials[index].id);
+        getSelectedMaterialsIdAddToList(listOfFilters[index].id);
       }
     });
   }
@@ -1111,4 +802,21 @@ class _MapScreenState extends State<MapScreen> {
     var outputDate = outputFormat.format(inputDate);
     return outputDate;
   }
+
+  void initAnimation() {
+    controller = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 2000));
+    rotationAnimation = Tween(begin: 4.0, end: 7).animate(controller);
+    rotationAnimation.addListener(() {
+      setState(() {
+        x = rotationAnimation.value;
+      });
+    });
+    controller.repeat();
+  }
+
+  onError() {
+    print("dsdsd");
+  }
+
 }

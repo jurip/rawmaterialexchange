@@ -159,7 +159,8 @@ class _GarbageInfoWidgetState extends State<GarbageInfoWidget> {
                           children: [
                             //66 * 4
                             SizedBox(height: sizedBoxHeight1),
-                            Text('how_it_works_text'.tr())
+                            Text('how_it_works_text'.tr()),
+                            Text("\n\n\n\n\n\n\n\n\n")
                           ],
                         ),
                       ),
