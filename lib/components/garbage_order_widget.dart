@@ -76,32 +76,32 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
             ),
           )
         : SingleChildScrollView(
-        child: Container(
-      padding: EdgeInsets.only(
-        top: 10,
-        right: 10,
-        left: 10,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 200,
-      ),
-      //height: 900,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 1,
-                  blurRadius: 7,
-                  offset: Offset(0, 2), // changes position of shadow
-                ),
-              ],
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(30.0),
-                  topLeft: Radius.circular(30.0)),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
+            child: Container(
+              padding: EdgeInsets.only(
+                top: 10,
+                right: 10,
+                left: 10,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 200,
+              ),
+              //height: 900,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    spreadRadius: 1,
+                    blurRadius: 7,
+                    offset: Offset(0, 2), // changes position of shadow
+                  ),
+                ],
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(30.0),
+                    topLeft: Radius.circular(30.0)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
                   //mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   //crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,7 +162,7 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
                   ],
                 ),
               ),
-    ),
+            ),
           );
   }
 
@@ -192,25 +192,18 @@ class GarbageOrderForm extends StatefulWidget {
   }
 }
 
-// Define a corresponding State class.
-// This class holds data related to the form.
 class GarbageOrderFormState extends State<GarbageOrderForm> {
-  var defaultDate = DateTime.now().add(const Duration(days: 2)).add(const Duration(minutes: 2));
+  var defaultDate = DateTime.now()
+      .add(const Duration(days: 2))
+      .add(const Duration(minutes: 2));
 
-  //для выстраивания маршрута пешком
   @override
   void initState() {
     super.initState();
-    //getAddressCoordinates  (context, widget.position!.latitude, widget.position!.longitude);
     DateTime newDate = defaultDate;
     _dateController.text = DateFormat("yyyy-MM-dd").format(newDate);
   }
 
-  // Create a global key that uniquely identifies the Form widget
-  // and allows validation of the form.
-  //
-  // Note: This is a `GlobalKey<FormState>`,
-  // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
   var maskFormatter = new MaskTextInputFormatter(mask: '### ### ## ##');
   final DateTime limit = DateTime.now().add(const Duration(days: 2));
@@ -325,14 +318,14 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             onTap: () {
               FocusScope.of(context).requestFocus(new FocusNode());
               DateTimePicker.showSheetDateAfter(context,
-                  dateTime: defaultDate, minimumDateTime: limit, onClicked: (date) {
-                    setState(() {
-                      DateTime newDate =
-                      DateFormat('yyyy-MM-dd').parse(date);
-                      _dateController.text =
-                          DateFormat("yyyy-MM-dd").format(newDate);
-                    });
-                  });
+                  dateTime: defaultDate,
+                  minimumDateTime: limit, onClicked: (date) {
+                setState(() {
+                  DateTime newDate = DateFormat('yyyy-MM-dd').parse(date);
+                  _dateController.text =
+                      DateFormat("yyyy-MM-dd").format(newDate);
+                });
+              });
             },
             controller: _dateController,
             style: kTextStyle2,
@@ -366,11 +359,10 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             child: Text('comment'.tr(), style: kAlertTextStyle4),
           ),
           Align(
-
             alignment: Alignment.topLeft,
             child: TextFormField(
               scrollPadding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom +100),
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 100),
 
               onSaved: (String? value) {
                 order.comment = value;
@@ -409,7 +401,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
                 order.latitude = widget.position!.latitude;
                 order.longitude = widget.position!.longitude;
                 if (order.time == null)
-                  order.time = timePeriods[(DateTime.now().hour / 2).toInt()];
+                  order.time = timePeriods[(DateTime.now().hour ~/ 2)];
                 addOrder(context, order);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Processing Data')),

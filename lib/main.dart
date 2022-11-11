@@ -32,13 +32,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-
   @override
   void initState() {
     super.initState();
     getToken();
-
   }
 
   @override
@@ -53,11 +50,10 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
           fontFamily: 'GothamProNarrow-Medium',
           textSelectionTheme: TextSelectionThemeData(
-        cursorColor: kColorGreen1,
-
-        selectionColor: kColorGreen2,
-        selectionHandleColor: kColorGreen1,
-      )),
+            cursorColor: kColorGreen1,
+            selectionColor: kColorGreen2,
+            selectionHandleColor: kColorGreen1,
+          )),
       home: token == '' ? Registration() : MapScreen(),
     );
   }

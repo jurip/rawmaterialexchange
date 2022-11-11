@@ -8,7 +8,8 @@ class Order {
   var latitude;
   var longitude;
   var comment;
-  var datetimePickup ;
+  var datetimePickup;
+
   late List<MaterialListItem> items;
   var time;
 

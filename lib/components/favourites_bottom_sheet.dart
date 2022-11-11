@@ -110,93 +110,100 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
                           itemCount: favorites.length,
                           itemBuilder: (BuildContext context, int index) {
                             return InkWell(
-                                onTap: () async {
-                                  var selectedIndexMarker = favorites[index].itemId;
-                                  var listOfRawMaterialsOfSpecificObject =
-                                      await getListOfRawMaterialsOfSpecificObject(
-                                      selectedIndexMarker, context);
+                              onTap: () async {
+                                var selectedIndexMarker =
+                                    favorites[index].itemId;
+                                var listOfRawMaterialsOfSpecificObject =
+                                    await getListOfRawMaterialsOfSpecificObject(
+                                        selectedIndexMarker, context);
 
-                              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                return LocationInfoWidget(
-                                  materials: listOfRawMaterialsOfSpecificObject!,
-                                  selectedIndexMarker: selectedIndexMarker,
-                                );
-                              }));
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0, horizontal: 16.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.3),
-                                      spreadRadius: 1,
-                                      blurRadius: 7,
-                                      offset: Offset(
-                                          0, 2), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 16.0, vertical: 12.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              favorites[index].item.address,
-                                              style: kTextStyle2,
-                                              softWrap: true,
-                                            ),
-                                          ),
-                                          InkWell(
-                                            onTap: () {
-                                              deleteFavorite(context,
-                                                      favorites[index].itemId)
-                                                  .then((value) {
-                                                if (value)
-                                                  setState(() {
-                                                    favorites.removeAt(index);
-                                                  });
-                                              });
-                                            },
-                                            child: Icon(Icons.star,
-                                                color: Colors.yellow),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 5.0),
-                                      Text(getWorkingHours(
-                                          favorites[index].item.workingHours)),
-                                      SizedBox(height: 5.0),
-                                      RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                                text: 'types_of_raw_materials'
-                                                    .tr(),
-                                                style: kBottomSheetTextStyle2),
-                                            TextSpan(
-                                                text: getMaterials(
-                                                    favorites[index].item.raws),
-                                                style: kBottomSheetTextStyle),
-                                          ],
-                                        ),
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return LocationInfoWidget(
+                                    materials:
+                                        listOfRawMaterialsOfSpecificObject!,
+                                    selectedIndexMarker: selectedIndexMarker,
+                                  );
+                                }));
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 16.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.3),
+                                        spreadRadius: 1,
+                                        blurRadius: 7,
+                                        offset: Offset(
+                                            0, 2), // changes position of shadow
                                       ),
                                     ],
                                   ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0, vertical: 12.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                favorites[index].item.address,
+                                                style: kTextStyle2,
+                                                softWrap: true,
+                                              ),
+                                            ),
+                                            InkWell(
+                                              onTap: () {
+                                                deleteFavorite(context,
+                                                        favorites[index].itemId)
+                                                    .then((value) {
+                                                  if (value)
+                                                    setState(() {
+                                                      favorites.removeAt(index);
+                                                    });
+                                                });
+                                              },
+                                              child: Icon(Icons.star,
+                                                  color: Colors.yellow),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 5.0),
+                                        Text(getWorkingHours(favorites[index]
+                                            .item
+                                            .workingHours)),
+                                        SizedBox(height: 5.0),
+                                        RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                  text: 'types_of_raw_materials'
+                                                      .tr(),
+                                                  style:
+                                                      kBottomSheetTextStyle2),
+                                              TextSpan(
+                                                  text: getMaterials(
+                                                      favorites[index]
+                                                          .item
+                                                          .raws),
+                                                  style: kBottomSheetTextStyle),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
                             );
                           },
                         ),

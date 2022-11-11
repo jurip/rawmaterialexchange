@@ -1,15 +1,16 @@
+import 'dart:async';
+
 import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/models/response_user_data.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
-import 'package:app/screens/registration.dart';
 import 'package:app/utils/progress_bar.dart';
 import 'package:app/utils/user_session.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:flutter/services.dart';
+
 import '../../main.dart';
 import '../confirmation_button.dart';
 import 'information_column.dart';
@@ -26,18 +27,15 @@ class SettingsWidget extends StatefulWidget {
 }
 
 class _SettingsWidgetState extends State<SettingsWidget> {
-
   static const platform = MethodChannel('rawmaterials/openTelegram');
 
   Future<void> _openTelegram() async {
     try {
       await platform.invokeMethod('openTelegram');
     } on PlatformException catch (e) {
-
+      print(e);
     }
   }
-
-
 
   @override
   void initState() {
@@ -87,162 +85,170 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           )
         : SafeArea(
             child: SingleChildScrollView(
-              child:Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 1,
-                    blurRadius: 7,
-                    offset: Offset(0, 2), // changes position of shadow
-                  ),
-                ],
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(30.0),
-                    topLeft: Radius.circular(30.0)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: topPadding1),
-                      child: Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30.0),
-                            color: kColorGrey1,
-                          ),
-                          height: containerHeight1,
-                          width: 42.0,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: topPadding2),
-                      child: Center(
-                          child: Text('settings'.tr(), style: kAlertTextStyle)),
-                    ),
-                    Container(
-                      constraints: BoxConstraints(
-                        minHeight: 0,
-                        maxWidth: double.infinity,
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            //66 * 4
-                            InformationColumn(
-                              text1: 'name'.tr(),
-                              text2: userData!.name,
-                            ),
-                            InformationColumn(
-                              text1: 'surname'.tr(),
-                              text2: userData!.surname,
-                            ),
-                            InformationColumn(
-                              text1: 'phone_number'.tr(),
-                              text2: userData!.phone,
-                            ),
-                            InformationColumn(
-                              text1: 'date_birthday'.tr(),
-                              text2: birthDateUser,
-                            ),
-                            SizedBox(height: sizedBoxHeight1),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text('language'.tr(),
-                                  style: kAlertTextStyle4),
-                            ),
-                            SizedBox(height: sizedBoxHeight2),
-                            Row(
-                              children: [
-                                DropdownButton<ListLanguages>(
-                                  value: dropdownValue,
-                                  icon: const Icon(Icons.keyboard_arrow_right),
-                                  //TODO!!!!!!!!!!!!!!!!
-                                  style: kTextStyle2,
-                                  underline: Container(
-                                    height: 0,
-                                    color: Colors.transparent,
-                                  ),
-                                  onChanged: (ListLanguages? newValue) {
-                                    setState(() {
-                                      dropdownValue = newValue!;
-                                      setState(() {
-                                        if (dropdownValue!.id == 1) {
-                                          selectedLanguageId = 1;
-                                          context.setLocale(Locale('ru'));
-                                        } else if (dropdownValue!.id == 2) {
-                                          selectedLanguageId = 2;
-                                          context.setLocale(Locale('uz'));
-                                        } else if (dropdownValue!.id == 3) {
-                                          selectedLanguageId = 3;
-                                          context.setLocale(Locale('kk'));
-                                        }
-                                        mainLocale = context.locale;
-                                        // } else if (value.image == 'images/Ellipse td.png') {
-                                        //   selectedLanguageId = 4;
-                                        //   //context.setLocale(Locale('tjk'));
-                                        //   //EasyLocalization.of(context)!.locale = Locale('ar', 'SA');
-                                        // }
-                                      });
-                                    });
-                                  },
-                                  items: listLanguage
-                                      .map<DropdownMenuItem<ListLanguages>>(
-                                          (ListLanguages value) {
-                                    return DropdownMenuItem<ListLanguages>(
-                                      value: value,
-                                      child: Text(value.name), //value.name
-                                    );
-                                  }).toList(),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: sizedBoxHeight3),
-                            Container(
-                              width: double.infinity,
-                              height: containerHeight2,
-                              color: kColorGrey1,
-                            ),
-                            SizedBox(height: sizedBoxHeight4),
-                            Text("connect".tr(),style: kTextStyle2,),
-                      InkWell(
-                        onTap: () {
-                            _openTelegram();
-                        },
-                        child:Image(image: AssetImage("images/telegram.png"), height: 25,)),
-                            SizedBox(height: sizedBoxHeight4),
-                            ConfirmationButton(
-                              //46
-                              text: 'logout'.tr(),
-                              onTap: () {
-                                _sendingMsgProgressBar?.show(context);
-                                UserSession.setTokenFromSharedPref('');
-                                logout(context).then((value) {
-                                  _sendingMsgProgressBar?.hide();
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
-                                    content: Text(value!.message.toString()),
-                                  ));
-                                });
-                              },
-                            ),
-                            SizedBox(height: sizedBoxHeight5),
-                          ],
-                        ),
-                      ),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      spreadRadius: 1,
+                      blurRadius: 7,
+                      offset: Offset(0, 2), // changes position of shadow
                     ),
                   ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(30.0),
+                      topLeft: Radius.circular(30.0)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(top: topPadding1),
+                        child: Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30.0),
+                              color: kColorGrey1,
+                            ),
+                            height: containerHeight1,
+                            width: 42.0,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: topPadding2),
+                        child: Center(
+                            child:
+                                Text('settings'.tr(), style: kAlertTextStyle)),
+                      ),
+                      Container(
+                        constraints: BoxConstraints(
+                          minHeight: 0,
+                          maxWidth: double.infinity,
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              //66 * 4
+                              InformationColumn(
+                                text1: 'name'.tr(),
+                                text2: userData!.name,
+                              ),
+                              InformationColumn(
+                                text1: 'surname'.tr(),
+                                text2: userData!.surname,
+                              ),
+                              InformationColumn(
+                                text1: 'phone_number'.tr(),
+                                text2: userData!.phone,
+                              ),
+                              InformationColumn(
+                                text1: 'date_birthday'.tr(),
+                                text2: birthDateUser,
+                              ),
+                              SizedBox(height: sizedBoxHeight1),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('language'.tr(),
+                                    style: kAlertTextStyle4),
+                              ),
+                              SizedBox(height: sizedBoxHeight2),
+                              Row(
+                                children: [
+                                  DropdownButton<ListLanguages>(
+                                    value: dropdownValue,
+                                    icon:
+                                        const Icon(Icons.keyboard_arrow_right),
+                                    //TODO!!!!!!!!!!!!!!!!
+                                    style: kTextStyle2,
+                                    underline: Container(
+                                      height: 0,
+                                      color: Colors.transparent,
+                                    ),
+                                    onChanged: (ListLanguages? newValue) {
+                                      setState(() {
+                                        dropdownValue = newValue!;
+                                        setState(() {
+                                          if (dropdownValue!.id == 1) {
+                                            selectedLanguageId = 1;
+                                            context.setLocale(Locale('ru'));
+                                          } else if (dropdownValue!.id == 2) {
+                                            selectedLanguageId = 2;
+                                            context.setLocale(Locale('uz'));
+                                          } else if (dropdownValue!.id == 3) {
+                                            selectedLanguageId = 3;
+                                            context.setLocale(Locale('kk'));
+                                          }
+                                          mainLocale = context.locale;
+                                          // } else if (value.image == 'images/Ellipse td.png') {
+                                          //   selectedLanguageId = 4;
+                                          //   //context.setLocale(Locale('tjk'));
+                                          //   //EasyLocalization.of(context)!.locale = Locale('ar', 'SA');
+                                          // }
+                                        });
+                                      });
+                                    },
+                                    items: listLanguage
+                                        .map<DropdownMenuItem<ListLanguages>>(
+                                            (ListLanguages value) {
+                                      return DropdownMenuItem<ListLanguages>(
+                                        value: value,
+                                        child: Text(value.name), //value.name
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: sizedBoxHeight3),
+                              Container(
+                                width: double.infinity,
+                                height: containerHeight2,
+                                color: kColorGrey1,
+                              ),
+                              SizedBox(height: sizedBoxHeight4),
+                              Text(
+                                "connect".tr(),
+                                style: kTextStyle2,
+                              ),
+                              InkWell(
+                                  onTap: () {
+                                    _openTelegram();
+                                  },
+                                  child: Image(
+                                    image: AssetImage("images/telegram.png"),
+                                    height: 25,
+                                  )),
+                              SizedBox(height: sizedBoxHeight4),
+                              ConfirmationButton(
+                                //46
+                                text: 'logout'.tr(),
+                                onTap: () {
+                                  _sendingMsgProgressBar?.show(context);
+                                  UserSession.setTokenFromSharedPref('');
+                                  logout(context).then((value) {
+                                    _sendingMsgProgressBar?.hide();
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text(value!.message.toString()),
+                                    ));
+                                  });
+                                },
+                              ),
+                              SizedBox(height: sizedBoxHeight5),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
             ),
           );
   }

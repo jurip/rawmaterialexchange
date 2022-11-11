@@ -1,4 +1,5 @@
 package com.raw_materials_exchange.app
+
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -17,7 +18,7 @@ class MainActivity : FlutterActivity() {
     private val CHANNEL = "rawmaterials/openTelegram"
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler( {
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler({
             // This method is invoked on the main thread.
                 call, result ->
             if (call.method == "openTelegram") {
@@ -34,6 +35,7 @@ class MainActivity : FlutterActivity() {
         })
 
     }
+
     private fun openTelegram(): Int {
         val telegram = Intent(Intent.ACTION_VIEW, Uri.parse("https://telegram.me/rawpoint_partner"))
         startActivity(telegram)

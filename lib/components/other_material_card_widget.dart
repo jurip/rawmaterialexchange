@@ -30,8 +30,7 @@ class OtherMaterialCardWidget extends StatelessWidget {
               border: Border.all(color: colorShadow, width: 3),
               borderRadius: BorderRadius.circular(16.0),
             ),
-            child:
-                Image(
+            child: Image(
               image: AssetImage(assetImage),
               //fit: BoxFit.cover,
             ),

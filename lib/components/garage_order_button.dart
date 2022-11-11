@@ -51,15 +51,15 @@ class GarbageOrderButton extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      text2+"    ",
+                      text2 + "    ",
                       textAlign: TextAlign.center,
                       style: kTextStyle3,
                     ),
                   ],
                   mainAxisAlignment: MainAxisAlignment.end,
                 ),
-                Image(height: 20,
-                    image: AssetImage("images/white_arrow.png"))],
+                Image(height: 20, image: AssetImage("images/white_arrow.png"))
+              ],
             )),
       ),
     );

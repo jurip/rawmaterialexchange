@@ -18,10 +18,8 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'authorisation.dart';
 
 class Registration extends StatefulWidget {
-
   const Registration({
     Key? key,
-
   }) : super(key: key);
 
   @override
@@ -440,7 +438,7 @@ class _RegistrationState extends State<Registration> {
     _sendingMsgProgressBar?.show(context);
     var dataLanguage = await getLanguages();
     if (dataLanguage != null) {
-        listLanguage = dataLanguage;
+      listLanguage = dataLanguage;
     } else {
       setState(() {
         error = 'Error';

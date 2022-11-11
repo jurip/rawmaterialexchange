@@ -22,7 +22,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
 import '../api/models/material_list_item.dart';
 import '../api/models/response_list_object_working_hours.dart';
 import '../components/garbage_widget.dart';
@@ -43,9 +42,10 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 class _MapScreenState extends State<MapScreen>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   MapController _mapController = MapController();
-  late AnimationController animationController = AnimationController(
-      vsync: this, duration: Duration(milliseconds: 2000));
-  late Animation rotationAnimation = Tween(begin: 4.0, end: 7).animate(animationController);
+  late AnimationController animationController =
+      AnimationController(vsync: this, duration: Duration(milliseconds: 2000));
+  late Animation rotationAnimation =
+      Tween(begin: 4.0, end: 7).animate(animationController);
   ProgressBar _sendingMsgProgressBar = ProgressBar();
   int selectedIndexMarker = -1;
   LatLng _position = LatLng(55.76350864466721, 37.61888069876945);
@@ -60,7 +60,6 @@ class _MapScreenState extends State<MapScreen>
 
   LatLng latLngfromPosition(currentLocation) {
     return LatLng(currentLocation.latitude, currentLocation.longitude);
-
   }
 
   Future<bool> getPermission() async {
@@ -74,7 +73,8 @@ class _MapScreenState extends State<MapScreen>
 
   getLocation() async {
     try {
-      Position newPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+      Position newPosition = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.high)
           .timeout(new Duration(seconds: 25));
 
       setState(() {
@@ -86,40 +86,34 @@ class _MapScreenState extends State<MapScreen>
     }
   }
 
-  void initPositioning() async{
+  void initPositioning() async {
     var p = await SharedPreferences.getInstance();
     _position = await getPositionFromStored();
     if (await getPermission()) {
       Geolocator.getServiceStatusStream().listen((event) {
         print("set in service status: " + event.toString());
         getLocation();
-
       });
       getLocation();
       Geolocator.getPositionStream().listen((event) {
-        if(firstTime) {
-          setState(() =>
-          { print("${event.latitude} ${event.longitude}"),
-            _position = latLngfromPosition(event),
-          _mapController.move(_position, 15)
-
-
-          });
+        if (firstTime) {
+          setState(() => {
+                print("${event.latitude} ${event.longitude}"),
+                _position = latLngfromPosition(event),
+                _mapController.move(_position, 15)
+              });
           firstTime = false;
           p.setDouble("lat", _position.latitude);
           p.setDouble("lng", _position.longitude);
-
-        }else{
-          setState(() =>
-          {
-            _position = latLngfromPosition(event),
-
-
-          });
+        } else {
+          setState(() => {
+                _position = latLngfromPosition(event),
+              });
         }
       });
     }
   }
+
   @override
   void initState() {
     super.initState();
@@ -152,7 +146,6 @@ class _MapScreenState extends State<MapScreen>
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       print("AppLifecycleState: " + state.name.toString());
-      //getLocation();
     }
   }
 
@@ -232,9 +225,7 @@ class _MapScreenState extends State<MapScreen>
 
   @override
   Widget build(BuildContext context) {
-    return listOfRawMaterials.isEmpty ||
-            listOfObject.isEmpty ||
-            _position == null
+    return listOfRawMaterials.isEmpty || listOfObject.isEmpty
         ? Scaffold(
             backgroundColor: Colors.white,
             body: Center(
@@ -301,12 +292,8 @@ class _MapScreenState extends State<MapScreen>
                         height: 4.0,
                         width: 42.0,
                       ),
-                      //SizedBox(height: 5.0),
                       Column(
-                        //mainAxisSize: MainAxisSize.max,
-                        //mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          //Services
                           SizedBox(height: 20.0),
                           header("services".tr()),
                           SizedBox(height: 10.0),
@@ -330,8 +317,6 @@ class _MapScreenState extends State<MapScreen>
                     FlutterMap(
                       mapController: _mapController,
                       options: MapOptions(
-                        //boundsOptions:
-                        //    FitBoundsOptions(padding: EdgeInsets.all(300.0)),
                         center: _position,
                         minZoom: 3.0,
                         maxZoom: 18.4,
@@ -384,9 +369,7 @@ class _MapScreenState extends State<MapScreen>
                         child: IconButton(
                           color: Colors.white,
                           onPressed: () {
-
-                              _mapController.move(_position, 15);
-
+                            _mapController.move(_position, 15);
                           },
                           icon: Icon(
                             Icons.location_on,
@@ -408,28 +391,28 @@ class _MapScreenState extends State<MapScreen>
     List<Marker> newList = [];
     newList.addAll(markers);
 
-      newList.add(
-        Marker(
-          width: 30.0,
-          height: 30.0,
-          point: _position,
-          builder: (context) => Container(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: animatedWidth),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 1,
-                  blurRadius: 7,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
+    newList.add(
+      Marker(
+        width: 30.0,
+        height: 30.0,
+        point: _position,
+        builder: (context) => Container(
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: animatedWidth),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 1,
+                blurRadius: 7,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
 
     return newList;
   }
@@ -533,7 +516,6 @@ class _MapScreenState extends State<MapScreen>
                       height: 120,
                       decoration: BoxDecoration(
                         color: Colors.deepPurple.withOpacity(0.1),
-                        //kPurpleTransparent,
                         shape: BoxShape.circle,
                       ),
                       child: Padding(
@@ -585,7 +567,6 @@ class _MapScreenState extends State<MapScreen>
                       height: 120,
                       decoration: BoxDecoration(
                         color: Colors.deepPurple.withOpacity(0.1),
-                        //kPurpleTransparent,
                         shape: BoxShape.circle,
                       ),
                       child: Padding(
@@ -676,21 +657,8 @@ class _MapScreenState extends State<MapScreen>
       });
     }
     addMarkers();
-
-    //var bounds = new LatLngBounds();
-    //for (var item in listOfObjectFromFilter) {
-    //  bounds.extend(LatLng(item.latitude, item.longitude));
-    //}
-    //_mapController.fitBounds(
-    //  bounds,
-    //  options: FitBoundsOptions(
-    //    maxZoom: 9.6,
-    //    inside: false,
-    //  ),
-    //);
   }
 
-  //удаление фильтра
   void removeFilter(int id) {
     selectedMaterialsId.remove(id);
     getListOfObjectFromFilterAddDataToList();
@@ -815,5 +783,4 @@ class _MapScreenState extends State<MapScreen>
   onError() {
     print("error");
   }
-
 }

@@ -53,7 +53,6 @@
   "sb": "Shanba: ",
   "vs": "Quyosh: ",
   "main": "Uy",
-  "how_it_works_link": "Bu qanday ishlaydi?",
   "how_it_works": "Bu qanday ishlaydi",
   "price:": "Qabul narxi:",
   "rub_per_100_kilo": "rubl / 100 kg",
@@ -71,15 +70,9 @@
   "comment": "Sharh",
   "order_done": "Buyurtma berilgan",
   "orded_done_text": "Tasdiqlash uchun 30 daqiqa ichida siz bilan bog'lanasiz",
+  "filters": "Filtrlar",
   "to_main": "Asosiy",
   "services": "Xizmatlar",
-  "filters": "Filtrlar",
-  "types_of_raw_materials": "Xom ashyo turlari:",
-  "order_done": "Buyurtma berilgan",
-  "orded_done_text": "Tasdiqlash uchun 30 daqiqa ichida siz bilan bog'lanasiz",
-  "to_main": "Asosiy",
-  "services": "Xizmatlar",
-  "filters": "Filtrlar",
   "order_text": "To'lovni amalga oshirgandan so'ng, uni tasdiqlash uchun 30 daqiqa ichida siz bilan bog'lanishadi",
   "how_it_works_text": "1. Arizani qoldiring va biz sizning axlatingizni o'zimiz olib ketamiz. Siz kamida 300 kg hajmdagi xom ashyoni topshirishingiz mumkin.\n\n\n2. Arizani qoldiring va biz sizning axlatingizni o'zimiz olib ketamiz. Siz kamida 300 kg hajmdagi xom ashyoni topshirishingiz mumkin.",
   "garbage_collection_text": "Arizani qoldiring va biz sizning axlatingizni o'zimiz olib ketamiz. Siz kamida 300 kg hajmdagi xom ashyoni topshirishingiz mumkin.",
@@ -87,11 +80,5 @@
   "garbage_collection_header": "Eksport",
   "rub": "rub",
   "other": "Boshqa",
-  "rub_per_100_kilo": "rub/ 100 kg",
-  "how_it_works_link": "Қандай ишлайди?",
-  "how_it_works": "Қандай ишлайди",
-  "how_it_works_text": "Аризани тўлдиринг, мутахассис тафсилотларни аниқлаштириш учун сиз билан боғланади. Қанча пул топишингизни олдиндан билиб оласиз.",
-
-  "garbage_collection_text": "Сўров қолдиринг, биз келиб, қайта ишланадиган нарсаларни сотиб оламиз. Сотилган қайта ишланадиган материалларнинг вазни камида 300 кг бўлиши керак.",
-  "garbage_collection_header": "Қайта Ишланмаларни Сотиш"
+  "how_it_works_link": "Қандай ишлайди?"
 }
