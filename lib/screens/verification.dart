@@ -46,74 +46,6 @@ class _VerificationState extends State<Verification> {
   int code = 0;
 
   var dataList;
-  void go(){
-    if (widget.name == null) {
-      getAuthorization(widget.phone).then((data) {
-        _sendingMsgProgressBar?.hide();
-        if (data != null) {
-          if (data.smsSended !=
-              null /* && data.sms_sended! */ &&
-              data.smsCode != null) {
-            smsCode = data.smsCode;
-          } else {
-            if (data.errors != null &&
-                data.errors!.isNotEmpty) {
-              String toastMessage =
-                  data.errors!.first;
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(
-                content: Text(toastMessage),
-              ));
-            }
-          }
-        } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(
-            content: Text(
-                'check_your_network_connection'
-                    .tr()),
-          ));
-        }
-      });
-    } else {
-      getRegistration(
-          widget.name!,
-          widget.surname!,
-          widget.phone,
-          widget.dateBirthday!,
-          widget.selectedLanguageId!)
-          .then((data) {
-        _sendingMsgProgressBar?.hide();
-        if (data != null) {
-          if (data.sms_sended !=
-              null /* && data.sms_sended! */ &&
-              data.sms_code != null) {
-            smsCode = data.sms_code;
-            //TODO !!!!!!!!!!!!!!!!!!
-          } else {
-            if (data.errors != null &&
-                data.errors!.isNotEmpty) {
-              String toastMessage =
-                  data.errors!.first;
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(
-                content: Text(toastMessage),
-              ));
-            }
-          }
-        } else {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(
-            content: Text(
-                'check_your_network_connection'
-                    .tr()),
-          ));
-        }
-      });
-    }
-    startTimer();
-  }
-
 
   @override
   void initState() {
@@ -224,7 +156,6 @@ class _VerificationState extends State<Verification> {
                         controller: _codeController,
                         onCompleted: (v) {
                           print("Completed");
-                          go();
                         },
                         onChanged: (value) {
                           print(value);
@@ -253,7 +184,73 @@ class _VerificationState extends State<Verification> {
                                 'no_sms_coming'.tr() + ' ' + _start.toString(),
                                 style: kTextStyle8)
                             : InkWell(
-                                onTap: go ,
+                          onTap: () {
+                            if (widget.name == null) {
+                              getAuthorization(widget.phone).then((data) {
+                                _sendingMsgProgressBar?.hide();
+                                if (data != null) {
+                                  if (data.smsSended !=
+                                      null /* && data.sms_sended! */ &&
+                                      data.smsCode != null) {
+                                    smsCode = data.smsCode;
+                                  } else {
+                                    if (data.errors != null &&
+                                        data.errors!.isNotEmpty) {
+                                      String toastMessage =
+                                          data.errors!.first;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text(toastMessage),
+                                      ));
+                                    }
+                                  }
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: Text(
+                                        'check_your_network_connection'
+                                            .tr()),
+                                  ));
+                                }
+                              });
+                            } else {
+                              getRegistration(
+                                  widget.name!,
+                                  widget.surname!,
+                                  widget.phone,
+                                  widget.dateBirthday!,
+                                  widget.selectedLanguageId!)
+                                  .then((data) {
+                                _sendingMsgProgressBar?.hide();
+                                if (data != null) {
+                                  if (data.sms_sended !=
+                                      null /* && data.sms_sended! */ &&
+                                      data.sms_code != null) {
+                                    smsCode = data.sms_code;
+                                    //TODO !!!!!!!!!!!!!!!!!!
+                                  } else {
+                                    if (data.errors != null &&
+                                        data.errors!.isNotEmpty) {
+                                      String toastMessage =
+                                          data.errors!.first;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text(toastMessage),
+                                      ));
+                                    }
+                                  }
+                                } else {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: Text(
+                                        'check_your_network_connection'
+                                            .tr()),
+                                  ));
+                                }
+                              });
+                            }
+                            startTimer();
+                          },
                                 child:
                                     Text('send_again'.tr(), style: kTextStyle8),
                               ),

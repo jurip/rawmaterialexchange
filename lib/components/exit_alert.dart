@@ -2,6 +2,7 @@ import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MyWillPop {
   BuildContext context;
@@ -58,7 +59,7 @@ class MyWillPop {
                             color: Colors.white,
                           ),
                           TextButton(
-                            onPressed: () => Navigator.of(context).pop(true),
+                            onPressed: () => {SystemNavigator.pop()},
                             child: new Text(
                               'yes'.tr(),
                               style: kAlertTextStyle3,

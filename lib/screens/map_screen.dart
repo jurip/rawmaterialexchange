@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:app/api/models/response_list_of_object.dart';
 import 'package:app/api/models/response_list_of_raw_materials_of_specific_object.dart';
 import 'package:app/api/models/response_list_of_services.dart';
@@ -44,26 +43,20 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 class _MapScreenState extends State<MapScreen>
     with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   MapController _mapController = MapController();
-  late Animation rotationAnimation;
-  late AnimationController controller;
-  ProgressBar? _sendingMsgProgressBar;
+  late AnimationController animationController = AnimationController(
+      vsync: this, duration: Duration(milliseconds: 2000));
+  late Animation rotationAnimation = Tween(begin: 4.0, end: 7).animate(animationController);
+  ProgressBar _sendingMsgProgressBar = ProgressBar();
   int selectedIndexMarker = -1;
-  LatLng? _position = LatLng(55.76350864466721, 37.61888069876945);
+  LatLng _position = LatLng(55.76350864466721, 37.61888069876945);
   String error = '';
   bool load = false;
   int selectedMaterials = -1;
   bool userInfoClicked = false;
-  Timer? timer;
   bool firstTime = true;
-
-  var locationOpened = false;
-  double x = 4;
-  var perm;
-  var serviceStatusStream = Geolocator.getServiceStatusStream();
-
-  late Stream<Position> stream;
-
-  bool positionStreamIsListening = false;
+  bool locationOpened = false;
+  double animatedWidth = 4;
+  PanelController _pc = new PanelController();
 
   LatLng latLngfromPosition(currentLocation) {
     return LatLng(currentLocation.latitude, currentLocation.longitude);
@@ -79,27 +72,50 @@ class _MapScreenState extends State<MapScreen>
         enabled != LocationPermission.deniedForever;
   }
 
+  getLocation() async {
+    try {
+      Position newPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+          .timeout(new Duration(seconds: 25));
+
+      setState(() {
+        _position = latLngfromPosition(newPosition);
+        _mapController.move(_position, 15);
+      });
+    } catch (e) {
+      print('Error: ${e.toString()}');
+    }
+  }
+
   void initPositioning() async{
     var p = await SharedPreferences.getInstance();
     _position = await getPositionFromStored();
-    var permission = await getPermission();
-    stream = Geolocator.getPositionStream();
-    if (permission) {
-      serviceStatusStream.listen((event) {
+    if (await getPermission()) {
+      Geolocator.getServiceStatusStream().listen((event) {
         print("set in service status: " + event.toString());
+        getLocation();
+
       });
-      stream.listen((event) {
+      getLocation();
+      Geolocator.getPositionStream().listen((event) {
         if(firstTime) {
+          setState(() =>
+          { print("${event.latitude} ${event.longitude}"),
+            _position = latLngfromPosition(event),
+          _mapController.move(_position, 15)
+
+
+          });
+          firstTime = false;
+          p.setDouble("lat", _position.latitude);
+          p.setDouble("lng", _position.longitude);
+
+        }else{
           setState(() =>
           {
             _position = latLngfromPosition(event),
 
 
           });
-          firstTime = false;
-          p.setDouble("lat", _position!.latitude);
-          p.setDouble("lng", _position!.longitude);
-          //_mapController.move(_position!, 15);
         }
       });
     }
@@ -108,8 +124,6 @@ class _MapScreenState extends State<MapScreen>
   void initState() {
     super.initState();
     initPositioning();
-
-    _sendingMsgProgressBar = ProgressBar();
     getListOfObjectAddDataToList();
     WidgetsBinding.instance.addObserver(this);
     initAnimation();
@@ -131,7 +145,7 @@ class _MapScreenState extends State<MapScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    controller.dispose();
+    animationController.dispose();
     super.dispose();
   }
 
@@ -141,9 +155,6 @@ class _MapScreenState extends State<MapScreen>
       //getLocation();
     }
   }
-
-  PanelController _pc = new PanelController();
-  PersistentBottomSheetController? controllerBottomSheetRout;
 
   Widget header(text) {
     return Container(
@@ -261,7 +272,6 @@ class _MapScreenState extends State<MapScreen>
                   latLngDriving.clear();
                   latLngWalking.clear();
                   _pc.close();
-                  _closeRoutBottomSheet();
                   setState(() {});
                 },
                 returnMarkers: () {
@@ -374,9 +384,9 @@ class _MapScreenState extends State<MapScreen>
                         child: IconButton(
                           color: Colors.white,
                           onPressed: () {
-                            if (_position != null) {
-                              _mapController.move(_position!, 15);
-                            }
+
+                              _mapController.move(_position, 15);
+
                           },
                           icon: Icon(
                             Icons.location_on,
@@ -398,17 +408,16 @@ class _MapScreenState extends State<MapScreen>
     List<Marker> newList = [];
     newList.addAll(markers);
 
-    if (_position != null) {
       newList.add(
         Marker(
           width: 30.0,
           height: 30.0,
-          point: _position!,
+          point: _position,
           builder: (context) => Container(
             decoration: BoxDecoration(
               color: Colors.blue,
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: x),
+              border: Border.all(color: Colors.white, width: animatedWidth),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.3),
@@ -421,7 +430,6 @@ class _MapScreenState extends State<MapScreen>
           ),
         ),
       );
-    }
 
     return newList;
   }
@@ -538,7 +546,7 @@ class _MapScreenState extends State<MapScreen>
         );
       }
       setState(() {
-        _sendingMsgProgressBar?.hide();
+        _sendingMsgProgressBar.hide();
       });
     } else {
       for (var item in listOfObjectFromFilter) {
@@ -590,7 +598,7 @@ class _MapScreenState extends State<MapScreen>
         );
       }
       setState(() {
-        _sendingMsgProgressBar?.hide();
+        _sendingMsgProgressBar.hide();
       });
     }
   }
@@ -609,14 +617,6 @@ class _MapScreenState extends State<MapScreen>
 
   double distanceWalking = 0;
   double durationsWalking = 0;
-
-  void _closeRoutBottomSheet() {
-    if (controllerBottomSheetRout != null) {
-      userInfoClicked = true;
-      controllerBottomSheetRout?.close();
-      controllerBottomSheetRout = null;
-    }
-  }
 
   List<ListOfRawMaterialsOfSpecificObject>?
       dataListOfRawMaterialsOfSpecificObject;
@@ -661,7 +661,7 @@ class _MapScreenState extends State<MapScreen>
   //получение маркеров из  фильтра
   Future<void> getListOfObjectFromFilterAddDataToList() async {
     setState(() {
-      _sendingMsgProgressBar?.show(context);
+      _sendingMsgProgressBar.show(context);
     });
     var dataObjects =
         await getListOfObjectsInFilter(selectedMaterialsId, context);
@@ -669,7 +669,7 @@ class _MapScreenState extends State<MapScreen>
       listOfObjectFromFilter = dataObjects;
     } else {
       setState(() {
-        _sendingMsgProgressBar?.hide();
+        _sendingMsgProgressBar.hide();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('no_dots'.tr()),
         ));
@@ -804,19 +804,16 @@ class _MapScreenState extends State<MapScreen>
   }
 
   void initAnimation() {
-    controller = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 2000));
-    rotationAnimation = Tween(begin: 4.0, end: 7).animate(controller);
     rotationAnimation.addListener(() {
       setState(() {
-        x = rotationAnimation.value;
+        animatedWidth = rotationAnimation.value;
       });
     });
-    controller.repeat();
+    animationController.repeat();
   }
 
   onError() {
-    print("dsdsd");
+    print("error");
   }
 
 }

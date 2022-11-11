@@ -4,7 +4,6 @@ import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/screens/registration.dart';
 import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
-import 'package:app/utils/progress_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -13,7 +12,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../api/models/Order.dart';
 import '../api/models/material_list_item.dart';
-import '../utils/garbage_order_date_time_picker.dart';
+import '../utils/date_time_picker.dart';
 import '../utils/time_picker.dart';
 import '../utils/user_session.dart';
 import 'confirmation_button.dart';
@@ -40,7 +39,6 @@ class GarbageOrderWidget extends StatefulWidget {
 
 class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
   List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
-  ProgressBar? _sendingMsgProgressBar;
   String? phone;
   String language = '';
   final Order order = Order();
@@ -62,8 +60,6 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
   void initState() {
     super.initState();
     getUserData();
-
-    _sendingMsgProgressBar = ProgressBar();
   }
 
   @override
@@ -199,12 +195,14 @@ class GarbageOrderForm extends StatefulWidget {
 // Define a corresponding State class.
 // This class holds data related to the form.
 class GarbageOrderFormState extends State<GarbageOrderForm> {
+  var defaultDate = DateTime.now().add(const Duration(days: 2)).add(const Duration(minutes: 2));
+
   //для выстраивания маршрута пешком
   @override
   void initState() {
     super.initState();
     //getAddressCoordinates  (context, widget.position!.latitude, widget.position!.longitude);
-    DateTime newDate = DateTime.now().add(const Duration(days: 3));
+    DateTime newDate = defaultDate;
     _dateController.text = DateFormat("yyyy-MM-dd").format(newDate);
   }
 
@@ -215,9 +213,9 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
   var maskFormatter = new MaskTextInputFormatter(mask: '### ### ## ##');
+  final DateTime limit = DateTime.now().add(const Duration(days: 2));
   final TextEditingController _dateController = TextEditingController();
 
-  final _timeController = TextEditingController();
   String valid = '';
   var dropdownValue;
   var order = Order();
@@ -326,14 +324,15 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
             ],
             onTap: () {
               FocusScope.of(context).requestFocus(new FocusNode());
-              GarbageOrderDateTimePicker.showSheetDate(context,
-                  dateTime: DateTime.now().add(const Duration(days: 3)), minimumDate: DateTime.now().add(const Duration(days: 2)), onClicked: (date) {
-                setState(() {
-                  DateTime newDate = DateFormat('yyyy-MM-dd').parse(date);
-                  _dateController.text =
-                      DateFormat("yyyy-MM-dd").format(newDate);
-                });
-              });
+              DateTimePicker.showSheetDateAfter(context,
+                  dateTime: defaultDate, minimumDateTime: limit, onClicked: (date) {
+                    setState(() {
+                      DateTime newDate =
+                      DateFormat('yyyy-MM-dd').parse(date);
+                      _dateController.text =
+                          DateFormat("yyyy-MM-dd").format(newDate);
+                    });
+                  });
             },
             controller: _dateController,
             style: kTextStyle2,
