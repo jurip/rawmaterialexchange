@@ -6,8 +6,6 @@ import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/models/response_list_object_data.dart';
 import 'package:app/api/models/response_list_object_working_hours.dart';
 import 'package:app/api/models/response_list_of_contact_phone.dart';
-import 'package:app/api/models/response_list_of_coordinates_driving.dart'
-    as Driving;
 import 'package:app/api/models/response_list_of_coordinates_walking.dart'
     as Walking;
 import 'package:app/api/models/response_list_of_object.dart';
@@ -336,7 +334,7 @@ Future<List<ListOfObjectsFromFilter>?> getListOfObjectsInFilter(
 }
 
 //запрос для маршрута driving
-Future<Driving.Route?> getCoordinatesDriving(
+/*Future<Driving.Route?> getCoordinatesDriving(
     BuildContext context,
     double lngMyLocation,
     double latMyLocation,
@@ -367,7 +365,7 @@ Future<Driving.Route?> getCoordinatesDriving(
     return null;
   }
   return null;
-}
+}*/
 
 //запрос для маршрута driving
 Future<String?> getAddressCoordinates(
