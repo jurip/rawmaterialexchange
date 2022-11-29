@@ -16,7 +16,7 @@ import 'garbage_info_widget.dart';
 
 class GarbageWidget extends StatefulWidget {
   final List<MaterialListItem> materials;
-  final LatLng? position;
+  final LatLng position;
 
   GarbageWidget({
     Key? key,
@@ -35,8 +35,8 @@ class _GarbageWidgetState extends State<GarbageWidget> {
   Future<void> setAddress() async {
     getAddressCoordinates(
       context,
-      widget.position!.longitude,
-      widget.position!.latitude,
+      widget.position.longitude,
+      widget.position.latitude,
     ).then((value) {
       if (value != null) address = value;
     });
