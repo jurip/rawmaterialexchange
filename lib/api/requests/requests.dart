@@ -20,13 +20,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-
 import '../models/Order.dart';
 import '../models/material_list_item.dart';
 
 final String api = 'https://recyclemap.tmweb.ru/api/v1/';
-
-final String mapbox_token = dotenv.env["ACCESS_TOKEN"]!;
+final String mapboxToken = dotenv.env["ACCESS_TOKEN"]!;
 //запрос на получение списка языков
 Future<List<ListLanguages>?> getLanguages() async {
   String url = api + 'languages';
