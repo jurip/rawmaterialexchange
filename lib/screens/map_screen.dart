@@ -24,6 +24,7 @@ import '../api/models/material_list_item.dart';
 import '../components/garbage_widget.dart';
 import '../components/other_material_card_widget.dart';
 import '../constants/image_constants.dart';
+import '../utils/data_utils.dart';
 
 class MapScreen extends StatefulWidget {
   MapScreen({

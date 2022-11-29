@@ -3,8 +3,6 @@ import 'dart:convert';
 ResponseVerification responseVerificationFromJson(String str) =>
     ResponseVerification.fromJson(json.decode(str));
 
-//String responseVerificationToJson(ResponseVerification data) => json.encode(data.toJson());
-
 class ResponseVerification {
   ResponseVerification({
     this.accessToken,
@@ -25,9 +23,4 @@ class ResponseVerification {
             : null,
       );
 
-// Map<String, dynamic> toJson() => {
-//   "access_token": accessToken,
-//   "token_type": tokenType,
-//   "errors": List<dynamic>.from(errors.map((x) => x)),
-// };
 }

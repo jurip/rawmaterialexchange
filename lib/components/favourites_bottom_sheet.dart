@@ -31,17 +31,7 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return favorites == null
-        ? Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.transparent,
-                color: Colors.green,
-              ),
-            ),
-          )
-        : Container(
+    return Container(
             height: MediaQuery.of(context).size.height * 0.95,
             width: double.infinity,
             decoration: BoxDecoration(

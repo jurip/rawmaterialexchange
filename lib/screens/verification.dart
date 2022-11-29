@@ -223,10 +223,10 @@ class _VerificationState extends State<Verification> {
                                         .then((data) {
                                       _sendingMsgProgressBar?.hide();
                                       if (data != null) {
-                                        if (data.sms_sended !=
+                                        if (data.smsSended !=
                                                 null /* && data.sms_sended! */ &&
-                                            data.sms_code != null) {
-                                          smsCode = data.sms_code;
+                                            data.smsCode != null) {
+                                          smsCode = data.smsCode;
                                           //TODO !!!!!!!!!!!!!!!!!!
                                         } else {
                                           if (data.errors != null &&

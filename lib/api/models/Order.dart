@@ -13,13 +13,13 @@ class Order {
   late List<MaterialListItem> items;
   var time;
 
-  Map<int, dynamic> getItems() {
+  /*Map<int, dynamic> getItems() {
     var result = new Map<int, dynamic>();
     items.forEach((MaterialListItem element) {
       result.putIfAbsent(element.id, () => element.toJson());
     });
     return result;
-  }
+  }*/
 
   Map<String, dynamic> toJson() {
     return {

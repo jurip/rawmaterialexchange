@@ -350,12 +350,12 @@ class _RegistrationState extends State<Registration> {
                                   .then((data) {
                                 _sendingMsgProgressBar?.hide();
                                 if (data != null) {
-                                  if (data.sms_sended != null) {
+                                  if (data.smsSended != null) {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                       return Verification(
                                         phone: phoneNumber,
-                                        smsCode: data.sms_code,
+                                        smsCode: data.smsCode,
                                         name: _nameController.text,
                                         surname: _surnameController.text,
                                         dateBirthday: _dateController.text,

@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:convert' ;
 
 import 'package:app/api/models/response_authorization.dart';
 import 'package:app/api/models/response_get_favorites.dart';
@@ -25,6 +25,7 @@ import '../models/Order.dart';
 import '../models/material_list_item.dart';
 
 final String api = 'https://recyclemap.tmweb.ru/api/v1/';
+
 final String mapbox_token = dotenv.env["ACCESS_TOKEN"]!;
 //запрос на получение списка языков
 Future<List<ListLanguages>?> getLanguages() async {
@@ -360,7 +361,7 @@ Future<String?> getAddressCoordinates(
     BuildContext context, double lngMyLocation, double latMyLocation) async {
 
   String url =
-      'https://api.mapbox.com/geocoding/v5/mapbox.places/$lngMyLocation,$latMyLocation.json?access_token=$mapbox_token';
+      'https://api.mapbox.com/geocoding/v5/mapbox.places/$lngMyLocation,$latMyLocation.json?access_token=$mapboxToken';
   var headers = initHeaders();
 
   try {
@@ -439,6 +440,39 @@ Future<bool> addFavorite(BuildContext context, int itemId) async {
   return false;
 }
 
+Future<bool> addOrderToDB(BuildContext context, Order item) async {
+  String url = api + 'orders';
+
+  var headers = initHeaders();
+
+  var body = new Map<String, String>();
+  body['phone'] = item.phone;
+  body['address'] = item.address;
+  body['latitude'] = item.latitude.toString();
+  body['longitude'] = item.longitude.toString();
+  body['comment'] = item.comment;
+  body['datetime_pickup'] = item.datetimePickup.toString();
+  body['items'] = jsonEncode(item.items);
+
+  Response response;
+
+  try {
+    response = await http.post(Uri.parse(url), headers: headers, body: body);
+  } on Exception {
+    return false;
+  } catch (e) {
+    return false;
+  }
+  if (200 <= response.statusCode && response.statusCode < 300) {
+    return true;
+  } else if (response.statusCode == 401) {
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) {
+      return Authorisation();
+    }), (Route<dynamic> route) => false);
+  }
+  return false;
+}
+
 Future<bool> addOrder(BuildContext context, Order item) async {
   String url = api + 'orders';
 
@@ -450,6 +484,7 @@ Future<bool> addOrder(BuildContext context, Order item) async {
       item.time.toString().substring(0, 2) +
       ":00:00";
   item.items = item.items.where((element) => element.amount != 0).toList();
+
   body = item.toJson();
 
   Response response;

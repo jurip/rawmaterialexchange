@@ -3,7 +3,6 @@ import 'package:app/api/models/response_list_of_raw_materials_of_specific_object
 import 'package:app/constants/image_constants.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -16,7 +15,7 @@ import '../constants/style_constants.dart';
 class LocationInfoWidget extends StatefulWidget {
   final List<ListOfRawMaterialsOfSpecificObject>? materials;
 
-  int selectedIndexMarker;
+  final int selectedIndexMarker;
 
   LocationInfoWidget({
     Key? key,
@@ -437,7 +436,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
     if (dataObjects != null) {
       setState(() {
         objectData = dataObjects;
-        isFavorite = dataObjects.faved != null ? dataObjects.faved : false;
+        isFavorite =  dataObjects.faved ;
       });
     }
   }

@@ -25,9 +25,4 @@ class ResponseAuthorization {
             : null,
       );
 
-// Map<String, dynamic> toJson() => {
-//   "sms_sended": smsSended,
-//   "sms_code": smsCode,
-//   "errors": List<dynamic>.from(errors.map((x) => x)),
-// };
 }

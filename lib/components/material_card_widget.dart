@@ -44,6 +44,7 @@ class MaterialCardWidget extends StatelessWidget {
               child: Text(
                 text,
                 style: kTextStyle7,
+                textAlign: TextAlign.center
                 //softWrap: true,
               ),
             ),

@@ -8,20 +8,20 @@ ServerResponseWhenRequestingRegistration
 
 class ServerResponseWhenRequestingRegistration {
   ServerResponseWhenRequestingRegistration({
-    this.sms_sended,
-    this.sms_code,
+    this.smsSended,
+    this.smsCode,
     this.errors,
   });
 
-  bool? sms_sended;
-  int? sms_code;
+  bool? smsSended;
+  int? smsCode;
   List<String>? errors;
 
   factory ServerResponseWhenRequestingRegistration.fromJson(
           Map<String, dynamic> json) =>
       ServerResponseWhenRequestingRegistration(
-        sms_sended: json["sms_sended"],
-        sms_code: json["sms_code"],
+        smsSended: json["sms_sended"],
+        smsCode: json["sms_code"],
         errors: json["errors"] != null
             ? List<String>.from(json["errors"].map((x) => x))
             : null,
