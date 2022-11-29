@@ -95,7 +95,7 @@ const kTextStyle6 = TextStyle(
 const kTextStyle7 = TextStyle(
   fontWeight: FontWeight.w600,
   fontFamily: 'GothamProNarrow-Medium',
-  fontSize: 14.0,
+  fontSize: 13.0,
 );
 
 const kTextStyle8 = TextStyle(

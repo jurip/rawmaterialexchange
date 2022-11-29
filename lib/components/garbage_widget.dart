@@ -30,7 +30,7 @@ class GarbageWidget extends StatefulWidget {
 
 class _GarbageWidgetState extends State<GarbageWidget> {
   String address = "";
-  double income = 0;
+  int income = 0;
 
   Future<void> setAddress() async {
     getAddressCoordinates(
@@ -51,17 +51,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.materials == null
-        ? Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.transparent,
-                color: Colors.green,
-              ),
-            ),
-          )
-        : Container(
+    return Container(
             height: MediaQuery.of(context).size.height * 0.95,
             width: double.infinity,
             decoration: BoxDecoration(
@@ -134,13 +124,6 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                             ),
                             onTap: () async {
                               if (true) {
-                                // If the form is valid, display a snackbar. In the real world,
-                                // you'd often call a server or save the information in a database.
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Processing Data')),
-                                );
-
                                 cbs
                                     .showModalBottomSheet(
                                       backgroundColor: Colors.transparent,
@@ -152,7 +135,8 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                     .whenComplete(() {});
                               }
                             },
-                          )
+                          ),
+                          SizedBox(height: 15.0),
                         ],
                       )
                     ],
@@ -260,7 +244,8 @@ class _GarbageWidgetState extends State<GarbageWidget> {
                                         setState(() {
                                           if (widget.materials[index]
                                                   .changedAmount >
-                                              300) {
+                                              widget.materials[index]
+                                              .minAmount) {
                                             widget.materials[index]
                                                 .changedAmount = widget
                                                     .materials[index]
@@ -391,10 +376,10 @@ class _GarbageWidgetState extends State<GarbageWidget> {
           );
   }
 
-  double getIncome() {
-    double sum = 0;
+  int getIncome() {
+    int sum = 0;
     widget.materials.forEach((element) {
-      sum = sum + element.amount * element.price / 100;
+      sum = sum + element.amount * element.price;
     });
     return sum;
   }

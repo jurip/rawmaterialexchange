@@ -29,6 +29,7 @@ import '../api/models/response_list_object_working_hours.dart';
 import '../components/garbage_widget.dart';
 import '../components/other_material_card_widget.dart';
 import '../constants/image_constants.dart';
+import '../utils/data_utils.dart';
 
 class MapScreen extends StatefulWidget {
   MapScreen({
@@ -725,24 +726,7 @@ class _MapScreenState extends State<MapScreen>
   List<ListObjectWorkingHours> listWorkingHours = [];
   String selectedDayOfTheWeek = '';
 
-  String getDayString(int dayNumber) {
-    if (dayNumber == 0) {
-      selectedDayOfTheWeek = 'pn'.tr();
-    } else if (dayNumber == 1) {
-      selectedDayOfTheWeek = 'vt'.tr();
-    } else if (dayNumber == 2) {
-      selectedDayOfTheWeek = 'sr'.tr();
-    } else if (dayNumber == 3) {
-      selectedDayOfTheWeek = 'cht'.tr();
-    } else if (dayNumber == 4) {
-      selectedDayOfTheWeek = 'pt'.tr();
-    } else if (dayNumber == 5) {
-      selectedDayOfTheWeek = 'sb'.tr();
-    } else if (dayNumber == 6) {
-      selectedDayOfTheWeek = 'vs'.tr();
-    }
-    return selectedDayOfTheWeek;
-  }
+
 
   String getCurrentDate() {
     if (listWorkingHours.length == 0) return "";
@@ -750,11 +734,11 @@ class _MapScreenState extends State<MapScreen>
     int index =
         listWorkingHours.indexWhere((element) => element.day == weekDay);
     if (index == -1) {
-      return getDayString(listWorkingHours[0].day) +
+      return getDayString(listWorkingHours[0].day).tr() +
           ': ' +
           getStartEnd(listWorkingHours[0].start, listWorkingHours[0].end);
     }
-    return getDayString(listWorkingHours[index].day) +
+    return getDayString(listWorkingHours[index].day).tr() +
         ': ' +
         getStartEnd(listWorkingHours[index].start, listWorkingHours[index].end);
   }

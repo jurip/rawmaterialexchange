@@ -22,7 +22,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 class GarbageOrderWidget extends StatefulWidget {
   final String address;
   final List<MaterialListItem> materials;
-  final double income;
+  final int income;
   final LatLng? position;
 
   GarbageOrderWidget({
@@ -402,10 +402,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
                 order.longitude = widget.position!.longitude;
                 if (order.time == null)
                   order.time = timePeriods[(DateTime.now().hour ~/ 2)];
-                addOrder(context, order);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Processing Data')),
-                );
+                bool orderSent = await addOrder(context, order);
                 Navigator.pop(context);
                 widget.items.forEach((element) {
                   element.amount = 0;
@@ -418,7 +415,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
                       barrierColor: Colors.white.withOpacity(0),
                       context: context,
                       builder: (BuildContext context) {
-                        return GarbageOrderResultWidget();
+                        return GarbageOrderResultWidget(orderSent);
                       },
                     )
                     .whenComplete(() {});

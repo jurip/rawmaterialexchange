@@ -1,20 +1,17 @@
 import 'package:app/api/models/response_list_languages.dart';
-import 'package:app/api/models/response_user_data.dart';
-import 'package:app/api/requests/requests.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/screens/registration.dart';
-import 'package:app/utils/progress_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
-import '../../main.dart';
 import 'confirmation_button.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class GarbageOrderResultWidget extends StatefulWidget {
-  const GarbageOrderResultWidget({
+  final bool orderSent;
+
+  const GarbageOrderResultWidget( this.orderSent, {
     Key? key,
   }) : super(key: key);
 
@@ -29,16 +26,16 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
   @override
   void initState() {
     super.initState();
-    getToken();
-    _sendingMsgProgressBar = ProgressBar();
-    getListOfLanguageAddDataToList();
+    //getToken();
+    //_sendingMsgProgressBar = ProgressBar();
+    //getListOfLanguageAddDataToList();
   }
 
-  int selectedLanguageId = 1;
+/*  int selectedLanguageId = 1;
 
   ProgressBar? _sendingMsgProgressBar;
 
-  ListLanguages? dropdownValue;
+  ListLanguages? dropdownValue;*/
 
   final double topPadding1 = 12.0;
   final double topPadding2 = 16.0;
@@ -97,18 +94,7 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return userData == null || listLanguage.isEmpty
-        ? Scaffold(
-            key: _scaffoldKey,
-            backgroundColor: Colors.transparent,
-            body: Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.green,
-                color: Colors.white,
-              ),
-            ),
-          )
-        : SafeArea(
+    return SafeArea(
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -149,7 +135,10 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
                       padding: EdgeInsets.only(top: topPadding2),
                       child: Center(
                           child:
-                              Text('order_done'.tr(), style: kAlertTextStyle)),
+                              widget.orderSent?
+                              Text('order_done'.tr(), style: kAlertTextStyle):
+                        Text('order_error'.tr(), style: kAlertTextStyle)
+                      ),
                     ),
                     Container(
                       constraints: BoxConstraints(
@@ -163,7 +152,7 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
                           children: [
                             //66 * 4
                             SizedBox(height: sizedBoxHeight1),
-                            Text("orded_done_text".tr()),
+                            widget.orderSent?Text("orded_done_text".tr()):SizedBox(height: sizedBoxHeight3),
                             SizedBox(height: sizedBoxHeight3),
                             Container(
                               width: double.infinity,
@@ -191,21 +180,21 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
           );
   }
 
-  UserData? userData;
+ // UserData? userData;
 
-  void getToken() async {
+  /*void getToken() async {
     await getUserData(context).then((data) {
       setState(() {
         userData = data;
       });
     });
-    definitionLanguage();
-    definitionBirthDate();
-  }
+    //definitionLanguage();
+    //definitionBirthDate();
+  }*/
 
-  String language = '';
+ // String language = '';
 
-  void definitionLanguage() {
+  /*void definitionLanguage() {
     if (userData!.languageId == 1) {
       language = 'Русский';
     } else if (userData!.languageId == 2) {
@@ -215,21 +204,21 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
     } else if (userData!.languageId == 4) {
       language = 'Киргизский';
     }
-  }
+  }*/
 
-  String birthDateUser = '';
+  //String birthDateUser = '';
 
-  void definitionBirthDate() {
+  /*void definitionBirthDate() {
     String birthDate = userData!.birthDate.toString();
     birthDateUser = birthDate.substring(0, birthDate.indexOf(' '));
-  }
+  }*/
 
   String error = '';
 
   //получение списка языков
   List<ListLanguages> listLanguage = [];
 
-  Future<void> getListOfLanguageAddDataToList() async {
+ /* Future<void> getListOfLanguageAddDataToList() async {
     // _sendingMsgProgressBar?.show(context); // TODO Что-то не так с ним
     var dataLanguage = await getLanguages();
     if (dataLanguage != null) {
@@ -249,9 +238,9 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
       });
     }
     _sendingMsgProgressBar?.hide();
-  }
+  }*/
 
-  void languageDefinition() {
+  /*void languageDefinition() {
     if (mainLocale!.languageCode == 'ru') {
       dropdownValue = listLanguage[0];
     } else if (mainLocale!.languageCode == 'kk') {
@@ -259,5 +248,5 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
     } else if (mainLocale!.languageCode == 'uz') {
       dropdownValue = listLanguage[1];
     }
-  }
+  }*/
 }

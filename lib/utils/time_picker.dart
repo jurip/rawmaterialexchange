@@ -29,7 +29,7 @@ class TimePeriodPicker extends StatefulWidget {
 }
 
 class _TimePeriodPickerState extends State<TimePeriodPicker> {
-  int _selectedPeriod = (DateTime.now().hour / 2).toInt();
+  int _selectedPeriod = DateTime.now().hour ~/ 2;
 
   // This shows a CupertinoModalPopup with a reasonable fixed height which hosts CupertinoPicker.
   void _showDialog(Widget child) {
