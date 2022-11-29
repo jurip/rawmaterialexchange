@@ -22,12 +22,12 @@ class MainActivity : FlutterActivity() {
             // This method is invoked on the main thread.
                 call, result ->
             if (call.method == "openTelegram") {
-                val batteryLevel = openTelegram()
+                val result = openTelegram()
 
-                if (batteryLevel != -1) {
-                    result.success(batteryLevel)
+                if (result != -1) {
+                    result.success(result)
                 } else {
-                    result.error("UNAVAILABLE", "Battery level not available.", null)
+                    result.error("UNAVAILABLE", "Telegram not available.", null)
                 }
             } else {
                 result.notImplemented()

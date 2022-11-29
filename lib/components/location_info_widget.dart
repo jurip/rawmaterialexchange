@@ -13,13 +13,13 @@ import '../constants/color_constants.dart';
 import '../constants/style_constants.dart';
 
 class LocationInfoWidget extends StatefulWidget {
-  final List<ListOfRawMaterialsOfSpecificObject> materials;
+  final List<ListOfRawMaterialsOfSpecificObject>? materials;
 
   final int selectedIndexMarker;
 
   LocationInfoWidget({
     Key? key,
-    required this.materials,
+     this.materials,
     required this.selectedIndexMarker,
   }) : super(key: key);
 
@@ -269,7 +269,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                             child: GridView.builder(
                               physics: ScrollPhysics(),
                               shrinkWrap: true,
-                              itemCount: widget.materials.length,
+                              itemCount: widget.materials!.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Container(
                                   padding: EdgeInsets.all(5),
@@ -295,7 +295,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                                           child: Image(
                                             image: AssetImage("images/" +
                                                 imageName(widget
-                                                    .materials[index].id) +
+                                                    .materials![index].id) +
                                                 "2.png"),
                                             height: 60,
                                             fit: BoxFit.fill,
@@ -303,7 +303,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                                         ),
                                         SizedBox(height: 10.0),
                                         Text(
-                                          widget.materials[index].price
+                                          widget.materials![index].price
                                                   .toString() +
                                               " " +
                                               "rub_per_100_kilo".tr(),
@@ -311,7 +311,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                                         ),
                                         SizedBox(height: 10.0),
                                         Text(
-                                          widget.materials[index].name,
+                                          widget.materials![index].name,
                                           style: kTextStyle12,
                                         )
                                       ],

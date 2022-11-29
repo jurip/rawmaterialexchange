@@ -17,6 +17,7 @@ import 'package:app/main.dart';
 import 'package:app/screens/authorisation.dart';
 import 'package:app/utils/user_session.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
@@ -24,8 +25,8 @@ import '../models/Order.dart';
 import '../models/material_list_item.dart';
 
 final String api = 'https://recyclemap.tmweb.ru/api/v1/';
-final String mapboxToken =
-    'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA';
+
+final String mapbox_token = dotenv.env["ACCESS_TOKEN"]!;
 //запрос на получение списка языков
 Future<List<ListLanguages>?> getLanguages() async {
   String url = api + 'languages';
@@ -294,6 +295,30 @@ Future<List<ListObjectWorkingHours>?> getListObjectWorkingHours(int id) async {
   return null;
 }
 
+Future<Map<String, Object>?> getObjectsGeojson(List<int> array, BuildContext context) async{
+  var fs = [];
+  List<ListOfObjectsFromFilter>? list = await getListOfObjectsInFilter(array, context);
+  if(list==null){
+    return null;
+  }
+  list.forEach((element) { fs.add({
+    "type": "Feature",
+    "id": element.id,
+    "properties": {
+      "type": "rawmaterialpoint",
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [element.longitude,element.latitude]
+    }
+  });});
+  Map<String, Object> _geo = {
+    "type": "FeatureCollection",
+    "features": fs
+  };
+  return _geo;
+}
+
 //запрос на получение обьектов с фильтра
 Future<List<ListOfObjectsFromFilter>?> getListOfObjectsInFilter(
     List<int> array, BuildContext context) async {
@@ -332,10 +357,8 @@ Future<List<ListOfObjectsFromFilter>?> getListOfObjectsInFilter(
 }
 
 
-//запрос для маршрута driving
 Future<String?> getAddressCoordinates(
     BuildContext context, double lngMyLocation, double latMyLocation) async {
-  //String url = 'https://api.mapbox.com/directions/v5/mapbox/driving/30.090796,59.789816;30.134563,59.769149?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA&steps=true&language=ru';
 
   String url =
       'https://api.mapbox.com/geocoding/v5/mapbox.places/$lngMyLocation,$latMyLocation.json?access_token=$mapboxToken';
@@ -363,7 +386,6 @@ Future<String?> getAddressCoordinates(
   }
   return null;
 }
-
 // Получение списка избранных
 Future<List<GetFavorites>?> getFavorites(BuildContext context) async {
   String url = api + 'useritems';
