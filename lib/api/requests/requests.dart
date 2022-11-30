@@ -17,14 +17,15 @@ import 'package:app/main.dart';
 import 'package:app/screens/authorisation.dart';
 import 'package:app/utils/user_session.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+
 import '../models/Order.dart';
 import '../models/material_list_item.dart';
 
 final String api = 'https://recyclemap.tmweb.ru/api/v1/';
-final String mapboxToken = dotenv.env["ACCESS_TOKEN"]!;
+final String mapboxToken =
+    'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA';
 //запрос на получение списка языков
 Future<List<ListLanguages>?> getLanguages() async {
   String url = api + 'languages';
@@ -293,30 +294,6 @@ Future<List<ListObjectWorkingHours>?> getListObjectWorkingHours(int id) async {
   return null;
 }
 
-Future<Map<String, Object>?> getObjectsGeojson(List<int> array, BuildContext context) async{
-  var fs = [];
-  List<ListOfObjectsFromFilter>? list = await getListOfObjectsInFilter(array, context);
-  if(list==null){
-    return null;
-  }
-  list.forEach((element) { fs.add({
-    "type": "Feature",
-    "id": element.id,
-    "properties": {
-      "type": "rawmaterialpoint",
-    },
-    "geometry": {
-      "type": "Point",
-      "coordinates": [element.longitude,element.latitude]
-    }
-  });});
-  Map<String, Object> _geo = {
-    "type": "FeatureCollection",
-    "features": fs
-  };
-  return _geo;
-}
-
 //запрос на получение обьектов с фильтра
 Future<List<ListOfObjectsFromFilter>?> getListOfObjectsInFilter(
     List<int> array, BuildContext context) async {
@@ -355,8 +332,10 @@ Future<List<ListOfObjectsFromFilter>?> getListOfObjectsInFilter(
 }
 
 
+//запрос для маршрута driving
 Future<String?> getAddressCoordinates(
     BuildContext context, double lngMyLocation, double latMyLocation) async {
+  //String url = 'https://api.mapbox.com/directions/v5/mapbox/driving/30.090796,59.789816;30.134563,59.769149?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA&steps=true&language=ru';
 
   String url =
       'https://api.mapbox.com/geocoding/v5/mapbox.places/$lngMyLocation,$latMyLocation.json?access_token=$mapboxToken';
@@ -384,6 +363,7 @@ Future<String?> getAddressCoordinates(
   }
   return null;
 }
+
 // Получение списка избранных
 Future<List<GetFavorites>?> getFavorites(BuildContext context) async {
   String url = api + 'useritems';
@@ -490,16 +470,16 @@ Future<bool> addOrder(BuildContext context, Order item) async {
   String r = "Телефон: "+item.phone.toString()+ "%0A"+
       "Адрес: "+item.address.toString() + "%0A"+
       "Комментарий: "+item.comment.toString()+ "%0A"+
-      "Дата вывоза: "+item.datetimePickup.toString()+
+      "Дата вывоза: "+item.datetimePickup.toString()+"%0A"+
       "Состав: ";
   item.items.forEach((element) { r = r + element.name+" - "+element.amount.toString()+" кг - "+element.price.toString()+ " руб%0A";});
 
 
 
-  Response t = await http.get((Uri.parse("https://api.telegram.org/" +
+  http.get((Uri.parse("https://api.telegram.org/" +
       "bot5670549742:AAFYW_I0D9h4F0eCRbJ3YoDUBWu4AZG0lnI/" +
-      "sendMessage?chat_id=@rawmaterialstest&text=" +
-      "r")));
+      "sendMessage?chat_id=-1001710971907&text=" +
+      r)));
   try {
     response = await http.post(Uri.parse(url), headers: headers, body: body);
   } on Exception {
