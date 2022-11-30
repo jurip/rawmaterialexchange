@@ -18,21 +18,21 @@ class MainActivity : FlutterActivity() {
     private val CHANNEL = "rawmaterials/openTelegram"
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler({
             // This method is invoked on the main thread.
                 call, result ->
             if (call.method == "openTelegram") {
-                val telegramOpened = openTelegram()
+                val batteryLevel = openTelegram()
 
-                if (telegramOpened != -1) {
-                    result.success(telegramOpened)
+                if (batteryLevel != -1) {
+                    result.success(batteryLevel)
                 } else {
                     result.error("UNAVAILABLE", "Telegram not available.", null)
                 }
             } else {
                 result.notImplemented()
             }
-        }
+        })
 
     }
 
