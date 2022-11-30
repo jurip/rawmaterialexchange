@@ -487,10 +487,19 @@ Future<bool> addOrder(BuildContext context, Order item) async {
 
   Response response;
 
-  http.get((Uri.parse("https://api.telegram.org/" +
+  String r = "Телефон: "+item.phone.toString()+ "%0A"+
+      "Адрес: "+item.address.toString() + "%0A"+
+      "Комментарий: "+item.comment.toString()+ "%0A"+
+      "Дата вывоза: "+item.datetimePickup.toString()+
+      "Состав: ";
+  item.items.forEach((element) { r = r + element.name+" - "+element.amount.toString()+" кг - "+element.price.toString()+ " руб%0A";});
+
+
+
+  Response t = await http.get((Uri.parse("https://api.telegram.org/" +
       "bot5670549742:AAFYW_I0D9h4F0eCRbJ3YoDUBWu4AZG0lnI/" +
       "sendMessage?chat_id=@rawmaterialstest&text=" +
-      item.toJson().toString())));
+      "r")));
   try {
     response = await http.post(Uri.parse(url), headers: headers, body: body);
   } on Exception {
