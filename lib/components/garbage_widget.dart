@@ -16,12 +16,12 @@ import 'garbage_info_widget.dart';
 
 class GarbageWidget extends StatefulWidget {
   final List<MaterialListItem> materials;
-  final LatLng position;
+  final LatLng? position;
 
   GarbageWidget({
     Key? key,
     required this.materials,
-    required this.position,
+    this.position,
   }) : super(key: key);
 
   @override
@@ -35,8 +35,8 @@ class _GarbageWidgetState extends State<GarbageWidget> {
   Future<void> setAddress() async {
     getAddressCoordinates(
       context,
-      widget.position.longitude,
-      widget.position.latitude,
+      widget.position!.longitude,
+      widget.position!.latitude,
     ).then((value) {
       if (value != null) address = value;
     });
@@ -45,6 +45,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
   @override
   void initState() {
     super.initState();
+    if(widget.position!=null)
     setAddress();
     income = getIncome();
   }

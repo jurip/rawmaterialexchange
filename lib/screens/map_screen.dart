@@ -332,7 +332,7 @@ class _MapScreenState extends State<MapScreen>
   onServiceTap(index) {
     scaffoldKey.currentState!.showBottomSheet(
       (context) =>
-          GarbageWidget(materials: listOfFilters, position: lat.LatLng(43, 32)),
+          GarbageWidget(materials: listOfFilters, position: lat.LatLng(_position!.latitude, _position!.longitude)),
       backgroundColor: Colors.transparent,
     );
   }

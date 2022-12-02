@@ -10,7 +10,9 @@ import 'package:app/utils/user_session.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../authentication/bloc/authentication_bloc.dart';
 import '../../main.dart';
 import '../confirmation_button.dart';
 import 'information_column.dart';
@@ -238,6 +240,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                       content: Text(value!.message.toString()),
                                     ));
                                   });
+                                  context
+                                      .read<AuthenticationBloc>()
+                                      .add(AuthenticationLogoutRequested());
                                 },
                               ),
                               SizedBox(height: sizedBoxHeight5),
