@@ -263,7 +263,7 @@ class _VerificationState extends State<Verification> {
                         if (_codeController.text != '') {
                           code = int.parse(_codeController.text);
                           _sendingMsgProgressBar!.show(context);
-                          getSMSCode(code).then((data) {
+                          getSMSCode(code, widget.phone).then((data) {
                             _sendingMsgProgressBar!.hide();
                             if (data != null) {
                               if (data.accessToken != '' &&

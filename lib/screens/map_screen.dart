@@ -97,7 +97,7 @@ class _MapScreenState extends State<MapScreen>
         print("set in service status: " + event.toString());
         getLocation();
       });
-      getLocation();
+      //getLocation();
       Geolocator.getPositionStream().listen((event) {
         if (firstTime) {
           setState(() => {

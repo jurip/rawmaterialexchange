@@ -85,8 +85,8 @@ Future<ServerResponseWhenRequestingRegistration?> getRegistration(String name,
 }
 
 //верификация (смс - код)
-Future<ResponseVerification?> getSMSCode(int code) async {
-  String url = api + 'verification?sms_code=$code';
+Future<ResponseVerification?> getSMSCode(int code, String phone) async {
+  String url = api + 'verification?sms_code=$code&phone=$phone';
 
   Map<String, String> headers = initHeaders();
 
@@ -150,7 +150,7 @@ Future<UserData?> getUserData(BuildContext context) async {
 
 //запрос на получение списка сырья
 Future<List<MaterialListItem>?> getListOfRawMaterials() async {
-  String url = api + 'raws';
+  String url = api + 'raws?for_filter=1';
 
   var headers = initHeaders();
   Response response;
@@ -471,15 +471,28 @@ Future<bool> addOrder(BuildContext context, Order item) async {
       "Адрес: "+item.address.toString() + "%0A"+
       "Комментарий: "+item.comment.toString()+ "%0A"+
       "Дата вывоза: "+item.datetimePickup.toString()+"%0A"+
-      "Состав: ";
-  item.items.forEach((element) { r = r + element.name+" - "+element.amount.toString()+" кг - "+element.price.toString()+ " руб%0A";});
+      "Состав: %0A";
+  int sum = 0;
+  item.items.forEach((element) {
+    int rowTotal = element.amount*element.price;
+    sum = sum + rowTotal;
+    r = r + "* "+element.name+" - "+element.amount.toString()+" кг - "
+        +element.price.toString()+ " руб/кг - "+rowTotal.toString() +"руб%0A";});
+
+  r = r +"Всего: "+sum.toString()+" рублей%0A";
 
 
-
-  http.get((Uri.parse("https://api.telegram.org/" +
+  try {
+  Response tr = await http.get((Uri.parse("https://api.telegram.org/" +
       "bot5670549742:AAFYW_I0D9h4F0eCRbJ3YoDUBWu4AZG0lnI/" +
       "sendMessage?chat_id=-1001710971907&text=" +
       r)));
+  print(tr);
+  } on Exception {
+    return false;
+  } catch (e) {
+    return false;
+  }
   try {
     response = await http.post(Uri.parse(url), headers: headers, body: body);
   } on Exception {

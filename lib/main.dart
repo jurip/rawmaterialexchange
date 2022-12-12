@@ -17,7 +17,7 @@ void main() async {
         supportedLocales: [
           Locale('ru'),
           Locale('kk'),
-          //Locale('tjk'),
+          //Locale('tj'),
           Locale('uz')
         ],
         path: 'assets/translations',
