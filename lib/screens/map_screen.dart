@@ -39,7 +39,33 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 class _MapScreenState extends State<MapScreen>
 {
-
+  void initPositioning() async {
+    var p = await SharedPreferences.getInstance();
+    _position = await getPositionFromStored();
+    if (await getPermission()) {
+      Geolocator.getServiceStatusStream().listen((event) {
+        print("set in service status: " + event.toString());
+        getLocation();
+      });
+      //getLocation();
+      Geolocator.getPositionStream().listen((event) {
+        if (firstTime) {
+          setState(() => {
+                print("${event.latitude} ${event.longitude}"),
+                _position = latLngfromPosition(event),
+                _mapController.move(_position, 15)
+              });
+          firstTime = false;
+          p.setDouble("lat", _position.latitude);
+          p.setDouble("lng", _position.longitude);
+        } else {
+          setState(() => {
+                _position = latLngfromPosition(event),
+              });
+        }
+      });
+    }
+  }
   LatLng? _position;
   ProgressBar _sendingMsgProgressBar = ProgressBar();
   late MapboxMapController mapController;
