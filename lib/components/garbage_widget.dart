@@ -21,7 +21,7 @@ class GarbageWidget extends StatefulWidget {
   GarbageWidget({
     Key? key,
     required this.materials,
-    required this.position,
+    this.position,
   }) : super(key: key);
 
   @override
@@ -45,6 +45,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
   @override
   void initState() {
     super.initState();
+    if(widget.position!=null)
     setAddress();
     income = getIncome();
   }

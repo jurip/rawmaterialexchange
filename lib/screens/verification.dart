@@ -9,7 +9,10 @@ import 'package:app/utils/progress_bar.dart';
 import 'package:app/utils/user_session.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+
+import '../authentication/bloc/authentication_bloc.dart';
 
 class Verification extends StatefulWidget {
   const Verification({
@@ -275,10 +278,15 @@ class _VerificationState extends State<Verification> {
                                 UserSession.setLanguageFromSharedPref(
                                     widget.selectedLanguageId);
 
-                                Navigator.push(context,
+                                /*Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return MapScreen();
-                                }));
+                                  }));*/
+                                  context
+                                      .read<AuthenticationBloc>()
+                                      .add(AuthenticationLogoutRequested());
+
+
                               } else {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(

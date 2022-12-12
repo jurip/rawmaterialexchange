@@ -27,7 +27,7 @@ class MainActivity : FlutterActivity() {
                 if (batteryLevel != -1) {
                     result.success(batteryLevel)
                 } else {
-                    result.error("UNAVAILABLE", "Battery level not available.", null)
+                    result.error("UNAVAILABLE", "Telegram not available.", null)
                 }
             } else {
                 result.notImplemented()

@@ -1,9 +1,8 @@
 import 'dart:async';
-
-import 'package:app/api/models/response_list_of_object.dart';
-import 'package:app/api/models/response_list_of_raw_materials_of_specific_object.dart';
+import 'dart:math';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:app/api/models/response_list_of_services.dart';
-import 'package:app/api/models/response_objects_from_filter.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/bottom_sheet_setting_components/settings_widget.dart';
 import 'package:app/components/custom_app_bar.dart';
@@ -17,15 +16,11 @@ import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 import 'package:app/utils/progress_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:latlong2/latlong.dart' as lat;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
 import '../api/models/material_list_item.dart';
-import '../api/models/response_list_object_working_hours.dart';
 import '../components/garbage_widget.dart';
 import '../components/other_material_card_widget.dart';
 import '../constants/image_constants.dart';
@@ -43,52 +38,7 @@ class MapScreen extends StatefulWidget {
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 class _MapScreenState extends State<MapScreen>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
-  MapController _mapController = MapController();
-  late AnimationController animationController =
-      AnimationController(vsync: this, duration: Duration(milliseconds: 2000));
-  late Animation rotationAnimation =
-      Tween(begin: 4.0, end: 7).animate(animationController);
-  ProgressBar _sendingMsgProgressBar = ProgressBar();
-  int selectedIndexMarker = -1;
-  LatLng _position = LatLng(55.76350864466721, 37.61888069876945);
-  String error = '';
-  bool load = false;
-  int selectedMaterials = -1;
-  bool userInfoClicked = false;
-  bool firstTime = true;
-  bool locationOpened = false;
-  double animatedWidth = 4;
-  PanelController _pc = new PanelController();
-
-  LatLng latLngfromPosition(currentLocation) {
-    return LatLng(currentLocation.latitude, currentLocation.longitude);
-  }
-
-  Future<bool> getPermission() async {
-    var enabled = await Geolocator.checkPermission();
-    if (enabled == LocationPermission.denied) {
-      enabled = await Geolocator.requestPermission();
-    }
-    return enabled != LocationPermission.denied &&
-        enabled != LocationPermission.deniedForever;
-  }
-
-  getLocation() async {
-    try {
-      Position newPosition = await Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.high)
-          .timeout(new Duration(seconds: 25));
-
-      setState(() {
-        _position = latLngfromPosition(newPosition);
-        _mapController.move(_position, 15);
-      });
-    } catch (e) {
-      print('Error: ${e.toString()}');
-    }
-  }
-
+{
   void initPositioning() async {
     var p = await SharedPreferences.getInstance();
     _position = await getPositionFromStored();
@@ -116,14 +66,36 @@ class _MapScreenState extends State<MapScreen>
       });
     }
   }
+  LatLng? _position;
+  ProgressBar _sendingMsgProgressBar = ProgressBar();
+  late MapboxMapController mapController;
+  List<MaterialListItem> listOfFilters = [];
+  List<Service> listOfServices = [
+    Service(id: 9, name: "garbage_collection".tr()),
+  ];
+  List<Service> listOfOthers = [
+    Service(id: 10, name: "other".tr()),
+  ];
+  List<int> selectedMaterialsId = [];
 
   @override
   void initState() {
     super.initState();
-    initPositioning();
-    getListOfObjectAddDataToList();
-    WidgetsBinding.instance.addObserver(this);
-    initAnimation();
+    initData();
+  }
+  void initData() {
+    getPositionFromStored().then((value) => {
+      setState(() {
+        _position = value;
+      })
+    });
+    getListOfRawMaterials().then((value) => {
+    setState(() {
+      if(value!=null)
+        listOfFilters = value;
+    })
+    });
+
   }
 
   Future<LatLng> getPositionFromStored() async {
@@ -139,18 +111,15 @@ class _MapScreenState extends State<MapScreen>
     return position;
   }
 
+  lat.LatLng latLngfromPosition(currentLocation) {
+    return lat.LatLng(currentLocation.latitude, currentLocation.longitude);
+  }
+
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    animationController.dispose();
     super.dispose();
   }
 
-  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
-      print("AppLifecycleState: " + state.name.toString());
-    }
-  }
 
   Widget header(text) {
     return Container(
@@ -228,16 +197,16 @@ class _MapScreenState extends State<MapScreen>
 
   @override
   Widget build(BuildContext context) {
-    return listOfRawMaterials.isEmpty || listOfObject.isEmpty
+    return listOfFilters.isEmpty || _position == null
         ? Scaffold(
-            backgroundColor: Colors.white,
-            body: Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.green,
-                color: Colors.white,
-              ),
-            ),
-          )
+      backgroundColor: Colors.white,
+      body: Center(
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.green,
+          color: Colors.white,
+        ),
+      ),
+    )
         : WillPopScope(
             onWillPop: MyWillPop(context: context).onWillPop,
             child: Scaffold(
@@ -255,23 +224,13 @@ class _MapScreenState extends State<MapScreen>
                     },
                   )
                       .whenComplete(() {
-                    getListOfRawMaterialsAddDataToList();
-                    if (userInfoClicked)
-                      getListOfRawMaterialsOfSpecificObjectAddDataToList(
-                          selectedIndexMarker, false);
                   });
                 },
                 returnListOfSelectedMarkerBottomSheet: () {},
                 removeRoute: () {
-                  latLngDriving.clear();
-                  latLngWalking.clear();
-                  _pc.close();
-                  setState(() {});
+
                 },
                 returnMarkers: () {
-                  setState(() {
-                    getListOfObjectAddDataToList();
-                  });
                 },
                 updatingLanguageInTheFilter: () {},
               ),
@@ -279,7 +238,6 @@ class _MapScreenState extends State<MapScreen>
               body: SlidingUpPanel(
                 minHeight: 140,
                 maxHeight: 590,
-                controller: _pc,
                 borderRadius: BorderRadius.only(
                     topRight: Radius.circular(30.0),
                     topLeft: Radius.circular(30.0)),
@@ -317,38 +275,19 @@ class _MapScreenState extends State<MapScreen>
                 ),
                 body: Stack(
                   children: [
-                    FlutterMap(
-                      mapController: _mapController,
-                      options: MapOptions(
-                        center: _position,
-                        minZoom: 3.0,
-                        maxZoom: 18.4,
+                    MapboxMap(
+                      myLocationEnabled: true,
+                      trackCameraPosition: true,
+                      onMapCreated: _onMapCreated,
+                      styleString: 'mapbox://styles/mapbox/light-v11',
+                      minMaxZoomPreference: MinMaxZoomPreference(3.0, 18.4),
+                      initialCameraPosition: CameraPosition(
+                        target: _position!,
+                        zoom: 15.0,
                       ),
-                      layers: [
-                        TileLayerOptions(
-                            urlTemplate:
-                                'https://api.mapbox.com/styles/v1/logiman/ckweydbul0r7015mv54fy9u17/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
-                            additionalOptions: {
-                              'accessToken':
-                                  'pk.eyJ1IjoibG9naW1hbiIsImEiOiJja3c5aTJtcW8zMTJyMzByb240c2Fma29uIn0.3oWuXoPCWnsKDFxOqRPgjA',
-                              'id': 'mapbox.mapbox-streets-v8'
-                            }),
-                        PolylineLayerOptions(
-                          polylines: [
-                            Polyline(
-                              points: getSelectedToggleSwitch(),
-                              strokeWidth: 4.0,
-                              color: Colors.green,
-                              isDotted: true,
-                            ),
-                          ],
-                        ),
-                        MarkerLayerOptions(
-                          rotate: true,
-                          markers: getMarkersAndUserLocation(),
-                        ),
-                      ],
-                    ),
+                      onStyleLoadedCallback: () => onStyleLoaded(mapController),
+                      accessToken: dotenv.env["ACCESS_TOKEN"],),
+
                     Padding(
                       padding: EdgeInsets.only(
                         top: MediaQuery.of(context).size.width * 0.8,
@@ -371,8 +310,9 @@ class _MapScreenState extends State<MapScreen>
                         ),
                         child: IconButton(
                           color: Colors.white,
-                          onPressed: () {
-                            _mapController.move(_position, 15);
+                          onPressed: () async {
+
+                          await moveToMyLocation();
                           },
                           icon: Icon(
                             Icons.location_on,
@@ -389,268 +329,21 @@ class _MapScreenState extends State<MapScreen>
           );
   }
 
-  //запись в лист всех маркеров точек и отдельно маркер местоположения
-  List<Marker> getMarkersAndUserLocation() {
-    List<Marker> newList = [];
-    newList.addAll(markers);
-
-    newList.add(
-      Marker(
-        width: 30.0,
-        height: 30.0,
-        point: _position,
-        builder: (context) => Container(
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: animatedWidth),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
-                spreadRadius: 1,
-                blurRadius: 7,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    return newList;
+  Future<void> moveToMyLocation() async {
+    var loc = await mapController.requestMyLocationLatLng();
+    if(loc!=null)
+     mapController.moveCamera(CameraUpdate.newLatLng(loc));
   }
 
-  //получение всех маркеров
-  List<ListOfObjects> listOfObject = [];
-
-  Future<void> getListOfObjectAddDataToList() async {
-    var dataObjects = await getListOfObjects(context);
-    if (dataObjects != null) {
-      listOfObject = dataObjects;
-      getListOfRawMaterialsAddDataToList();
-      getListOfFilters();
-      addMarkers();
-      load = true;
-    } else {
-      setState(() {
-        error = 'Error';
-      });
-    }
-  }
-
-  //получение списка сырья
-  List<MaterialListItem> listOfRawMaterials = [];
-
-  Future<void> getListOfRawMaterialsAddDataToList() async {
-    var dataListOfRawMaterials = await getListOfRawMaterials();
-    if (dataListOfRawMaterials != null) {
-      setState(() {
-        listOfRawMaterials = dataListOfRawMaterials;
-      });
-    } else {
-      setState(() {
-        error = 'Error';
-      });
-    }
-  }
-
-  List<MaterialListItem> listOfFilters = [];
-
-  Future<void> getListOfFilters() async {
-    var dataListOfRawMaterials = await getListOfRawMaterials();
-    if (dataListOfRawMaterials != null) {
-      setState(() {
-        listOfFilters = dataListOfRawMaterials;
-      });
-    } else {
-      setState(() {
-        error = 'Error';
-      });
-    }
-  }
-
-  List<Service> listOfServices = [
-    Service(id: 9, name: "garbage_collection".tr()),
-  ];
-  List<Service> listOfOthers = [
-    Service(id: 10, name: "other".tr()),
-  ];
-
-  //запись маркеров в лист для их отображения
-  List<Marker> markers = [];
-
-  void addMarkers() {
-    if (listOfObject.isEmpty) return;
-    markers.clear();
-    if (selectedMaterialsId.isEmpty) {
-      for (var item in listOfObject) {
-        markers.add(
-          Marker(
-            height: selectedIndexMarker == item.id ? 90.0 : 30.0,
-            width: selectedIndexMarker == item.id ? 60.0 : 30.0,
-            point: LatLng(item.latitude, item.longitude),
-            builder: (context) => InkWell(
-              onTap: () {
-                setState(() {
-                  selectedIndexMarker = item.id;
-                  addMarkers();
-                });
-                getListOfRawMaterialsOfSpecificObjectAddDataToList(
-                    selectedIndexMarker, true);
-              },
-              child: selectedIndexMarker != item.id
-                  ? Container(
-                      decoration: BoxDecoration(
-                        color: kColorGreen1,
-                        borderRadius: BorderRadius.circular(20.0),
-                        border: Border.all(color: Colors.white, width: 4.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 7,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                    )
-                  : Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
-                        child: Image(image: AssetImage('images/Pin.png')),
-                      ),
-                    ),
-            ),
-          ),
-        );
-      }
-      setState(() {
-        _sendingMsgProgressBar.hide();
-      });
-    } else {
-      for (var item in listOfObjectFromFilter) {
-        markers.add(
-          Marker(
-            height: selectedIndexMarker == item.id ? 90.0 : 30.0,
-            width: selectedIndexMarker == item.id ? 60.0 : 30.0,
-            point: LatLng(item.latitude, item.longitude),
-            builder: (context) => InkWell(
-              onTap: () {
-                setState(() {
-                  selectedIndexMarker = item.id;
-                  addMarkers();
-                });
-                getListOfRawMaterialsOfSpecificObjectAddDataToList(
-                    selectedIndexMarker, true);
-              },
-              child: selectedIndexMarker != item.id
-                  ? Container(
-                      decoration: BoxDecoration(
-                        color: kColorGreen1,
-                        borderRadius: BorderRadius.circular(20.0),
-                        border: Border.all(color: Colors.white, width: 4.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 1,
-                            blurRadius: 7,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                    )
-                  : Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
-                        child: Image(image: AssetImage('images/Pin.png')),
-                      ),
-                    ),
-            ),
-          ),
-        );
-      }
-      setState(() {
-        _sendingMsgProgressBar.hide();
-      });
-    }
-  }
-
-  List<ListOfRawMaterialsOfSpecificObject> listOfRawMaterialsOfSpecificObject =
-      [];
-
-  //лист для точек маршрута на машине
-  List<LatLng> latLngDriving = [];
-
-  double distanceDriving = 0;
-  double durationsDriving = 0;
-
-  //лист для точек маршрута пешком
-  List<LatLng> latLngWalking = [];
-
-  double distanceWalking = 0;
-  double durationsWalking = 0;
-
-  List<ListOfRawMaterialsOfSpecificObject>?
-      dataListOfRawMaterialsOfSpecificObject;
-
-  Future<void> getListOfRawMaterialsOfSpecificObjectAddDataToList(
-      int selectedIndexMarker, bool update) async {
-    if (update)
-      dataListOfRawMaterialsOfSpecificObject =
-          await getListOfRawMaterialsOfSpecificObject(
-              selectedIndexMarker, context);
-    if (dataListOfRawMaterialsOfSpecificObject != null) {
-      setState(() {
-        listOfRawMaterialsOfSpecificObject =
-            dataListOfRawMaterialsOfSpecificObject!;
-        locationOpened = true;
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return LocationInfoWidget(
-            materials: listOfRawMaterialsOfSpecificObject,
-            selectedIndexMarker: selectedIndexMarker,
-          );
-        }));
-      });
-    } else {
-      setState(() {
-        error = 'Error';
-      });
-    }
-  }
-
-  double latSelectedObject = 0;
-  double lngSelectedObject = 0;
-
-  List<int> selectedMaterialsId = [];
-
-  void getSelectedMaterialsIdAddToList(int id) {
-    selectedMaterialsId.add(id);
-    getListOfObjectFromFilterAddDataToList();
-  }
-
-  List<ListOfObjectsFromFilter> listOfObjectFromFilter = [];
-
-  //получение маркеров из  фильтра
-  Future<void> getListOfObjectFromFilterAddDataToList() async {
+  Future<void> loadPoints() async {
     setState(() {
       _sendingMsgProgressBar.show(context);
     });
     var dataObjects =
-        await getListOfObjectsInFilter(selectedMaterialsId, context);
+    await getObjectsGeojson(selectedMaterialsId, context);
     if (dataObjects != null) {
-      listOfObjectFromFilter = dataObjects;
+      mapController.setGeoJsonSource("points", dataObjects);
+      _sendingMsgProgressBar.hide();
     } else {
       setState(() {
         _sendingMsgProgressBar.hide();
@@ -659,48 +352,13 @@ class _MapScreenState extends State<MapScreen>
         ));
       });
     }
-    addMarkers();
   }
 
-  void removeFilter(int id) {
-    selectedMaterialsId.remove(id);
-    getListOfObjectFromFilterAddDataToList();
-    if (selectedMaterialsId.isEmpty) {
-      addMarkers();
-    }
-  }
-
-  String twoDigits(int n) => n.toString().padLeft(2, '0');
-
-  String address = '';
-
-  bool selectedToggleSwitch = false;
-
-  List<LatLng> selectedListLatLng = [];
-
-  List<LatLng> getSelectedToggleSwitch() {
-    if (updatedSelectedToggleSwitch == false) {
-      setState(() {
-        selectedListLatLng = latLngWalking;
-      });
-    } else {
-      setState(() {
-        selectedListLatLng = latLngDriving;
-      });
-    }
-    return selectedListLatLng;
-  }
-
-  bool updatedSelectedToggleSwitch = false;
-
-  String assetImage = '';
-
-  Color colorFilterElement = kColorGrey4;
 
   onServiceTap(index) {
     scaffoldKey.currentState!.showBottomSheet(
       (context) =>
-          GarbageWidget(materials: listOfRawMaterials, position: _position),
+          GarbageWidget(materials: listOfFilters, position: lat.LatLng(_position!.latitude, _position!.longitude)),
       backgroundColor: Colors.transparent,
     );
   }
@@ -709,9 +367,11 @@ class _MapScreenState extends State<MapScreen>
     setState(() {
       listOfFilters[index].selected = !listOfFilters[index].selected;
       if (listOfFilters[index].selected == false) {
-        removeFilter(listOfFilters[index].id);
+        selectedMaterialsId.remove(listOfFilters[index].id);
+        loadPoints();
       } else {
-        getSelectedMaterialsIdAddToList(listOfFilters[index].id);
+        selectedMaterialsId.add(listOfFilters[index].id);
+        loadPoints();
       }
     });
   }
@@ -723,50 +383,40 @@ class _MapScreenState extends State<MapScreen>
     );
   }
 
-  List<ListObjectWorkingHours> listWorkingHours = [];
-  String selectedDayOfTheWeek = '';
-
-
-
-  String getCurrentDate() {
-    if (listWorkingHours.length == 0) return "";
-    int weekDay = DateTime.now().weekday - 1;
-    int index =
-        listWorkingHours.indexWhere((element) => element.day == weekDay);
-    if (index == -1) {
-      return getDayString(listWorkingHours[0].day).tr() +
-          ': ' +
-          getStartEnd(listWorkingHours[0].start, listWorkingHours[0].end);
-    }
-    return getDayString(listWorkingHours[index].day).tr() +
-        ': ' +
-        getStartEnd(listWorkingHours[index].start, listWorkingHours[index].end);
+  void onStyleLoaded(MapboxMapController controller) async{
+    this.mapController = controller;
+    await controller.setMapLanguage("name_ru");
+    var json = await getObjectsGeojson(selectedMaterialsId, context);
+    if(json!=null)
+    await controller.addGeoJsonSource("points", json);
+    await controller.addSymbolLayer(
+      "points",
+      "symbols",
+      SymbolLayerProperties(
+        iconImage: "images/point.png",
+        iconSize: 2,
+        iconAllowOverlap: true,
+      ),
+    );
+  }
+  void _onMapCreated(MapboxMapController controller) {
+    this.mapController = controller;
+    mapController.onFeatureTapped.add(onFeatureTap);
+    mapController.requestMyLocationLatLng().then((value) =>
+        mapController.moveCamera(CameraUpdate.newLatLngZoom(value!, 15)));
+  }
+  Future<void> onFeatureTap(dynamic featureId, Point<double> point, LatLng latLng) async {
+    _sendingMsgProgressBar.show(context);
+    int id = int.parse(featureId);
+    var d = await getListOfRawMaterialsOfSpecificObject(
+        id, context);
+    _sendingMsgProgressBar.hide();
+    Navigator.push(context, MaterialPageRoute(builder: (context)  {
+      return LocationInfoWidget(
+        materials:  d,
+        selectedIndexMarker: id,
+      );
+    }));
   }
 
-  String getStartEnd(String start, String end) {
-    String startFormatted = formatHours(start);
-    String endFormatted = formatHours(end);
-    return startFormatted + '-' + endFormatted;
-  }
-
-  String formatHours(String date) {
-    DateTime parseDate = DateFormat('HH:mm:ss').parse(date);
-    var inputDate = DateTime.parse(parseDate.toString());
-    var outputFormat = DateFormat('HH:mm');
-    var outputDate = outputFormat.format(inputDate);
-    return outputDate;
-  }
-
-  void initAnimation() {
-    rotationAnimation.addListener(() {
-      setState(() {
-        animatedWidth = rotationAnimation.value;
-      });
-    });
-    animationController.repeat();
-  }
-
-  onError() {
-    print("error");
-  }
 }

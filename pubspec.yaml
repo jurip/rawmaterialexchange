@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.17.0 <3.3.3"
 
 dependencies:
   flutter:
@@ -48,13 +48,25 @@ dependencies:
   geolocator: ^9.0.2
   permission_handler: ^8.1.4+2
   path_provider: ^2.0.11
+  mapbox_gl: ^0.16.0
+  flutter_dotenv: ^5.0.2
+  authentication_repository:
+    path: packages/authentication_repository
+  bloc: ^8.1.0
+  equatable: ^2.0.3
+  flutter_bloc: ^8.1.1
+  formz: ^0.4.0
+  user_repository:
+    path: packages/user_repository
 
 
 
 dev_dependencies:
+  bloc_test: ^9.1.0
   flutter_test:
     sdk: flutter
-
+  mocktail: ^0.3.0
+  very_good_analysis: ^3.1.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -64,6 +76,7 @@ flutter:
     - images/
     - assets/
     - assets/translations/
+    - .env
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
