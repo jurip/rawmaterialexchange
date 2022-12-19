@@ -4,20 +4,9 @@ import 'package:flutter/material.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     Key? key,
-    required this.removeRoute,
-    required this.returnMarkers,
-    required this.updatingLanguageInTheFilter,
-    required this.returnListOfSelectedMarkerBottomSheet,
     required this.showUserSettingsInfo,
   }) : super(key: key);
-
-  final Function() removeRoute;
-  final Function() returnMarkers;
-  final Function() updatingLanguageInTheFilter;
-  final Function() returnListOfSelectedMarkerBottomSheet;
-
   final Function() showUserSettingsInfo;
-
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -43,8 +32,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: IconButton(
           icon: Icon(Icons.person, color: kColorGrey2, size: 30.0),
           onPressed: () {
-            removeRoute();
-            returnMarkers();
             showUserSettingsInfo();
           },
         ),

@@ -18,9 +18,9 @@ class UserSession {
     return prefs.setString('phone', phone);
   }
 
-  static Future<bool> setLanguageFromSharedPref(int? lang) async {
+  static Future<bool> setLanguageFromSharedPref(String lang) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setString('language', definitionLanguage(lang));
+    return prefs.setString('language', lang);
   }
 
 //считывание токена

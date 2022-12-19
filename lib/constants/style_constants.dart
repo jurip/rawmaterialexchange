@@ -2,6 +2,26 @@ import 'package:flutter/material.dart';
 
 import 'color_constants.dart';
 
+final double topPadding1 = 12.0;
+final double topPadding2 = 16.0;
+final double containerHeight1 = 4.0;
+final double informationColumnHeight = 66.0;
+final double sizedBoxHeight1 = 24.0;
+final double sizedBoxHeight2 = 0.0;
+final double sizedBoxHeight3 = 8.0;
+final double sizedBoxHeight4 = 40.0;
+final double confirmationButtonHeight = 46.0;
+final double sizedBoxHeight5 = 40.0;
+
+final double textHeight1 = 20.0;
+final double textHeight2 = 12.0;
+final double textHeight3 = 18.0;
+
+final double containerHeight2 = 2.0;
+
+double heightBottomSheetSettings = 0;
+
+
 const kTextStyle1 = TextStyle(
   fontSize: 28.0,
   fontWeight: FontWeight.w900,

@@ -8,89 +8,13 @@ import 'confirmation_button.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-class GarbageOrderResultWidget extends StatefulWidget {
+class GarbageOrderResultWidget extends StatelessWidget {
   final bool orderSent;
 
   const GarbageOrderResultWidget( this.orderSent, {
     Key? key,
   }) : super(key: key);
 
-  @override
-  _GarbageOrderResultWidgetState createState() =>
-      _GarbageOrderResultWidgetState();
-}
-
-class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
-  List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
-
-  @override
-  void initState() {
-    super.initState();
-    //getToken();
-    //_sendingMsgProgressBar = ProgressBar();
-    //getListOfLanguageAddDataToList();
-  }
-
-/*  int selectedLanguageId = 1;
-
-  ProgressBar? _sendingMsgProgressBar;
-
-  ListLanguages? dropdownValue;*/
-
-  final double topPadding1 = 12.0;
-  final double topPadding2 = 16.0;
-  final double containerHeight1 = 4.0;
-  final double informationColumnHeight = 66.0;
-  final double sizedBoxHeight1 = 24.0;
-  final double sizedBoxHeight2 = 0.0;
-  final double sizedBoxHeight3 = 8.0;
-  final double sizedBoxHeight4 = 40.0;
-  final double confirmationButtonHeight = 46.0;
-  final double sizedBoxHeight5 = 40.0;
-
-  final double textHeight1 = 20.0;
-  final double textHeight2 = 12.0;
-  final double textHeight3 = 18.0;
-
-  final double containerHeight2 = 2.0;
-
-  double heightBottomSheetSettings = 0;
-
-  double definitionHeightBottomSheetSettings() {
-    if (topPadding1 +
-            topPadding2 +
-            containerHeight1 +
-            (informationColumnHeight * 4) +
-            sizedBoxHeight1 +
-            sizedBoxHeight2 +
-            sizedBoxHeight3 +
-            sizedBoxHeight4 +
-            confirmationButtonHeight +
-            sizedBoxHeight5 +
-            textHeight1 +
-            textHeight2 +
-            textHeight3 +
-            containerHeight2 >=
-        MediaQuery.of(context).size.height) {
-      heightBottomSheetSettings = MediaQuery.of(context).size.height;
-    } else {
-      heightBottomSheetSettings = topPadding1 +
-          topPadding2 +
-          containerHeight1 +
-          (informationColumnHeight * 4) +
-          sizedBoxHeight1 +
-          sizedBoxHeight2 +
-          sizedBoxHeight3 +
-          sizedBoxHeight4 +
-          confirmationButtonHeight +
-          sizedBoxHeight5 +
-          textHeight1 +
-          textHeight2 +
-          textHeight3 +
-          containerHeight2;
-    }
-    return heightBottomSheetSettings;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -135,7 +59,7 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
                       padding: EdgeInsets.only(top: topPadding2),
                       child: Center(
                           child:
-                              widget.orderSent?
+                              orderSent?
                               Text('order_done'.tr(), style: kAlertTextStyle):
                         Text('order_error'.tr(), style: kAlertTextStyle)
                       ),
@@ -152,7 +76,7 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
                           children: [
                             //66 * 4
                             SizedBox(height: sizedBoxHeight1),
-                            widget.orderSent?Text("orded_done_text".tr()):SizedBox(height: sizedBoxHeight3),
+                            orderSent?Text("orded_done_text".tr()):SizedBox(height: sizedBoxHeight3),
                             SizedBox(height: sizedBoxHeight3),
                             Container(
                               width: double.infinity,
@@ -179,74 +103,4 @@ class _GarbageOrderResultWidgetState extends State<GarbageOrderResultWidget> {
             ),
           );
   }
-
- // UserData? userData;
-
-  /*void getToken() async {
-    await getUserData(context).then((data) {
-      setState(() {
-        userData = data;
-      });
-    });
-    //definitionLanguage();
-    //definitionBirthDate();
-  }*/
-
- // String language = '';
-
-  /*void definitionLanguage() {
-    if (userData!.languageId == 1) {
-      language = 'Русский';
-    } else if (userData!.languageId == 2) {
-      language = 'Узбекский';
-    } else if (userData!.languageId == 3) {
-      language = 'Таджитский';
-    } else if (userData!.languageId == 4) {
-      language = 'Киргизский';
-    }
-  }*/
-
-  //String birthDateUser = '';
-
-  /*void definitionBirthDate() {
-    String birthDate = userData!.birthDate.toString();
-    birthDateUser = birthDate.substring(0, birthDate.indexOf(' '));
-  }*/
-
-  String error = '';
-
-  //получение списка языков
-  List<ListLanguages> listLanguage = [];
-
- /* Future<void> getListOfLanguageAddDataToList() async {
-    // _sendingMsgProgressBar?.show(context); // TODO Что-то не так с ним
-    var dataLanguage = await getLanguages();
-    if (dataLanguage != null) {
-      setState(() {
-        listLanguage = dataLanguage;
-        for (int index = 0; index < listLanguage.length; index++) {
-          if (listLanguage[index].id == 4) {
-            listLanguage.removeAt(index);
-          }
-        }
-        if (listLanguage.isNotEmpty) languageDefinition();
-        //dropdownValue = listLanguage.first;
-      });
-    } else {
-      setState(() {
-        error = 'Error';
-      });
-    }
-    _sendingMsgProgressBar?.hide();
-  }*/
-
-  /*void languageDefinition() {
-    if (mainLocale!.languageCode == 'ru') {
-      dropdownValue = listLanguage[0];
-    } else if (mainLocale!.languageCode == 'kk') {
-      dropdownValue = listLanguage[2];
-    } else if (mainLocale!.languageCode == 'uz') {
-      dropdownValue = listLanguage[1];
-    }
-  }*/
 }

@@ -1,11 +1,10 @@
-import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/confirmation_button.dart';
 import 'package:app/components/exit_alert.dart';
 import 'package:app/components/input_fields.dart';
-import 'package:app/components/language_popup_menu.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
+import 'package:app/screens/language_select.dart';
 import 'package:app/screens/registration.dart';
 import 'package:app/screens/verification.dart';
 import 'package:app/utils/progress_bar.dart';
@@ -24,43 +23,6 @@ class Authorisation extends StatefulWidget {
 }
 
 class _AuthorisationState extends State<Authorisation> {
-  List<PopupItem> items = [
-    PopupItem(title: "Русский", image: 'images/Ellipse ru.png'),
-    PopupItem(title: "Узбекский", image: 'images/Ellipse uz.png'),
-    //PopupItem(title: "Таджикский", image: 'images/Ellipse td.png'),
-    PopupItem(title: "Киргизский", image: 'images/Ellipse kz.png')
-  ];
-
-  List<Widget> languages2 = [
-    Row(children: [
-      Image(
-        image: AssetImage('images/Ellipse ru.png'),
-        width: 20,
-        height: 20,
-      ),
-      SizedBox(
-        width: 10.0,
-      ),
-      Text('Русский')
-    ]),
-    Row(children: [
-      Image(image: AssetImage('images/Ellipse uz.png'), width: 20, height: 20),
-      SizedBox(
-        width: 10.0,
-      ),
-      Text('Узбекский')
-    ]),
-    //Row(children: [Image(image: AssetImage('images/Ellipse td.png'), width: 20, height: 20), SizedBox(width: 10.0,),Text('Таджикский')]),
-    Row(children: [
-      Image(image: AssetImage('images/Ellipse kz.png'), width: 20, height: 20),
-      SizedBox(
-        width: 10.0,
-      ),
-      Text('Киргизский')
-    ]),
-  ];
-
-  List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
 
   List<String> _numberForm = ['### ### ## ##', '## ### ## ##', '### ## ####'];
 
@@ -70,30 +32,12 @@ class _AuthorisationState extends State<Authorisation> {
   List<String> _regionNumber = ['+7', '+998', '+992'];
 
   var maskFormatter = new MaskTextInputFormatter(mask: '### ### ## ##');
-
-  var selectedLanguage =
-      PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
-
-  void languageDefinition() {
-    if (mainLocale!.languageCode == 'ru') {
-      selectedLanguage =
-          PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
-    } else if (mainLocale!.languageCode == 'kk') {
-      selectedLanguage =
-          PopupItem(title: "Казахский", image: 'images/Ellipse kz.png');
-    } else if (mainLocale!.languageCode == 'uz') {
-      selectedLanguage =
-          PopupItem(title: "Узбекский", image: 'images/Ellipse uz.png');
-    }
-  }
-
   final _phoneController = TextEditingController();
 
   String imagePhone = '';
 
   String _region = '+7';
 
-  int selectedLanguageId = 1;
 
   @override
   void dispose() {
@@ -107,46 +51,7 @@ class _AuthorisationState extends State<Authorisation> {
   @override
   void initState() {
     super.initState();
-    languageDefinition();
-    getListOfLanguageAddDataToList().then((value) {
-      if (listLanguage.isNotEmpty)
-        listLanguage.forEach((element) {
-          if (element.id != 4)
-            popUpMenuItem.add(PopupMenuItem(
-                value: PopupItem(
-                    title: element.name,
-                    image: definitionLanguageImage(element.id)),
-                child: Row(children: [
-                  Image(
-                      image: AssetImage(definitionLanguageImage(element.id)),
-                      width: 20,
-                      height: 20),
-                  SizedBox(width: 10.0),
-                  Text(element.name)
-                ])));
-        });
-    });
     _sendingMsgProgressBar = ProgressBar();
-  }
-
-  String languageImage = '';
-
-  String definitionLanguageImage(int languageId) {
-    switch (languageId) {
-      case 1:
-        languageImage = 'images/Ellipse ru.png';
-        break;
-      case 2:
-        languageImage = 'images/Ellipse uz.png';
-        break;
-      case 3:
-        languageImage = 'images/Ellipse kz.png';
-        break;
-      case 4:
-        languageImage = 'images/Ellipse td.png';
-        break;
-    }
-    return languageImage;
   }
 
   @override
@@ -170,33 +75,7 @@ class _AuthorisationState extends State<Authorisation> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('entrance'.tr(), style: kTextStyle1),
-                          LanguagePopupMenu(
-                            onSelected: (value) {
-                              setState(() {
-                                selectedLanguage = value;
-                                if (value.image == 'images/Ellipse ru.png') {
-                                  selectedLanguageId = 1;
-                                  context.setLocale(Locale('ru'));
-                                } else if (value.image ==
-                                    'images/Ellipse uz.png') {
-                                  selectedLanguageId = 2;
-                                  context.setLocale(Locale('uz'));
-                                } else if (value.image ==
-                                    'images/Ellipse kz.png') {
-                                  selectedLanguageId = 3;
-                                  context.setLocale(Locale('kk'));
-                                }
-                                mainLocale = context.locale;
-                                // } else if (value.image == 'images/Ellipse td.png') {
-                                //   selectedLanguageId = 4;
-                                //   //context.setLocale(Locale('tjk'));
-                                //   //EasyLocalization.of(context)!.locale = Locale('ar', 'SA');
-                                // }
-                              });
-                            },
-                            assetImage: AssetImage(selectedLanguage.image),
-                            itemBuilder: (context) => popUpMenuItem,
-                          ),
+                          LanguageSelect(),
                         ],
                       ),
                       SizedBox(height: 32.0),
@@ -261,7 +140,7 @@ class _AuthorisationState extends State<Authorisation> {
                                   '' /* && imagePhone == 'images/icon.svg'*/) {
                             _sendingMsgProgressBar?.show(context);
                             changingNumber();
-                            getAuthorization(phoneNumber).then((data) {
+                            getIt<MyRequests>().getAuthorization(phoneNumber).then((data) {
                               _sendingMsgProgressBar?.hide();
                               if (data != null) {
                                 if (data.smsSended !=
@@ -390,24 +269,5 @@ class _AuthorisationState extends State<Authorisation> {
     var unformattedStr = maskFormatter.getUnmaskedText();
     phoneNumber = tempRegion + unformattedStr;
   }
-
   String error = '';
-
-  //получение списка языков
-  List<ListLanguages> listLanguage = [];
-
-  Future<void> getListOfLanguageAddDataToList() async {
-    _sendingMsgProgressBar?.show(context);
-    var dataLanguage = await getLanguages();
-    if (dataLanguage != null) {
-      setState(() {
-        listLanguage = dataLanguage;
-      });
-    } else {
-      setState(() {
-        error = 'Error';
-      });
-    }
-    _sendingMsgProgressBar?.hide();
-  }
 }

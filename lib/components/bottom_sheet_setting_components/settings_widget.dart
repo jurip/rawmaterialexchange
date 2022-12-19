@@ -5,12 +5,12 @@ import 'package:app/api/models/response_user_data.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
+import 'package:app/screens/language_select.dart';
 import 'package:app/utils/progress_bar.dart';
 import 'package:app/utils/user_session.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../../main.dart';
 import '../confirmation_button.dart';
 import 'information_column.dart';
@@ -28,7 +28,10 @@ class SettingsWidget extends StatefulWidget {
 
 class _SettingsWidgetState extends State<SettingsWidget> {
   static const platform = MethodChannel('rawmaterials/openTelegram');
-
+  UserData? userData;
+  String error = '';
+  String birthDateUser = '';
+  ProgressBar? _sendingMsgProgressBar;
   Future<void> _openTelegram() async {
     try {
       await platform.invokeMethod('openTelegram');
@@ -36,43 +39,16 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       print(e);
     }
   }
-
   @override
   void initState() {
     super.initState();
     getToken();
     _sendingMsgProgressBar = ProgressBar();
-    getListOfLanguageAddDataToList();
   }
-
-  int selectedLanguageId = 1;
-
-  ProgressBar? _sendingMsgProgressBar;
-
-  ListLanguages? dropdownValue;
-
-  final double topPadding1 = 12.0;
-  final double topPadding2 = 16.0;
-  final double containerHeight1 = 4.0;
-  final double informationColumnHeight = 66.0;
-  final double sizedBoxHeight1 = 24.0;
-  final double sizedBoxHeight2 = 0.0;
-  final double sizedBoxHeight3 = 8.0;
-  final double sizedBoxHeight4 = 40.0;
-  final double confirmationButtonHeight = 46.0;
-  final double sizedBoxHeight5 = 40.0;
-
-  final double textHeight1 = 20.0;
-  final double textHeight2 = 12.0;
-  final double textHeight3 = 18.0;
-
-  final double containerHeight2 = 2.0;
-
-  double heightBottomSheetSettings = 0;
 
   @override
   Widget build(BuildContext context) {
-    return userData == null || listLanguage.isEmpty
+    return userData == null
         ? Scaffold(
             key: _scaffoldKey,
             backgroundColor: Colors.transparent,
@@ -159,52 +135,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                     style: kAlertTextStyle4),
                               ),
                               SizedBox(height: sizedBoxHeight2),
-                              Row(
-                                children: [
-                                  DropdownButton<ListLanguages>(
-                                    value: dropdownValue,
-                                    icon:
-                                        const Icon(Icons.keyboard_arrow_right),
-                                    //TODO!!!!!!!!!!!!!!!!
-                                    style: kTextStyle2,
-                                    underline: Container(
-                                      height: 0,
-                                      color: Colors.transparent,
-                                    ),
-                                    onChanged: (ListLanguages? newValue) {
-                                      setState(() {
-                                        dropdownValue = newValue!;
-                                        setState(() {
-                                          if (dropdownValue!.id == 1) {
-                                            selectedLanguageId = 1;
-                                            context.setLocale(Locale('ru'));
-                                          } else if (dropdownValue!.id == 2) {
-                                            selectedLanguageId = 2;
-                                            context.setLocale(Locale('uz'));
-                                          } else if (dropdownValue!.id == 3) {
-                                            selectedLanguageId = 3;
-                                            context.setLocale(Locale('kk'));
-                                          }
-                                          mainLocale = context.locale;
-                                          // } else if (value.image == 'images/Ellipse td.png') {
-                                          //   selectedLanguageId = 4;
-                                          //   //context.setLocale(Locale('tjk'));
-                                          //   //EasyLocalization.of(context)!.locale = Locale('ar', 'SA');
-                                          // }
-                                        });
-                                      });
-                                    },
-                                    items: listLanguage
-                                        .map<DropdownMenuItem<ListLanguages>>(
-                                            (ListLanguages value) {
-                                      return DropdownMenuItem<ListLanguages>(
-                                        value: value,
-                                        child: Text(value.name), //value.name
-                                      );
-                                    }).toList(),
-                                  ),
-                                ],
-                              ),
+                              LanguageSelect(),
                               SizedBox(height: sizedBoxHeight3),
                               Container(
                                 width: double.infinity,
@@ -231,7 +162,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                                 onTap: () {
                                   _sendingMsgProgressBar?.show(context);
                                   UserSession.setTokenFromSharedPref('');
-                                  logout(context).then((value) {
+                                  getIt<MyRequests>().logout(context).then((value) {
                                     _sendingMsgProgressBar?.hide();
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(SnackBar(
@@ -252,73 +183,14 @@ class _SettingsWidgetState extends State<SettingsWidget> {
             ),
           );
   }
-
-  UserData? userData;
-
   void getToken() async {
-    await getUserData(context).then((data) {
+    await getIt<MyRequests>().getUserData(context).then((data) {
       setState(() {
         userData = data;
       });
     });
-    definitionLanguage();
-    definitionBirthDate();
-  }
 
-  String language = '';
-
-  void definitionLanguage() {
-    if (userData!.languageId == 1) {
-      language = 'Русский';
-    } else if (userData!.languageId == 2) {
-      language = 'Узбекский';
-    } else if (userData!.languageId == 3) {
-      language = 'Таджитский';
-    } else if (userData!.languageId == 4) {
-      language = 'Киргизский';
-    }
-  }
-
-  String birthDateUser = '';
-
-  void definitionBirthDate() {
     String birthDate = userData!.birthDate.toString();
     birthDateUser = birthDate.substring(0, birthDate.indexOf(' '));
-  }
-
-  String error = '';
-
-  //получение списка языков
-  List<ListLanguages> listLanguage = [];
-
-  Future<void> getListOfLanguageAddDataToList() async {
-    var dataLanguage = await getLanguages();
-    if (dataLanguage != null) {
-      setState(() {
-        listLanguage = dataLanguage;
-        for (int index = 0; index < listLanguage.length; index++) {
-          if (listLanguage[index].id == 4) {
-            listLanguage.removeAt(index);
-          }
-        }
-        if (listLanguage.isNotEmpty) languageDefinition();
-        //dropdownValue = listLanguage.first;
-      });
-    } else {
-      setState(() {
-        error = 'Error';
-      });
-    }
-    _sendingMsgProgressBar?.hide();
-  }
-
-  void languageDefinition() {
-    if (mainLocale!.languageCode == 'ru') {
-      dropdownValue = listLanguage[0];
-    } else if (mainLocale!.languageCode == 'kk') {
-      dropdownValue = listLanguage[2];
-    } else if (mainLocale!.languageCode == 'uz') {
-      dropdownValue = listLanguage[1];
-    }
   }
 }

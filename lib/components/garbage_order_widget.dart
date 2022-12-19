@@ -7,11 +7,12 @@ import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../api/models/Order.dart';
 import '../api/models/material_list_item.dart';
+import '../main.dart';
 import '../utils/date_time_picker.dart';
 import '../utils/time_picker.dart';
 import '../utils/user_session.dart';
@@ -168,7 +169,6 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
 
   String error = '';
 
-//получение списка языков
 }
 
 // Define a custom Form widget.
@@ -402,7 +402,7 @@ class GarbageOrderFormState extends State<GarbageOrderForm> {
                 order.longitude = widget.position!.longitude;
                 if (order.time == null)
                   order.time = timePeriods[(DateTime.now().hour ~/ 2)];
-                bool orderSent = await addOrder(context, order);
+                bool orderSent = await getIt<MyRequests>().addOrder(context, order);
                 Navigator.pop(context);
                 widget.items.forEach((element) {
                   element.amount = 0;

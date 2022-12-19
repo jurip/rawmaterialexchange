@@ -3,18 +3,20 @@ import 'package:app/api/requests/requests.dart';
 import 'package:app/components/confirmation_button.dart';
 import 'package:app/components/exit_alert.dart';
 import 'package:app/components/input_fields.dart';
-import 'package:app/components/language_popup_menu.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
-import 'package:app/main.dart';
+import 'package:app/screens/language_bloc.dart';
+import 'package:app/screens/language_select.dart';
 import 'package:app/screens/verification.dart';
 import 'package:app/utils/date_time_picker.dart';
 import 'package:app/utils/progress_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
+import '../main.dart';
 import 'authorisation.dart';
 
 class Registration extends StatefulWidget {
@@ -27,61 +29,12 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
-  List<PopupItem> items = [
-    PopupItem(title: "Русский", image: 'images/Ellipse ru.png'),
-    PopupItem(title: "Узбекский", image: 'images/Ellipse uz.png'),
-    PopupItem(title: "Казахский", image: 'images/Ellipse kz.png'),
-    //PopupItem(title: "Таджикский", image: 'images/Ellipse td.png')
-  ];
-
-  List<Widget> languages2 = [
-    Row(children: [
-      Image(image: AssetImage('images/Ellipse ru.png'), width: 20, height: 20),
-      SizedBox(width: 10.0),
-      Text('Русский')
-    ]),
-    Row(children: [
-      Image(image: AssetImage('images/Ellipse uz.png'), width: 20, height: 20),
-      SizedBox(width: 10.0),
-      Text('Узбекский')
-    ]),
-    Row(children: [
-      Image(image: AssetImage('images/Ellipse kz.png'), width: 20, height: 20),
-      SizedBox(width: 10.0),
-      Text('Казахский')
-    ]),
-    // Row(children: [
-    //   Image(image: AssetImage('images/Ellipse td.png'), width: 20, height: 20),
-    //   SizedBox(width: 10.0),
-    //   Text('Таджикский')
-    // ]),
-  ];
-
-  List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
-
   List<String> _numberForm = ['### ### ## ##', '## ### ## ##', '### ## ####'];
 
   //Россия Казахстан +7 XXX XXX XX XX
   //Узбекистан +998 XX ХХХ-ХХ-ХХ
   //Таджикистан +992 XXX XX XXXX
   List<String> _regionNumber = ['+7', '+998', '+992'];
-
-  var selectedLanguage =
-      PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
-
-  void languageDefinition() {
-    if (mainLocale!.languageCode == 'ru') {
-      selectedLanguage =
-          PopupItem(title: "Русский", image: 'images/Ellipse ru.png');
-    } else if (mainLocale!.languageCode == 'kk') {
-      selectedLanguage =
-          PopupItem(title: "Казахский", image: 'images/Ellipse kz.png');
-    } else if (mainLocale!.languageCode == 'uz') {
-      selectedLanguage =
-          PopupItem(title: "Узбекский", image: 'images/Ellipse uz.png');
-    }
-  }
-
   var maskFormatter = new MaskTextInputFormatter(mask: '### ### ## ##');
 
   final _nameController = TextEditingController();
@@ -99,58 +52,8 @@ class _RegistrationState extends State<Registration> {
   @override
   void initState() {
     super.initState();
-    //mainLocale = context.locale;
-    languageDefinition();
-    //mainLocale = context.locale;
-    getListOfLanguageAddDataToList().then((value) {
-      if (listLanguage.isNotEmpty)
-        listLanguage.forEach((element) {
-          if (element.id != 4)
-            popUpMenuItem.add(
-              PopupMenuItem(
-                value: PopupItem(
-                    title: element.name,
-                    image: definitionLanguageImage(element.id)),
-                child: Row(
-                  children: [
-                    Image(
-                      image: AssetImage(definitionLanguageImage(element.id)),
-                      width: 20,
-                      height: 20,
-                    ),
-                    SizedBox(width: 10.0),
-                    Text(element.name)
-                  ],
-                ),
-              ),
-            );
-        });
-    });
     _sendingMsgProgressBar = ProgressBar();
   }
-
-  String languageImage = '';
-
-  String definitionLanguageImage(int languageId) {
-    switch (languageId) {
-      case 1:
-        languageImage = 'images/Ellipse ru.png';
-        break;
-      case 2:
-        languageImage = 'images/Ellipse uz.png';
-        break;
-      case 3:
-        languageImage = 'images/Ellipse kz.png';
-        break;
-      case 4:
-        languageImage = 'images/Ellipse td.png';
-        break;
-    }
-    return languageImage;
-  }
-
-  int selectedLanguageId = 1;
-
   @override
   void dispose() {
     super.dispose();
@@ -164,6 +67,7 @@ class _RegistrationState extends State<Registration> {
 
   @override
   Widget build(BuildContext context) {
+    var lang = context.select((LanguageBloc value) => value.state.lang,);
     return WillPopScope(
       onWillPop: MyWillPop(context: context).onWillPop,
       child: GestureDetector(
@@ -187,33 +91,7 @@ class _RegistrationState extends State<Registration> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('registration'.tr(), style: kTextStyle1),
-                            LanguagePopupMenu(
-                              onSelected: (value) {
-                                setState(() {
-                                  selectedLanguage = value;
-                                  if (value.image == 'images/Ellipse ru.png') {
-                                    selectedLanguageId = 1;
-                                    context.setLocale(Locale('ru'));
-                                  } else if (value.image ==
-                                      'images/Ellipse uz.png') {
-                                    selectedLanguageId = 2;
-                                    context.setLocale(Locale('uz'));
-                                  } else if (value.image ==
-                                      'images/Ellipse kz.png') {
-                                    selectedLanguageId = 3;
-                                    context.setLocale(Locale('kk'));
-                                  }
-                                  mainLocale = context.locale;
-                                  // } else if (value.image == 'images/Ellipse td.png') {
-                                  //   selectedLanguageId = 4;
-                                  //   //context.setLocale(Locale('tjk'));
-                                  //   //EasyLocalization.of(context)!.locale = Locale('ar', 'SA');
-                                  // }
-                                });
-                              },
-                              assetImage: AssetImage(selectedLanguage.image),
-                              itemBuilder: (context) => popUpMenuItem,
-                            ),
+                            LanguageSelect(),
                           ],
                         ),
                         SizedBox(height: 32.0),
@@ -341,12 +219,12 @@ class _RegistrationState extends State<Registration> {
                                 _region != '') {
                               _sendingMsgProgressBar?.show(context);
                               changingNumber();
-                              getRegistration(
+                              getIt<MyRequests>().getRegistration(
                                       _nameController.text,
                                       _surnameController.text,
                                       phoneNumber,
                                       _dateController.text,
-                                      selectedLanguageId)
+                                      lang)
                                   .then((data) {
                                 _sendingMsgProgressBar?.hide();
                                 if (data != null) {
@@ -359,7 +237,6 @@ class _RegistrationState extends State<Registration> {
                                         name: _nameController.text,
                                         surname: _surnameController.text,
                                         dateBirthday: _dateController.text,
-                                        selectedLanguageId: selectedLanguageId,
                                       );
                                     }));
                                   } else {
@@ -430,23 +307,6 @@ class _RegistrationState extends State<Registration> {
   }
 
   String error = '';
-
-  //получение списка языков
-  List<ListLanguages> listLanguage = [];
-
-  Future<void> getListOfLanguageAddDataToList() async {
-    _sendingMsgProgressBar?.show(context);
-    var dataLanguage = await getLanguages();
-    if (dataLanguage != null) {
-      listLanguage = dataLanguage;
-    } else {
-      setState(() {
-        error = 'Error';
-      });
-    }
-    _sendingMsgProgressBar?.hide();
-  }
-
   void changeForm(String str) {
     int position = 0;
     for (int index = 0; index < _regionNumber.length; index++) {

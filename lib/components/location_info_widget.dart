@@ -1,26 +1,21 @@
 import 'package:app/api/models/response_list_object_data.dart';
-import 'package:app/api/models/response_list_of_raw_materials_of_specific_object.dart';
 import 'package:app/constants/image_constants.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../api/models/response_list_object_working_hours.dart';
-import '../api/models/response_list_of_contact_phone.dart';
 import '../api/requests/requests.dart';
 import '../constants/color_constants.dart';
 import '../constants/style_constants.dart';
+import '../main.dart';
+import '../utils/data_utils.dart';
 
 class LocationInfoWidget extends StatefulWidget {
-  final List<ListOfRawMaterialsOfSpecificObject> materials;
-
-  final int selectedIndexMarker;
+  final int id;
 
   LocationInfoWidget({
     Key? key,
-    required this.materials,
-    required this.selectedIndexMarker,
+    required this.id,
   }) : super(key: key);
 
   @override
@@ -28,16 +23,29 @@ class LocationInfoWidget extends StatefulWidget {
 }
 
 class _LocationInfoWidgetState extends State<LocationInfoWidget> {
-  String address = "";
-  double income = 0;
-  bool isFavorite = false;
+  LocationInfo locationInfo = LocationInfo(
+      0,
+      [],
+      [],
+      ListObjectData(
+          address: "",
+          faved: false,
+          id: 0,
+          latitude: 0,
+          longitude: 0,
+          website: "",
+          pickUp: false),
+      []);
 
   @override
   void initState() {
+    getIt<MyRequests>()
+        .getLocationInfo(widget.id, context)
+        .then((value) => setState(
+              () => locationInfo = value,
+            ));
+
     super.initState();
-    getListObjectWorkingHoursAddToList();
-    getObjectDataAddDataToList();
-    getContactPhoneAddDataToList();
   }
 
   @override
@@ -121,20 +129,27 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                                   ),
                                   child: InkWell(
                                     onTap: () {
-                                      if (isFavorite == true) {
-                                        deleteFavorite(context, objectData!.id)
+                                      if (locationInfo.listObjectData.faved ==
+                                          true) {
+                                        getIt<MyRequests>()
+                                            .deleteFavorite(context,
+                                                locationInfo.listObjectData.id)
                                             .then((value) {
                                           if (value)
                                             setState(() {
-                                              isFavorite = false;
+                                              locationInfo
+                                                  .listObjectData.faved = false;
                                             });
                                         });
                                       } else {
-                                        addFavorite(context, objectData!.id)
+                                        getIt<MyRequests>()
+                                            .addFavorite(context,
+                                                locationInfo.listObjectData.id)
                                             .then((value) {
                                           if (value)
                                             setState(() {
-                                              isFavorite = true;
+                                              locationInfo
+                                                  .listObjectData.faved = true;
                                             });
                                         });
                                       }
@@ -143,11 +158,9 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                                     child: Container(
                                       padding: EdgeInsets.all(12),
                                       child: Image(
-                                        image: isFavorite
-                                            ? AssetImage("images/heart.png")
-                                            : AssetImage("images/heart.png"),
+                                        image: AssetImage("images/heart.png"),
                                         //24
-                                        color: isFavorite
+                                        color: locationInfo.listObjectData.faved
                                             ? Colors.yellow
                                             : Colors.black,
                                       ),
@@ -162,7 +175,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                     padding: EdgeInsets.symmetric(horizontal: 15),
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      objectData == null ? "" : objectData!.address,
+                      locationInfo.listObjectData.address,
                       style: bigWhite,
                     ),
                   ),
@@ -203,10 +216,11 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                                       width: 124.0,
                                       child: ListView.builder(
                                         shrinkWrap: true,
-                                        itemCount: listWorkingHours.length,
+                                        itemCount:
+                                            locationInfo.workingHours.length,
                                         itemBuilder: (context, index) {
                                           return Text(
-                                            '${getDayString(listWorkingHours[index].day)}: ${getStartEnd(listWorkingHours[index].start, listWorkingHours[index].end)}',
+                                            '${getDayString(locationInfo.workingHours[index].day)}: ${getStartEnd(locationInfo.workingHours[index].start, locationInfo.workingHours[index].end)}',
                                             softWrap: false,
                                             style: kBottomSheetTextStyle,
                                           );
@@ -228,7 +242,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                           ),
                           child: InkWell(
                             onTap: () {
-                              _makePhoneCall(listOfContactPhone[0].value);
+                              _makePhoneCall(locationInfo.phones[0].value);
                             },
                             child: Image(
                                 height: 30,
@@ -244,7 +258,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                           ),
                           child: InkWell(
                             onTap: () {
-                              _openSite(objectData!.website);
+                              _openSite(locationInfo.listObjectData.website);
                             },
                             child: Image(
                                 height: 30,
@@ -269,7 +283,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                             child: GridView.builder(
                               physics: ScrollPhysics(),
                               shrinkWrap: true,
-                              itemCount: widget.materials.length,
+                              itemCount: locationInfo.materials.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Container(
                                   padding: EdgeInsets.all(5),
@@ -294,7 +308,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                                           ),
                                           child: Image(
                                             image: AssetImage("images/" +
-                                                imageName(widget
+                                                imageName(locationInfo
                                                     .materials[index].id) +
                                                 "2.png"),
                                             height: 60,
@@ -303,7 +317,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                                         ),
                                         SizedBox(height: 10.0),
                                         Text(
-                                          widget.materials[index].price
+                                          locationInfo.materials[index].price
                                                   .toString() +
                                               " " +
                                               "rub_per_100_kilo".tr(),
@@ -311,7 +325,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
                                         ),
                                         SizedBox(height: 10.0),
                                         Text(
-                                          widget.materials[index].name,
+                                          locationInfo.materials[index].name,
                                           style: kTextStyle12,
                                         )
                                       ],
@@ -357,101 +371,21 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
         ));
   }
 
-  List<int> selectedMaterials = [];
-
-  //удаление фильтра
-  void removeFilter(int id) {
-    selectedMaterials.remove(id);
-  }
-
   String getCurrentDate() {
-    if (listWorkingHours.length == 0) return "";
+    if (locationInfo.workingHours.length == 0) return "";
     int weekDay = DateTime.now().weekday - 1;
-    int index =
-        listWorkingHours.indexWhere((element) => element.day == weekDay);
+    int index = locationInfo.workingHours
+        .indexWhere((element) => element.day == weekDay);
     if (index == -1) {
-      return getDayString(listWorkingHours[0].day) +
+      return getDayString(locationInfo.workingHours[0].day) +
           ': ' +
-          getStartEnd(listWorkingHours[0].start, listWorkingHours[0].end);
+          getStartEnd(locationInfo.workingHours[0].start,
+              locationInfo.workingHours[0].end);
     }
-    return getDayString(listWorkingHours[index].day) +
+    return getDayString(locationInfo.workingHours[index].day) +
         ': ' +
-        getStartEnd(listWorkingHours[index].start, listWorkingHours[index].end);
-  }
-
-  String selectedDayOfTheWeek = '';
-
-  String getDayString(int dayNumber) {
-    if (dayNumber == 0) {
-      selectedDayOfTheWeek = 'pn'.tr();
-    } else if (dayNumber == 1) {
-      selectedDayOfTheWeek = 'vt'.tr();
-    } else if (dayNumber == 2) {
-      selectedDayOfTheWeek = 'sr'.tr();
-    } else if (dayNumber == 3) {
-      selectedDayOfTheWeek = 'cht'.tr();
-    } else if (dayNumber == 4) {
-      selectedDayOfTheWeek = 'pt'.tr();
-    } else if (dayNumber == 5) {
-      selectedDayOfTheWeek = 'sb'.tr();
-    } else if (dayNumber == 6) {
-      selectedDayOfTheWeek = 'vs'.tr();
-    }
-    return selectedDayOfTheWeek;
-  }
-
-  String getStartEnd(String start, String end) {
-    String startFormatted = formatHours(start);
-    String endFormatted = formatHours(end);
-    return startFormatted + '-' + endFormatted;
-  }
-
-  String formatHours(String date) {
-    DateTime parseDate = DateFormat('HH:mm:ss').parse(date);
-    var inputDate = DateTime.parse(parseDate.toString());
-    var outputFormat = DateFormat('HH:mm');
-    var outputDate = outputFormat.format(inputDate);
-    return outputDate;
-  }
-
-  //лист для времени работы конкретного обьекта
-  List<ListObjectWorkingHours> listWorkingHours = [];
-
-  //записывает в лист время работы конкретного обьекта
-  Future<void> getListObjectWorkingHoursAddToList() async {
-    var dataTime = await getListObjectWorkingHours(widget.selectedIndexMarker);
-    if (dataTime != null) {
-      setState(() {
-        listWorkingHours = dataTime.cast<ListObjectWorkingHours>();
-        getCurrentDate();
-      });
-    }
-  }
-
-//переменная для данных конкретного обьекта (адресс, вебсайт)
-  ListObjectData? objectData;
-
-  Future<void> getObjectDataAddDataToList() async {
-    var dataObjects = await getObjectData(widget.selectedIndexMarker);
-    if (dataObjects != null) {
-      setState(() {
-        objectData = dataObjects;
-        isFavorite =  dataObjects.faved ;
-      });
-    }
-  }
-
-  //лист для контактов конкретного обьекта
-  List<ListOfContactPhone> listOfContactPhone = [];
-
-  //записыввает в лист контакты конкретного обьекта
-  Future<void> getContactPhoneAddDataToList() async {
-    var dataContact = await getListOfContactPhone(widget.selectedIndexMarker);
-    if (dataContact != null) {
-      setState(() {
-        listOfContactPhone = dataContact;
-      });
-    }
+        getStartEnd(locationInfo.workingHours[index].start,
+            locationInfo.workingHours[index].end);
   }
 
   Future<void> _makePhoneCall(String phoneNumber) async {
@@ -471,6 +405,7 @@ class _LocationInfoWidgetState extends State<LocationInfoWidget> {
   }
 
   Future<void> _openMap(String phoneNumber) async {
-    MapsLauncher.launchCoordinates(objectData!.latitude, objectData!.longitude);
+    MapsLauncher.launchCoordinates(locationInfo.listObjectData.latitude,
+        locationInfo.listObjectData.longitude);
   }
 }

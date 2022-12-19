@@ -4,7 +4,8 @@ import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
+import '../main.dart';
+import '../utils/data_utils.dart';
 import 'location_info_widget.dart';
 
 class FavouritesBottomSheet extends StatefulWidget {
@@ -22,7 +23,7 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
   @override
   void initState() {
     super.initState();
-    getFavorites(context).then((value) {
+    getIt<MyRequests>().getFavorites(context).then((value) {
       setState(() {
         favorites = value!;
       });
@@ -103,16 +104,11 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
                               onTap: () async {
                                 var selectedIndexMarker =
                                     favorites[index].itemId;
-                                var listOfRawMaterialsOfSpecificObject =
-                                    await getListOfRawMaterialsOfSpecificObject(
-                                        selectedIndexMarker, context);
 
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return LocationInfoWidget(
-                                    materials:
-                                        listOfRawMaterialsOfSpecificObject!,
-                                    selectedIndexMarker: selectedIndexMarker,
+                                    id: selectedIndexMarker,
                                   );
                                 }));
                               },
@@ -153,7 +149,7 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
                                             ),
                                             InkWell(
                                               onTap: () {
-                                                deleteFavorite(context,
+                                                getIt<MyRequests>().deleteFavorite(context,
                                                         favorites[index].itemId)
                                                     .then((value) {
                                                   if (value)
@@ -201,57 +197,6 @@ class _FavouritesBottomSheetState extends State<FavouritesBottomSheet> {
               ],
             ),
           );
-  }
-
-  String selectedDayOfTheWeek = '';
-
-  String getDayString(int dayNumber) {
-    if (dayNumber == 0) {
-      selectedDayOfTheWeek = 'pn'.tr() + ': ';
-    } else if (dayNumber == 1) {
-      selectedDayOfTheWeek = 'vt'.tr() + ': ';
-    } else if (dayNumber == 2) {
-      selectedDayOfTheWeek = 'sr'.tr() + ': ';
-    } else if (dayNumber == 3) {
-      selectedDayOfTheWeek = 'cht'.tr() + ': ';
-    } else if (dayNumber == 4) {
-      selectedDayOfTheWeek = 'pt'.tr() + ': ';
-    } else if (dayNumber == 5) {
-      selectedDayOfTheWeek = 'sb'.tr() + ': ';
-    } else if (dayNumber == 6) {
-      selectedDayOfTheWeek = 'vs'.tr() + ': ';
-    }
-    return selectedDayOfTheWeek;
-  }
-
-  String getWorkingHours(List<WorkingHour> hours) {
-    String workingHours = '';
-    if (hours.isNotEmpty) {
-      for (var item in hours) {
-        if (item.day != hours.last.day) {
-          workingHours +=
-              getDayString(item.day) + getStartEnd(item.start, item.end) + '\n';
-        } else {
-          workingHours +=
-              getDayString(item.day) + getStartEnd(item.start, item.end);
-        }
-      }
-    }
-    return workingHours;
-  }
-
-  String getStartEnd(String start, String end) {
-    String startFormatted = formatHours(start);
-    String endFormatted = formatHours(end);
-    return startFormatted + '-' + endFormatted;
-  }
-
-  String formatHours(String date) {
-    DateTime parseDate = DateFormat('HH:mm:ss').parse(date);
-    var inputDate = DateTime.parse(parseDate.toString());
-    var outputFormat = DateFormat('HH:mm');
-    var outputDate = outputFormat.format(inputDate);
-    return outputDate;
   }
 
   String getMaterials(List<Raw> raws) {

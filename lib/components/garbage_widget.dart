@@ -6,10 +6,11 @@ import 'package:app/constants/style_constants.dart';
 import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 
 import '../api/models/material_list_item.dart';
 import '../constants/image_constants.dart';
+import '../main.dart';
 import 'garage_order_button.dart';
 import 'garbage_add_button.dart';
 import 'garbage_info_widget.dart';
@@ -33,7 +34,7 @@ class _GarbageWidgetState extends State<GarbageWidget> {
   int income = 0;
 
   Future<void> setAddress() async {
-    getAddressCoordinates(
+    getIt<MyRequests>().getAddressCoordinates(
       context,
       widget.position!.longitude,
       widget.position!.latitude,

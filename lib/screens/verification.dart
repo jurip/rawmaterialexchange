@@ -4,12 +4,16 @@ import 'package:app/api/requests/requests.dart';
 import 'package:app/components/confirmation_button.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
+import 'package:app/screens/language_bloc.dart';
 import 'package:app/screens/map_screen.dart';
 import 'package:app/utils/progress_bar.dart';
 import 'package:app/utils/user_session.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+
+import '../main.dart';
 
 class Verification extends StatefulWidget {
   const Verification({
@@ -17,7 +21,6 @@ class Verification extends StatefulWidget {
     required this.phone,
     this.smsCode,
     this.name,
-    this.selectedLanguageId,
     this.surname,
     this.dateBirthday,
   }) : super(key: key);
@@ -27,7 +30,6 @@ class Verification extends StatefulWidget {
   final String? name;
   final String? surname;
   final String? dateBirthday;
-  final int? selectedLanguageId;
 
   @override
   _VerificationState createState() => _VerificationState();
@@ -87,6 +89,7 @@ class _VerificationState extends State<Verification> {
 
   @override
   Widget build(BuildContext context) {
+    var lang = context.select((LanguageBloc value) => value.state.lang,);
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(new FocusNode());
@@ -186,7 +189,7 @@ class _VerificationState extends State<Verification> {
                             : InkWell(
                                 onTap: () {
                                   if (widget.name == null) {
-                                    getAuthorization(widget.phone).then((data) {
+                                    getIt<MyRequests>().getAuthorization(widget.phone).then((data) {
                                       _sendingMsgProgressBar?.hide();
                                       if (data != null) {
                                         if (data.smsSended !=
@@ -214,12 +217,12 @@ class _VerificationState extends State<Verification> {
                                       }
                                     });
                                   } else {
-                                    getRegistration(
+                                    getIt<MyRequests>().getRegistration(
                                             widget.name!,
                                             widget.surname!,
                                             widget.phone,
                                             widget.dateBirthday!,
-                                            widget.selectedLanguageId!)
+                                            lang)
                                         .then((data) {
                                       _sendingMsgProgressBar?.hide();
                                       if (data != null) {
@@ -263,7 +266,7 @@ class _VerificationState extends State<Verification> {
                         if (_codeController.text != '') {
                           code = int.parse(_codeController.text);
                           _sendingMsgProgressBar!.show(context);
-                          getSMSCode(code, widget.phone).then((data) {
+                          getIt<MyRequests>().getSMSCode(code, widget.phone).then((data) {
                             _sendingMsgProgressBar!.hide();
                             if (data != null) {
                               if (data.accessToken != '' &&
@@ -273,7 +276,7 @@ class _VerificationState extends State<Verification> {
                                 UserSession.setPhoneFromSharedPref(
                                     widget.phone);
                                 UserSession.setLanguageFromSharedPref(
-                                    widget.selectedLanguageId);
+                                    lang);
 
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
