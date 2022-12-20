@@ -85,7 +85,7 @@ Future<ServerResponseWhenRequestingRegistration?> getRegistration(String name,
 }
 
 //верификация (смс - код)
-Future<ResponseVerification?> getSMSCode(int code, String phone) async {
+Future<ResponseVerification?> getVerificationResponse(int code, String phone) async {
   String url = api + 'verification?sms_code=$code&phone=$phone';
 
   Map<String, String> headers = initHeaders();

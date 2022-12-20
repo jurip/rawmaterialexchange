@@ -1,3 +1,4 @@
+import 'package:app/api/models/response_authorization.dart';
 import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/confirmation_button.dart';
@@ -15,6 +16,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../main.dart';
+import '../utils/user_session.dart';
+import 'map_screen.dart';
 
 class Authorisation extends StatefulWidget {
   const Authorisation({Key? key}) : super(key: key);
@@ -266,13 +269,7 @@ class _AuthorisationState extends State<Authorisation> {
                               if (data != null) {
                                 if (data.smsSended !=
                                     null /* && data.smsCode != null */) {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return Verification(
-                                      phone: phoneNumber,
-                                      smsCode: data.smsCode,
-                                    );
-                                  }));
+                                  nextScreen(context, data);
                                 } else {
                                   if (data.errors != null &&
                                       data.errors!.isNotEmpty) {
@@ -317,6 +314,47 @@ class _AuthorisationState extends State<Authorisation> {
         ),
       ),
     );
+  }
+
+  void nextScreen(BuildContext context, ResponseAuthorization data) {
+    getVerificationResponse(9999, phoneNumber).then((data) {
+      _sendingMsgProgressBar!.hide();
+      if (data != null) {
+        if (data.accessToken != '' &&
+            data.accessToken != null) {
+          UserSession.setTokenFromSharedPref(
+              data.accessToken!);
+          UserSession.setPhoneFromSharedPref(
+              phoneNumber);
+          UserSession.setLanguageFromSharedPref(
+              selectedLanguageId);
+
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) {
+                return MapScreen();
+              }));
+        } else {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(
+            content: Text(data.errors!.first),
+          ));
+        }
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(
+          content:
+          Text('check_your_network_connection'.tr()),
+        ));
+      }
+    });
+
+    /* Navigator.push(context,
+        MaterialPageRoute(builder: (context) {
+      return Verification(
+        phone: phoneNumber,
+        smsCode: data.smsCode,
+      );
+    }));*/
   }
 
   String placeHolder = '';

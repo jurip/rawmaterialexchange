@@ -15,7 +15,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
+import '../utils/user_session.dart';
 import 'authorisation.dart';
+import 'map_screen.dart';
 
 class Registration extends StatefulWidget {
   const Registration({
@@ -341,45 +343,7 @@ class _RegistrationState extends State<Registration> {
                                 _region != '') {
                               _sendingMsgProgressBar?.show(context);
                               changingNumber();
-                              getRegistration(
-                                      _nameController.text,
-                                      _surnameController.text,
-                                      phoneNumber,
-                                      _dateController.text,
-                                      selectedLanguageId)
-                                  .then((data) {
-                                _sendingMsgProgressBar?.hide();
-                                if (data != null) {
-                                  if (data.smsSended != null) {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return Verification(
-                                        phone: phoneNumber,
-                                        smsCode: data.smsCode,
-                                        name: _nameController.text,
-                                        surname: _surnameController.text,
-                                        dateBirthday: _dateController.text,
-                                        selectedLanguageId: selectedLanguageId,
-                                      );
-                                    }));
-                                  } else {
-                                    if (data.errors != null &&
-                                        data.errors!.isNotEmpty) {
-                                      String toastMessage = data.errors!.first;
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: Text(toastMessage),
-                                      ));
-                                    }
-                                  }
-                                } else {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
-                                    content: Text(
-                                        'check_your_network_connection'.tr()),
-                                  ));
-                                }
-                              });
+                              nextScreen(context);
                             }
                           },
                         ),
@@ -412,6 +376,84 @@ class _RegistrationState extends State<Registration> {
         ),
       ),
     );
+  }
+
+  void nextScreen(BuildContext context) {
+    getRegistration(
+            _nameController.text,
+            _surnameController.text,
+            phoneNumber,
+            _dateController.text,
+            selectedLanguageId)
+        .then((data) {
+      _sendingMsgProgressBar?.hide();
+      if (data != null) {
+        if (data.smsSended != null) {
+
+
+
+
+          getVerificationResponse(9999, phoneNumber).then((data) {
+            _sendingMsgProgressBar!.hide();
+            if (data != null) {
+              if (data.accessToken != '' &&
+                  data.accessToken != null) {
+                UserSession.setTokenFromSharedPref(
+                    data.accessToken!);
+                UserSession.setPhoneFromSharedPref(
+                    phoneNumber);
+                UserSession.setLanguageFromSharedPref(
+                    selectedLanguageId);
+
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                      return MapScreen();
+                    }));
+              } else {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(
+                  content: Text(data.errors!.first),
+                ));
+              }
+            } else {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(
+                content:
+                Text('check_your_network_connection'.tr()),
+              ));
+            }
+          });
+
+
+          /*Navigator.push(context,
+              MaterialPageRoute(builder: (context) {
+            return Verification(
+              phone: phoneNumber,
+              smsCode: data.smsCode,
+              name: _nameController.text,
+              surname: _surnameController.text,
+              dateBirthday: _dateController.text,
+              selectedLanguageId: selectedLanguageId,
+            );
+          }));*/
+        } else {
+          if (data.errors != null &&
+              data.errors!.isNotEmpty) {
+            String toastMessage = data.errors!.first;
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(
+              content: Text(toastMessage),
+            ));
+          }
+        }
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(
+          content: Text(
+              'check_your_network_connection'.tr()),
+        ));
+      }
+    });
   }
 
   String placeHolder = '';
