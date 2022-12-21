@@ -19,10 +19,10 @@ String getWorkingHours(List<WorkingHour> hours) {
     for (var item in hours) {
       if (item.day != hours.last.day) {
         workingHours +=
-            getDayString(item.day) + getStartEnd(item.start, item.end) + '\n';
+            getDayString(item.day).tr() + getStartEnd(item.start, item.end) + '\n';
       } else {
         workingHours +=
-            getDayString(item.day) + getStartEnd(item.start, item.end);
+            getDayString(item.day).tr() + getStartEnd(item.start, item.end);
       }
     }
   }

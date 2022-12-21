@@ -1,4 +1,3 @@
-import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/api/requests/requests.dart';
 import 'package:app/components/confirmation_button.dart';
 import 'package:app/components/exit_alert.dart';
@@ -41,18 +40,16 @@ class _RegistrationState extends State<Registration> {
   final _surnameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _dateController = TextEditingController();
-
   String _region = '+7';
-
   String imageName = '';
   String imageSurname = '';
   String imagePhone = '';
   String imageBirthday = '';
-
+  ProgressBar? _sendingMsgProgressBar = ProgressBar();
   @override
   void initState() {
     super.initState();
-    _sendingMsgProgressBar = ProgressBar();
+
   }
   @override
   void dispose() {
@@ -62,8 +59,6 @@ class _RegistrationState extends State<Registration> {
     _phoneController.dispose();
     _dateController.dispose();
   }
-
-  ProgressBar? _sendingMsgProgressBar;
 
   @override
   Widget build(BuildContext context) {
@@ -305,8 +300,6 @@ class _RegistrationState extends State<Registration> {
     }
     return placeHolder;
   }
-
-  String error = '';
   void changeForm(String str) {
     int position = 0;
     for (int index = 0; index < _regionNumber.length; index++) {
@@ -329,7 +322,6 @@ class _RegistrationState extends State<Registration> {
           _region.isEmpty) {
         imageName = 'images/icon1.svg';
         imageSurname = 'images/icon1.svg';
-        imagePhone = 'images/icon1.svg';
         imagePhone = 'images/icon1.svg';
       } else {
         getValidateName();
@@ -407,7 +399,6 @@ class _RegistrationState extends State<Registration> {
     phoneNumber = tempRegion + unformattedStr;
   }
 }
-
 class PopupItem {
   final String title;
   final String image;

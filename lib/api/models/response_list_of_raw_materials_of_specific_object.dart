@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../../constants/image_constants.dart';
+
 List<ListOfRawMaterialsOfSpecificObject>
     listOfRawMaterialsOfSpecificObjectFromJson(String str) =>
         List<ListOfRawMaterialsOfSpecificObject>.from(json
@@ -13,11 +15,13 @@ class ListOfRawMaterialsOfSpecificObject {
     required this.id,
     required this.name,
     required this.price,
+    required this.image,
   });
 
   int id;
   String name;
   int price;
+  String image;
 
   factory ListOfRawMaterialsOfSpecificObject.fromJson(
           Map<String, dynamic> json) =>
@@ -25,7 +29,8 @@ class ListOfRawMaterialsOfSpecificObject {
         id: json["id"],
         name: json["name"],
         price: json["price"] ?? 0,
-        //price: json["price"] == null ? null : json["price"],
+        image: imageName(json["id"])
+
       );
 
 // Map<String, dynamic> toJson() => {

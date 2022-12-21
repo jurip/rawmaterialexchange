@@ -11,9 +11,6 @@ class _PopupItem1 {
   _PopupItem1({required this.title, required this.image, required this.lang});
 }
 class LanguageSelect extends StatelessWidget {
-  LanguageSelect(){
-
-  }
   final List<PopupMenuEntry<_PopupItem1>> popUpMenuItem = [];
   String image(String lang) {
     return 'images/Ellipse ' + lang + '.png';

@@ -167,8 +167,6 @@ class _GarbageOrderWidgetState extends State<GarbageOrderWidget> {
           );
   }
 
-  String error = '';
-
 }
 
 // Define a custom Form widget.

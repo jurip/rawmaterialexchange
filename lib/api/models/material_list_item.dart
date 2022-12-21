@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../../constants/image_constants.dart';
+
 List<MaterialListItem> listOfRawMaterialsFromJson(String str) =>
     List<MaterialListItem>.from(
         json.decode(str).map((x) => MaterialListItem.fromJson(x)));
@@ -13,6 +15,7 @@ class MaterialListItem {
     required this.changedAmount,
     required this.price,
     required this.minAmount,
+    required this.image,
     this.text =
         "Описание материала дйвкдхв додвй вкдх кдвх вкдх скхд скдх скдхксдхйс кд кх скдх скхдскхд скдх скдх скдх скх фвихдв2их",
   });
@@ -25,6 +28,7 @@ class MaterialListItem {
   int price;
   String text;
   int minAmount;
+  String image;
 
   Map<String, dynamic> toJson() {
     return {
@@ -41,6 +45,7 @@ class MaterialListItem {
         name: json["name"],
         price: json["price"],
         minAmount: json["weight"],
-        changedAmount: json["weight"]
+        changedAmount: json["weight"],
+        image: imageDefinitionInFilter(json["id"]),
       );
 }

@@ -12,18 +12,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-
 import '../main.dart';
 
 class Authorisation extends StatefulWidget {
   const Authorisation({Key? key}) : super(key: key);
-
   @override
   _AuthorisationState createState() => _AuthorisationState();
 }
 
 class _AuthorisationState extends State<Authorisation> {
-
   List<String> _numberForm = ['### ### ## ##', '## ### ## ##', '### ## ####'];
 
   //Россия Казахстан +7 XXX XXX XX XX
@@ -35,23 +32,19 @@ class _AuthorisationState extends State<Authorisation> {
   final _phoneController = TextEditingController();
 
   String imagePhone = '';
-
   String _region = '+7';
-
-
+  ProgressBar? _sendingMsgProgressBar = ProgressBar();
+  String placeHolder = '';
+  String phoneNumber = '';
   @override
   void dispose() {
     super.dispose();
     _phoneController.dispose();
-    _sendingMsgProgressBar = ProgressBar();
   }
-
-  ProgressBar? _sendingMsgProgressBar;
 
   @override
   void initState() {
     super.initState();
-    _sendingMsgProgressBar = ProgressBar();
   }
 
   @override
@@ -114,8 +107,6 @@ class _AuthorisationState extends State<Authorisation> {
                               hintText: definitionPlaceHolder(),
                               inputFormatters: [maskFormatter],
                               controller: _phoneController,
-                              //_phoneController,
-                              //maskFormatter.getUnmaskedText(phoneNumber);
                               svgPicture: imagePhone == ''
                                   ? null
                                   : SvgPicture.asset(getValidatePhone()),
@@ -136,11 +127,12 @@ class _AuthorisationState extends State<Authorisation> {
                         onTap: () {
                           getValidatePhone();
                           if (_phoneController.text != '' &&
-                              _region !=
-                                  '' /* && imagePhone == 'images/icon.svg'*/) {
+                              _region != '' ) {
                             _sendingMsgProgressBar?.show(context);
                             changingNumber();
-                            getIt<MyRequests>().getAuthorization(phoneNumber).then((data) {
+                            getIt<MyRequests>()
+                                .getAuthorization(phoneNumber)
+                                .then((data) {
                               _sendingMsgProgressBar?.hide();
                               if (data != null) {
                                 if (data.smsSended !=
@@ -198,8 +190,6 @@ class _AuthorisationState extends State<Authorisation> {
     );
   }
 
-  String placeHolder = '';
-
   String definitionPlaceHolder() {
     if (_region.isNotEmpty) {
       if (_region == '+7') {
@@ -255,8 +245,6 @@ class _AuthorisationState extends State<Authorisation> {
     return imagePhone;
   }
 
-  String phoneNumber = '';
-
   void changingNumber() {
     String tempRegion = '';
     if (_region == '+7') {
@@ -269,5 +257,4 @@ class _AuthorisationState extends State<Authorisation> {
     var unformattedStr = maskFormatter.getUnmaskedText();
     phoneNumber = tempRegion + unformattedStr;
   }
-  String error = '';
 }

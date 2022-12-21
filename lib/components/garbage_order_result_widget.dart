@@ -1,12 +1,8 @@
-import 'package:app/api/models/response_list_languages.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
-import 'package:app/screens/registration.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'confirmation_button.dart';
-
-final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class GarbageOrderResultWidget extends StatelessWidget {
   final bool orderSent;

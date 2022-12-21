@@ -37,7 +37,12 @@ class Verification extends StatefulWidget {
 
 class _VerificationState extends State<Verification> {
   final TextEditingController _codeController = TextEditingController();
-
+  int code = 0;
+  var dataList;
+  ProgressBar? _sendingMsgProgressBar = ProgressBar();
+  Timer? _timer;
+  late int _start;
+  int? smsCode = 0;
   @override
   void dispose() {
     _codeController.dispose();
@@ -45,24 +50,12 @@ class _VerificationState extends State<Verification> {
     super.dispose();
   }
 
-  int code = 0;
-
-  var dataList;
-
   @override
   void initState() {
     super.initState();
-    //Geolocator.openLocationSettings();
     smsCode = widget.smsCode;
     startTimer();
-    _sendingMsgProgressBar = ProgressBar();
   }
-
-  ProgressBar? _sendingMsgProgressBar;
-
-  Timer? _timer;
-  late int _start;
-
   void startTimer() {
     setState(() {
       _start = 60;
@@ -84,8 +77,6 @@ class _VerificationState extends State<Verification> {
       },
     );
   }
-
-  int? smsCode = 0;
 
   @override
   Widget build(BuildContext context) {

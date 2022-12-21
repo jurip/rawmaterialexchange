@@ -7,7 +7,6 @@ import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
-
 import '../api/models/material_list_item.dart';
 import '../constants/image_constants.dart';
 import '../main.dart';
@@ -32,6 +31,7 @@ class GarbageWidget extends StatefulWidget {
 class _GarbageWidgetState extends State<GarbageWidget> {
   String address = "";
   int income = 0;
+  List<int> selectedMaterials = [];
 
   Future<void> setAddress() async {
     getIt<MyRequests>().getAddressCoordinates(
@@ -384,10 +384,6 @@ class _GarbageWidgetState extends State<GarbageWidget> {
     });
     return sum;
   }
-
-  List<int> selectedMaterials = [];
-
-  //удаление фильтра
   void removeFilter(int id) {
     selectedMaterials.remove(id);
   }

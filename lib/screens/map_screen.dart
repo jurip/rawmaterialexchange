@@ -12,19 +12,16 @@ import 'package:app/components/location_info_widget.dart';
 import 'package:app/components/material_card_widget.dart';
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
-import 'package:app/utils/custom_bottom_sheet.dart' as cbs;
 import 'package:app/utils/progress_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../api/models/material_list_item.dart';
 import '../components/garbage_widget.dart';
 import '../components/other_material_card_widget.dart';
 import '../constants/image_constants.dart';
 import '../main.dart';
-import '../utils/data_utils.dart';
 
 class MapScreen extends StatefulWidget {
   MapScreen({
@@ -40,15 +37,14 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 class _MapScreenState extends State<MapScreen>
 {
 
-  LatLng? _position;
   ProgressBar _sendingMsgProgressBar = ProgressBar();
   late MapboxMapController mapController;
   List<MaterialListItem> listOfFilters = [];
   List<Service> listOfServices = [
-    Service(id: 9, name: "garbage_collection".tr()),
+    Service(id: 9, name: "garbage_collection".tr(), image: imageDefinitionInFilter(9)),
   ];
   List<Service> listOfOthers = [
-    Service(id: 10, name: "other".tr()),
+    Service(id: 10, name: "other".tr(),image: imageDefinitionInFilter(10)),
   ];
   List<int> selectedMaterialsId = [];
 
@@ -58,35 +54,12 @@ class _MapScreenState extends State<MapScreen>
     initData();
   }
   void initData() {
-    getPositionFromStored().then((value) => {
-      setState(() {
-        _position = value;
-      })
-    });
     getIt<MyRequests>().getListOfRawMaterials().then((value) => {
       setState(() {
         if(value!=null)
           listOfFilters = value;
       })
     });
-
-  }
-
-  Future<LatLng> getPositionFromStored() async {
-    LatLng position;
-    var prefs = await SharedPreferences.getInstance();
-    var lat = prefs.getDouble("lat");
-    var lng = prefs.getDouble("lng");
-    if (lat != null && lng != null) {
-      position = LatLng(lat, lng);
-    } else {
-      position = LatLng(55.76350864466721, 37.61888069876945);
-    }
-    return position;
-  }
-
- latLngfromPosition(currentLocation) {
-    return LatLng(currentLocation.latitude, currentLocation.longitude);
   }
 
   @override
@@ -125,7 +98,7 @@ class _MapScreenState extends State<MapScreen>
             colorShadow: list[index].selected == true
                 ? Color(0xFF009900)
                 : Colors.transparent,
-            assetImage: imageDefinitionInFilter(list[index].id),
+            assetImage: list[index].image,
             color: colorDefinitionInFilter(list[index].id),
             onTap: () {
               onTap(index);
@@ -138,7 +111,7 @@ class _MapScreenState extends State<MapScreen>
     );
   }
 
-  Widget otherHorizontalScrollList(BuildContext context, list, onTap) {
+  Widget otherHorizontalScrollList(BuildContext context,List<Service> list, onTap) {
     return Container(
       alignment: Alignment.topLeft,
       margin: EdgeInsets.only(left: 12),
@@ -156,7 +129,7 @@ class _MapScreenState extends State<MapScreen>
             colorShadow: list[index].selected == true
                 ? Color(0xFF009900)
                 : Colors.transparent,
-            assetImage: imageDefinitionInFilter(list[index].id),
+            assetImage: list[index].image,
             color: colorDefinitionInFilter(list[index].id),
             onTap: () {
               onTap(index);
@@ -171,7 +144,7 @@ class _MapScreenState extends State<MapScreen>
 
   @override
   Widget build(BuildContext context) {
-    return listOfFilters.isEmpty || _position == null
+    return listOfFilters.isEmpty //|| _position == null
         ? Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -187,8 +160,7 @@ class _MapScreenState extends State<MapScreen>
         extendBodyBehindAppBar: true,
         appBar: CustomAppBar(
           showUserSettingsInfo: () async {
-            cbs
-                .showModalBottomSheet(
+            showModalBottomSheet(
               backgroundColor: Colors.transparent,
               isScrollControlled: true,
               barrierColor: Colors.white.withOpacity(0),
@@ -249,7 +221,7 @@ class _MapScreenState extends State<MapScreen>
                 styleString: 'mapbox://styles/mapbox/light-v11',
                 minMaxZoomPreference: MinMaxZoomPreference(3.0, 18.4),
                 initialCameraPosition: CameraPosition(
-                  target: _position!,
+                  target: LatLng(55.76350864466721, 37.61888069876945),
                   zoom: 15.0,
                 ),
                 onStyleLoadedCallback: () => onStyleLoaded(mapController),
@@ -325,7 +297,7 @@ class _MapScreenState extends State<MapScreen>
   onServiceTap(index) {
     scaffoldKey.currentState!.showBottomSheet(
           (context) =>
-          GarbageWidget(materials: listOfFilters, position: LatLng(_position!.latitude, _position!.longitude)),
+          GarbageWidget(materials: listOfFilters, position: mapController.cameraPosition?.target),
       backgroundColor: Colors.transparent,
     );
   }

@@ -1,4 +1,3 @@
-import 'package:app/utils/data_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserSession {

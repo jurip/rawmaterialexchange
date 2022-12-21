@@ -1,14 +1,9 @@
-import 'package:app/api/models/response_list_languages.dart';
-import 'package:app/api/models/response_user_data.dart';
-import 'package:app/api/requests/requests.dart';
+
 import 'package:app/constants/color_constants.dart';
 import 'package:app/constants/style_constants.dart';
 import 'package:app/screens/registration.dart';
-import 'package:app/utils/progress_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import '../../main.dart';
-final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 class GarbageInfoWidget extends StatefulWidget {
   const GarbageInfoWidget({
     Key? key,
@@ -20,29 +15,13 @@ class GarbageInfoWidget extends StatefulWidget {
 
 class _GarbageInfoWidgetState extends State<GarbageInfoWidget> {
   List<PopupMenuEntry<PopupItem>> popUpMenuItem = [];
-
   @override
   void initState() {
     super.initState();
-    _sendingMsgProgressBar = ProgressBar();
   }
-
-  ProgressBar? _sendingMsgProgressBar;
-
   @override
   Widget build(BuildContext context) {
-    return false
-        ? Scaffold(
-            key: _scaffoldKey,
-            backgroundColor: Colors.transparent,
-            body: Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.green,
-                color: Colors.white,
-              ),
-            ),
-          )
-        : SafeArea(
+    return SafeArea(
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(

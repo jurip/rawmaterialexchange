@@ -1,26 +1,14 @@
-import 'dart:convert';
-
 import 'package:app/api/models/response_authorization.dart';
 import 'package:app/api/models/response_get_favorites.dart';
 import 'package:app/api/models/response_list_object_data.dart';
-import 'package:app/api/models/response_list_object_working_hours.dart';
-import 'package:app/api/models/response_list_of_contact_phone.dart';
 import 'package:app/api/models/response_list_of_object.dart';
-import 'package:app/api/models/response_list_of_raw_materials_of_specific_object.dart';
 import 'package:app/api/models/response_logout.dart';
-import 'package:app/api/models/response_objects_from_filter.dart';
 import 'package:app/api/models/response_user_data.dart';
 import 'package:app/api/models/response_verification.dart';
 import 'package:app/api/models/server_response_when_requesting_registration.dart';
 import 'package:app/api/requests/requests_prod.dart';
-import 'package:app/main.dart';
-import 'package:app/screens/authorisation.dart';
-import 'package:app/utils/user_session.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
-
+import '../../constants/image_constants.dart';
 import '../models/Order.dart';
 import '../models/material_list_item.dart';
 
@@ -123,6 +111,7 @@ class MyRequestsDev extends MyRequests {
           minAmount: 10,
           name: 'sdsd',
           id: 1,
+          image: imageDefinitionInFilter(1),
           text: 'edededwd',
           changedAmount: 0,
           price: 600,
