@@ -12,7 +12,17 @@ class _PopupItem1 {
 }
 class LanguageSelect extends StatelessWidget {
   LanguageSelect(){
+
+  }
+  final List<PopupMenuEntry<_PopupItem1>> popUpMenuItem = [];
+  String image(String lang) {
+    return 'images/Ellipse ' + lang + '.png';
+  }
+
+  @override
+  Widget build(BuildContext context) {
     ['ru','uz', 'kk'].forEach((element) {
+      if(context.select((LanguageBloc b) => b.state.lang)!=element)
       popUpMenuItem.add(PopupMenuItem(
           value: _PopupItem1(
             lang: element,
@@ -25,15 +35,6 @@ class LanguageSelect extends StatelessWidget {
             Text(element.tr()),
           ])));
     });
-  }
-  final List<PopupMenuEntry<_PopupItem1>> popUpMenuItem = [];
-  String image(String lang) {
-    return 'images/Ellipse ' + lang + '.png';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
 
     return PopupMenuButton<_PopupItem1>(
       offset: Offset(0, 46),

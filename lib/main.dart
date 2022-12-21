@@ -9,12 +9,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 
 import 'api/requests/requests.dart';
+import 'api/requests/requests_prod.dart';
 import 'constants/color_constants.dart';
 
 Locale? mainLocale;
 final getIt = GetIt.instance;
 void setup() {
-  getIt.registerSingleton<MyRequests>(MyRequestsTest());
+  getIt.registerSingleton<MyRequests>(MyRequestsProd());
 }
 
 void setupTest() {
@@ -23,8 +24,8 @@ void setupTest() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //setup();
-  setupTest();
+  setup();
+  //setupTest();
 
   await EasyLocalization.ensureInitialized();
   await dotenv.load(fileName: ".env");
@@ -39,7 +40,7 @@ void main() async {
         supportedLocales: [
           Locale('ru'),
           Locale('kk'),
-          Locale('tj'),
+          //Locale('tj'),
           Locale('uz')
         ],
         path: 'assets/translations',
@@ -62,8 +63,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    mainLocale = context.locale;
-
     return MaterialApp(
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,

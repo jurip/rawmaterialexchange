@@ -266,7 +266,7 @@ class _VerificationState extends State<Verification> {
                         if (_codeController.text != '') {
                           code = int.parse(_codeController.text);
                           _sendingMsgProgressBar!.show(context);
-                          getIt<MyRequests>().getSMSCode(code, widget.phone).then((data) {
+                          getIt<MyRequests>().getVerificationResponse(code, widget.phone).then((data) {
                             _sendingMsgProgressBar!.hide();
                             if (data != null) {
                               if (data.accessToken != '' &&
@@ -275,8 +275,7 @@ class _VerificationState extends State<Verification> {
                                     data.accessToken!);
                                 UserSession.setPhoneFromSharedPref(
                                     widget.phone);
-                                UserSession.setLanguageFromSharedPref(
-                                    lang);
+
 
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
