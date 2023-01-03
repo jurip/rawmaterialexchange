@@ -3,6 +3,7 @@ import 'package:app/screens/map_screen.dart';
 import 'package:app/screens/registration.dart';
 import 'package:app/utils/user_session.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,6 +13,7 @@ import 'package:get_it/get_it.dart';
 import 'api/requests/requests.dart';
 import 'api/requests/requests_prod.dart';
 import 'constants/color_constants.dart';
+import 'firebase_options.dart';
 
 Locale? mainLocale;
 final getIt = GetIt.instance;
@@ -25,6 +27,11 @@ void setupTest() {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   setup();
   //setupTest();
 

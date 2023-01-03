@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:app/api/models/response_list_of_services.dart';
 import 'package:app/api/requests/requests.dart';
-import 'package:app/components/bottom_sheet_setting_components/settings_widget.dart';
 import 'package:app/components/custom_app_bar.dart';
 import 'package:app/components/exit_alert.dart';
 import 'package:app/components/favourites_bottom_sheet.dart';
@@ -48,12 +49,19 @@ class _MapScreenState extends State<MapScreen>
   ];
   List<int> selectedMaterialsId = [];
 
+  Position? _position;
+  var json;
+
   @override
   void initState() {
     super.initState();
     initData();
   }
-  void initData() {
+  Future<void> initData() async {
+    json = await getIt<MyRequests>().getObjectsGeojson(selectedMaterialsId, context);
+    var p = await Geolocator.getLastKnownPosition();
+    if(p!=null)
+    _position = p;
     getIt<MyRequests>().getListOfRawMaterials().then((value) => {
       setState(() {
         if(value!=null)
@@ -144,7 +152,7 @@ class _MapScreenState extends State<MapScreen>
 
   @override
   Widget build(BuildContext context) {
-    return listOfFilters.isEmpty //|| _position == null
+    return listOfFilters.isEmpty || _position == null
         ? Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -159,19 +167,6 @@ class _MapScreenState extends State<MapScreen>
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: CustomAppBar(
-          showUserSettingsInfo: () async {
-            showModalBottomSheet(
-              backgroundColor: Colors.transparent,
-              isScrollControlled: true,
-              barrierColor: Colors.white.withOpacity(0),
-              context: context,
-              builder: (BuildContext context) {
-                return SettingsWidget();
-              },
-            )
-                .whenComplete(() {
-            });
-          },
         ),
         key: scaffoldKey,
         body: SlidingUpPanel(
@@ -221,7 +216,7 @@ class _MapScreenState extends State<MapScreen>
                 styleString: 'mapbox://styles/mapbox/light-v11',
                 minMaxZoomPreference: MinMaxZoomPreference(3.0, 18.4),
                 initialCameraPosition: CameraPosition(
-                  target: LatLng(55.76350864466721, 37.61888069876945),
+                  target: LatLng(_position!.latitude, _position!.longitude),
                   zoom: 15.0,
                 ),
                 onStyleLoadedCallback: () => onStyleLoaded(mapController),
@@ -269,9 +264,8 @@ class _MapScreenState extends State<MapScreen>
   }
 
   Future<void> moveToMyLocation() async {
-    var loc = await mapController.requestMyLocationLatLng();
-    if(loc!=null)
-      mapController.moveCamera(CameraUpdate.newLatLng(loc));
+    if(_position!=null)
+      mapController.moveCamera(CameraUpdate.newLatLng(LatLng( _position!.latitude,_position!.longitude)));
   }
 
   Future<void> loadPoints() async {
@@ -325,7 +319,8 @@ class _MapScreenState extends State<MapScreen>
   void onStyleLoaded(MapboxMapController controller) async{
     this.mapController = controller;
     await controller.setMapLanguage("name_ru");
-    var json = await getIt<MyRequests>().getObjectsGeojson(selectedMaterialsId, context);
+   // await moveToMyLocation();
+
     if(json!=null)
       await controller.addGeoJsonSource("points", json);
     await controller.addSymbolLayer(
@@ -340,11 +335,14 @@ class _MapScreenState extends State<MapScreen>
   }
   void _onMapCreated(MapboxMapController controller) {
     this.mapController = controller;
+    if(json!=null)
+    controller.setGeoJsonSource("points", json);
     mapController.onFeatureTapped.add(onFeatureTap);
-    mapController.requestMyLocationLatLng().then((value) =>
-        mapController.moveCamera(CameraUpdate.newLatLngZoom(value!, 15)));
+    //mapController.requestMyLocationLatLng().then((value) =>
+    //    mapController.moveCamera(CameraUpdate.newLatLngZoom(value!, 15)));
   }
   Future<void> onFeatureTap(dynamic featureId, Point<double> point, LatLng latLng) async {
+    SystemSound.play(SystemSoundType.click);
     _sendingMsgProgressBar.show(context);
     int id = int.parse(featureId);
     _sendingMsgProgressBar.hide();

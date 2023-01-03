@@ -1,12 +1,12 @@
 import 'package:app/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 
+import 'bottom_sheet_setting_components/settings_widget.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     Key? key,
-    required this.showUserSettingsInfo,
   }) : super(key: key);
-  final Function() showUserSettingsInfo;
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -31,8 +31,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         child: IconButton(
           icon: Icon(Icons.person, color: kColorGrey2, size: 30.0),
-          onPressed: () {
-            showUserSettingsInfo();
+          onPressed:  () async {
+            showModalBottomSheet(
+              backgroundColor: Colors.transparent,
+              isScrollControlled: true,
+              barrierColor: Colors.white.withOpacity(0),
+              context: context,
+              builder: (BuildContext context) {
+                return SettingsWidget();
+              },
+            )
+                .whenComplete(() {
+            });
           },
         ),
       ),

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "340075955663",
+    "project_id": "rawmaterial",
+    "storage_bucket": "rawmaterial.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:340075955663:android:842b2702dd93e83b71beba",
+        "android_client_info": {
+          "package_name": "com.raw_materials_exchange.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "340075955663-687192fci0gg4ue3am3cr30p0qd0nbsa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClMzxXx2Tm_S9fl8H3xgxkx-UePRIW8cA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "340075955663-687192fci0gg4ue3am3cr30p0qd0nbsa.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "340075955663-n6odi075851fcugfm2tibu7blf0n7s05.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rawMaterialsExchange"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
